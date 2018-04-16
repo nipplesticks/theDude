@@ -15,6 +15,7 @@
 #include "Camera\Camera.hpp"
 #include "Level\Level.hpp"
 #include <fstream>
+#include "Interface\Button.hpp"
 
 const float REFRESH_RATE = 60.0f;
 const std::string gameTitle = "theDude!";
@@ -30,7 +31,10 @@ void ConsoleThread(lua_State* L) {
 			std::cout << lua_tostring(L, -1) << '\n';
 	}
 }
-
+void yes()
+{
+	std::cout << "JAG TRYCKTES" << std::endl;
+}
 int main()
 {
 	/*lua_State* L = luaL_newstate();
@@ -64,9 +68,14 @@ int main()
 	int fpsCounter = 0;
 	float freq = 1000000000.0f / REFRESH_RATE;
 	float unprocessed = 0;
+	Button lol(200, 200, 100 * (16.0f / 9.0f), 100 );
+	lol.setFunctionPointer(yes);
 	
+
 	while (window.isOpen())
 	{
+		sf::Vector2i mp = sf::Mouse::getPosition(window);
+		lol.update(mp);
 		auto currentTime = steady_clock::now();
 		auto dt = duration_cast<nanoseconds>(currentTime - time).count();
 		time = currentTime;
@@ -94,6 +103,7 @@ int main()
 		window.clear();
 		fpsCounter++;
 		window.draw(level);
+		window.draw(lol);
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)
