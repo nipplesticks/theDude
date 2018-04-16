@@ -58,7 +58,7 @@ sf::Color Entity::getColor() const
 	return m_color;
 }
 
-bool Entity::getIsAvtive() const
+bool Entity::getIsActive() const
 {
 	return m_isActive;
 }

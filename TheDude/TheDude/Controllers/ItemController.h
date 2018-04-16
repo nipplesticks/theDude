@@ -15,4 +15,6 @@ public:
 
 	void setAsInactive(int index); 
 
+	void updateItems(float dt); 
+
 };

@@ -28,5 +28,16 @@ void ItemController::setup(int index, float x, float y, sf::Color color, float s
 
 void ItemController::setAsInactive(int index)
 {
-	m_items[index].
+	m_items[index].setIsActive(false); 
+}
+
+void ItemController::updateItems(float dt)
+{
+	for (int i = 0; i < m_nrOfItems; i++)
+	{
+		if (m_items[i].getIsActive())
+		{
+			m_items[i].update(dt); 
+		}
+	}
 }

@@ -18,6 +18,11 @@ Item::Item(float x, float y, sf::Color color, float speed, std::string effectTyp
 	setEffect(effectType); 
 }
 
+Item::Item()
+{
+
+}
+
 Item::~Item()
 {
 }

@@ -52,7 +52,7 @@ void EnemyController::updateEnemies(float dt)
 {
 	for (int i = 0; i < m_nrOfEnemies; i++)
 	{
-		if (m_enemies[i].getIsAvtive())
+		if (m_enemies[i].getIsActive())
 		{
 			m_enemies[i].update(dt);
 		}
