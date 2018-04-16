@@ -38,7 +38,7 @@ int main()
 	std::thread conThread(ConsoleThread, L);*/
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 
-	Level level;
+	Level level(&window);
 	level.LoadLevel("Resourses/Levels/test.chef");
 
 	/*Grid g(32, 32, 32);

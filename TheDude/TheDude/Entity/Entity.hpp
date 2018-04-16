@@ -23,7 +23,7 @@ public:
 	sf::Vector2f getSpeed() const;
 	sf::RectangleShape& getSelf();
 	sf::Color getColor() const;
-	bool getIsAvtive() const;
+	bool getIsActive() const;
 
 	void setPosition(float x, float y);
 	void setPosition(sf::Vector2f newPosXY);

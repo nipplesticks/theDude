@@ -4,7 +4,7 @@ class EnemyController
 {
 private:
 	int m_nrOfEnemies;
-	Enemy** m_enemies;
+	Enemy* m_enemies;
 
 public:
 	EnemyController(int nrOfEnemies);
