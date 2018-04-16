@@ -144,3 +144,7 @@ void Level::_copy(const Level & other)
 {
 	m_grid = new Grid(*other.m_grid);
 }
+
+void Level::_handleInput()
+{
+}
