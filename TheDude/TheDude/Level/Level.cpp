@@ -3,10 +3,11 @@
 #include <sstream> 
 #include <iostream> 
 
-Level::Level()
+Level::Level(sf::RenderWindow* renderWindow)
 {
 	m_camera = new Camera(0, 0, 10,10);
 	m_grid = new Grid();
+	m_pWindow = renderWindow;
 	for (int i = 0; i < 32; i++)
 	{
 		for (int k = 0; k < 32; k++)
@@ -147,4 +148,15 @@ void Level::_copy(const Level & other)
 
 void Level::_handleInput()
 {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+		sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
+
+		if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+		{
+			m_grid->setColorOfTile(index.x, index.y, 255, 255, 255);
+		}
+
+	}
 }

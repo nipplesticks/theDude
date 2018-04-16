@@ -9,6 +9,8 @@ private:
 	Grid * m_grid;
 	std::string m_levelName;
 	Camera* m_camera;
+	sf::RenderWindow* m_pWindow;
+
 	/*
 		Player ctrl
 		Enemy ctrl
@@ -18,7 +20,7 @@ private:
 	*/
 
 public:
-	Level();
+	Level(sf::RenderWindow* renderWindow);
 	Level(const Level& other);
 	~Level();
 	void LoadLevel(const std::string & target);
