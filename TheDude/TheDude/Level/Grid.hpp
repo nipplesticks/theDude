@@ -7,8 +7,8 @@
 class Grid : public sf::Drawable
 {
 private:
-	std::vector<std::vector<Tile>> m_tiles;
-	std::deque<Tile> m_renderTiles;
+	std::vector<std::vector<Tile>> m_tiles;	
+	std::vector<Tile*> m_renderableTiles;
 
 public:
 	Grid(int width = 32, int height = 32, float sizeOfTile = 32.0f, int type = 0);
