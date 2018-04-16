@@ -145,11 +145,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
     <ClCompile Include="Level\Tile.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera\Camera.hpp" />
     <ClInclude Include="Level\Grid.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
   </ItemGroup>

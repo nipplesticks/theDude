@@ -13,6 +13,7 @@
 #include <chrono>
 
 #include "Level\Grid.hpp"
+#include "Camera\Camera.hpp"
 
 const float REFRESH_RATE = 60.0f;
 const std::string gameTitle = "theDude!";
@@ -37,7 +38,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 
 	Grid g(32, 32, 32);
-
+	Camera cam(0, 0);
 	for (int i = 0; i < 32; i++)
 	{
 		for (int k = 0; k < 32; k++)
@@ -53,7 +54,7 @@ int main()
 	int fpsCounter = 0;
 	float freq = 1000000000.0f / REFRESH_RATE;
 	float unprocessed = 0;
-
+	
 	while (window.isOpen())
 	{
 		auto currentTime = steady_clock::now();
@@ -66,7 +67,8 @@ int main()
 		{
 			updates++;
 			unprocessed -= 1;
-
+			cam.update();
+			g.update(cam);
 		}
 
 		sf::Event event;
@@ -74,6 +76,9 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			if (event.type == sf::Event::KeyPressed)
+				if (event.key.code == sf::Keyboard::Escape)
+					window.close();
 		}
 
 		window.clear();
