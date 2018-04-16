@@ -12,6 +12,7 @@
 #include "lua.h"
 #include <chrono>
 
+#include "Camera\Camera.hpp"
 #include "Level\Level.hpp"
 #include <fstream>
 
@@ -37,7 +38,7 @@ int main()
 	std::thread conThread(ConsoleThread, L);*/
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 
-	Level l1;
+	Level level;
 	l1.LoadLevel("Resourses/Levels/test.chef");
 
 	/*Grid g(32, 32, 32);
@@ -63,7 +64,7 @@ int main()
 	int fpsCounter = 0;
 	float freq = 1000000000.0f / REFRESH_RATE;
 	float unprocessed = 0;
-
+	
 	while (window.isOpen())
 	{
 		auto currentTime = steady_clock::now();
@@ -76,7 +77,8 @@ int main()
 		{
 			updates++;
 			unprocessed -= 1;
-
+			
+			level.Update();
 		}
 
 		sf::Event event;
@@ -84,11 +86,14 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			if (event.type == sf::Event::KeyPressed)
+				if (event.key.code == sf::Keyboard::Escape)
+					window.close();
 		}
 
 		window.clear();
 		fpsCounter++;
-		window.draw(l1);
+		window.draw(level);
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)

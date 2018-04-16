@@ -1,4 +1,5 @@
 #include "Grid.hpp"
+#include <iostream>
 
 Grid::Grid(int width, int height, float sizeOfTile, int type)
 {
@@ -67,8 +68,21 @@ std::string Grid::toFile() const
 	return map;
 }
 
+void Grid::update(Camera* cam)
+{
+	for (auto& v : m_tiles)
+	{
+		for (auto& v2 : v)
+		{
+			v2.setShapePosition(sf::Vector2f(v2.getPosition()) + cam->getPosition());
+			//v2.setSize(v2.getSize() * cam->getZoom());
+		}
+	}
+}
+
 void Grid::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
+	
 	for (size_t i = 0; i < m_tiles.size(); i++)
 	{
 		for (size_t k = 0; k < m_tiles[i].size(); k++)
@@ -97,7 +111,7 @@ void Grid::_init(int width, int height, float sizeOfTile, int type)
 		for (int k = 0; k < width; k++)
 		{
 			Tile t(sizeOfTile, sizeOfTile, type);
-			t.setPosition(static_cast<float>(i) * sizeOfTile, static_cast<float>(k) * sizeOfTile);
+			t.setPosition(static_cast<float>(i) * sizeOfTile , static_cast<float>(k) * sizeOfTile);
 			m_tiles[i].push_back(t);
 		}
 	}

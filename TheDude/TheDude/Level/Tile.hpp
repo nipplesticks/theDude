@@ -14,6 +14,7 @@ public:
 private:
 	sf::RectangleShape	m_tileShape;
 	sf::Vector2i		m_pos;
+	sf::Vector2f		m_scale;
 	int					m_type;
 
 public:
@@ -23,6 +24,9 @@ public:
 
 	void setPosition(float x, float y);
 	void setPosition(const sf::Vector2f &position);
+	void setShapePosition(float x, float y);
+	void setShapePosition(const sf::Vector2f& position);
+
 	void setSize(float x, float y);
 	void setSize(const sf::Vector2f &size);
 	void setType(int type);
@@ -33,6 +37,7 @@ public:
 	int getType() const;
 	const sf::Vector2f& getSize() const;
 	const sf::Vector2i& getPosition() const;
+	const sf::Vector2f& getShapePosition() const;
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

@@ -146,6 +146,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Controllers\EnemyController.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
     <ClCompile Include="Level\Level.cpp" />
     <ClCompile Include="Level\Tile.cpp" />
@@ -158,6 +160,8 @@
     <ClCompile Include="Entity\TheDude.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera\Camera.hpp" />
+    <ClInclude Include="Controllers\EnemyController.hpp" />
     <ClInclude Include="Level\Grid.hpp" />
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
