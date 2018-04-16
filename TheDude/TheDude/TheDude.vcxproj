@@ -146,11 +146,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Level\Grid.cpp" />
+    <ClCompile Include="Level\Level.cpp" />
     <ClCompile Include="Level\Tile.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Level\Grid.hpp" />
+    <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

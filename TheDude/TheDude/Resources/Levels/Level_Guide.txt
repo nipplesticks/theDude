@@ -1,0 +1,11 @@
+# name LevelName // Defines level name
+# grid width height tileSize standardTile // defines the grid
+# t posX posY type // Defines a tile
+#
+#
+
+name LevelName
+grid 32 32 16 0
+
+t 0 0 1
+t 0 1 1

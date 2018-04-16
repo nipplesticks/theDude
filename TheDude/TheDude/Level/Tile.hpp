@@ -6,13 +6,14 @@ class Tile : public sf::Drawable
 public:
 	enum Type
 	{
+		Water,
 		Ground,
-		Wall,
-		Water
+		Wall
 	};
 
 private:
 	sf::RectangleShape	m_tileShape;
+	sf::Vector2i		m_pos;
 	Type				m_type;
 
 public:
@@ -30,7 +31,7 @@ public:
 
 	const Type & getType() const;
 	const sf::Vector2f& getSize() const;
-	const sf::Vector2f& getPosition() const;
+	const sf::Vector2i& getPosition() const;
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
