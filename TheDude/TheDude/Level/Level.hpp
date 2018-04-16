@@ -23,6 +23,7 @@ public:
 	void LoadLevel(const std::string & target);
 	void Update();
 	Level& operator=(const Level& other);
+	void draw(sf::RenderTarget & target, sf::RenderStates states) const;
 private:
 	void _cleanup();
 	void _copy(const Level& other);

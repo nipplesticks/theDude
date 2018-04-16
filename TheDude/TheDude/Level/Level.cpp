@@ -39,16 +39,54 @@ void Level::LoadLevel(const std::string & target)
 
 				if (type == "t")
 				{
-					int x, y, t;
+					int x, y, t, r, g, b;
+					scanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d", &x, &y, &t, &r, &g, &b);
+					m_grid->setTypeOfTile(x, y, t);
+					m_grid->setColorOfTile(x, y, r, g, b);
+				}
+				else if (type == "e")
+				{
+					// posX, posY, sizeX, sizeY, type
+					int x, y, sx, sy, t, r, g, b;
+					scanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &t, &r, &g, &b);
 
-					scanf_s(currentLine.c_str(), "%*s %d %d %d", &x, &y, &t);
+					/*
+						Create Enemy
+					*/
 
+				}
+				else if (type == "i")
+				{
+					// posX, posY, sizeX, sizeY, type
+					int x, y, sx, sy, t, r, g, b;
+					scanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &t, &r, &g, &b);
 
+					/*
+						Create item
+					*/
+				}
+				else if (type == "theDude")
+				{
+					// posX, posY, sizeX, sizeY
+					int x, y, sx, sy, r, g, b;
+					scanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &r, &g, &b);
+
+					/*
+						Create theDude
+					*/
 				}
 				else if (type == "name")
 				{
 					std::getline(stream, m_levelName);
 				}
+				else if (type == "grid")
+				{
+					int w, h, s, t;
+					scanf_s(currentLine.c_str(), "%*s %d %d %d %d", &w, &h, &s, &t);
+					m_grid = new Grid(w, h, static_cast<float>(s), t);
+				}
+				
+
 
 			}
 		}
@@ -70,6 +108,11 @@ Level & Level::operator=(const Level & other)
 	}
 
 	return *this;
+}
+
+void Level::draw(sf::RenderTarget & target, sf::RenderStates states) const
+{
+	target.draw(*m_grid, states);
 }
 
 void Level::_cleanup()

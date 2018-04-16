@@ -1,6 +1,6 @@
 #include "Grid.hpp"
 
-Grid::Grid(int width, int height, float sizeOfTile, Tile::Type type)
+Grid::Grid(int width, int height, float sizeOfTile, int type)
 {
 	_init(width, height, sizeOfTile, type);
 }
@@ -11,24 +11,29 @@ Grid::Grid(const Grid & other)
 	_copy(other);
 }
 
-void Grid::setTypeOfTile(int x, int y, const Tile::Type & type)
+void Grid::setTypeOfTile(int x, int y, int type)
 {
-	m_tiles[y][x].setType(type);
+	m_tiles[x][y].setType(type);
 }
 
-void Grid::setColorOfTile(int x, int y, float r, float g, float b)
+void Grid::setColorOfTile(int x, int y, int r, int g, int b)
 {
-	m_tiles[y][x].setColor(r, g, b);
+	m_tiles[x][y].setColor(r, g, b);
+}
+
+void Grid::setColorOfTile(int x, int y, const sf::Vector3i& color)
+{
+	this->setColorOfTile(x, y, color.x, color.y, color.z);
 }
 
 int Grid::getWidth() const
 {
-	return m_tiles[0].size();
+	return static_cast<int>(m_tiles[0].size());
 }
 
 int Grid::getHeight() const
 {
-	return m_tiles.size();
+	return static_cast<int>(m_tiles.size());
 }
 
 sf::Vector2i Grid::getDimensions() const
@@ -63,7 +68,7 @@ Grid & Grid::operator=(const Grid & other)
 	return *this;
 }
 
-void Grid::_init(int width, int height, float sizeOfTile, Tile::Type type)
+void Grid::_init(int width, int height, float sizeOfTile, int type)
 {
 	for (int i = 0; i < height; i++)
 	{
