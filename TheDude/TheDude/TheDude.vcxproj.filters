@@ -20,4 +20,7 @@
     </ClInclude>
     <ClInclude Include="Level\Level.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resourses\Levels\level_template.txt" />
+  </ItemGroup>
 </Project>

@@ -155,6 +155,9 @@
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resourses\Levels\level_template.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
