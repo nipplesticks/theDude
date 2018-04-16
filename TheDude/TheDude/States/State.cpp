@@ -18,6 +18,7 @@ void State::Pop()
 {
 	if (!s_states->empty())
 		s_states->pop();
+	delete this;
 }
 
 void State::Push(State * state)

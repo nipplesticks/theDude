@@ -17,6 +17,7 @@
     <ClCompile Include="States\State.cpp" />
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
+    <ClCompile Include="States\MainMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">

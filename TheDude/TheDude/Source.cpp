@@ -14,7 +14,7 @@
 
 #include "Camera\Camera.hpp"
 #include "Level\Level.hpp"
-#include "States\GameState.hpp"
+#include "States\MainMenu.hpp"
 
 #include <fstream>
 #include "Interface\Button.hpp"
@@ -48,7 +48,7 @@ int main()
 
 	std::stack<State*> stateStack;
 	State::initStatics(&stateStack, &window);
-	GameState * s = new GameState("Resourses/Levels/test.chef");
+	MainMenu * s = new MainMenu();
 	stateStack.push(s);
 	
 	using namespace std::chrono;

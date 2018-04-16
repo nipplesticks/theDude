@@ -161,6 +161,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Entity\TheDude.cpp" />
     <ClCompile Include="States\GameState.cpp" />
+    <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="States\State.cpp" />
   </ItemGroup>
   <ItemGroup>

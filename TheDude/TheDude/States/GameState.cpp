@@ -33,14 +33,3 @@ void GameState::_init(const std::string &levelPath)
 	m_currentLevel->LoadLevel(levelPath);
 }
 
-void GameState::_cleanup()
-{
-	delete m_currentLevel;
-	m_currentLevel = nullptr;
-}
-
-void GameState::Pop()
-{
-	State::Pop();
-	delete this;
-}

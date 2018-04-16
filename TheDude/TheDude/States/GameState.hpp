@@ -16,7 +16,4 @@ public:
 	void Draw() override;
 private:
 	void _init(const std::string &levelPath);
-	void _cleanup();
-protected:
-	void Pop() override;
 };
