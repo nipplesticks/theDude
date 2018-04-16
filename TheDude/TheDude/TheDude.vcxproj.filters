@@ -4,6 +4,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Level\Tile.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
+    <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Level\Level.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -19,6 +20,7 @@
       <Filter>levelEditor</Filter>
     </ClInclude>
     <ClInclude Include="Level\Level.hpp" />
+    <ClInclude Include="Camera\Camera.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />

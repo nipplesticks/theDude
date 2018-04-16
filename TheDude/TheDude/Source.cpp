@@ -12,7 +12,8 @@
 #include "lua.h"
 #include <chrono>
 
-#include "Level\Grid.hpp"
+#include "Level\Level.hpp"
+#include "Camera\Camera.hpp"
 
 const float REFRESH_RATE = 60.0f;
 const std::string gameTitle = "theDude!";
@@ -36,15 +37,7 @@ int main()
 	std::thread conThread(ConsoleThread, L);*/
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 
-	Grid g(32, 32, 32);
-
-	for (int i = 0; i < 32; i++)
-	{
-		for (int k = 0; k < 32; k++)
-		{
-			g.setColorOfTile(i, k, i * 8, k * 8, (i + k) * 4);
-		}
-	}
+	Level level;
 	
 	using namespace std::chrono;
 	auto time = steady_clock::now();
@@ -53,7 +46,7 @@ int main()
 	int fpsCounter = 0;
 	float freq = 1000000000.0f / REFRESH_RATE;
 	float unprocessed = 0;
-
+	
 	while (window.isOpen())
 	{
 		auto currentTime = steady_clock::now();
@@ -66,7 +59,8 @@ int main()
 		{
 			updates++;
 			unprocessed -= 1;
-
+			
+			level.Update();
 		}
 
 		sf::Event event;
@@ -74,11 +68,14 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			if (event.type == sf::Event::KeyPressed)
+				if (event.key.code == sf::Keyboard::Escape)
+					window.close();
 		}
 
 		window.clear();
 		fpsCounter++;
-		window.draw(g);
+		window.draw(level);
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)

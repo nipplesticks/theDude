@@ -23,15 +23,22 @@ public:
 
 	void setPosition(float x, float y);
 	void setPosition(const sf::Vector2f &position);
+	void setShapePosition(float x, float y);
+	void setShapePosition(const sf::Vector2f& position);
+
 	void setSize(float x, float y);
 	void setSize(const sf::Vector2f &size);
+
 	void setType(const Type &type);
+
 	void setColor(float r, float g, float b);
 	void setColor(const sf::Color &color);
 
 	const Type & getType() const;
+
 	const sf::Vector2f& getSize() const;
 	const sf::Vector2i& getPosition() const;
+	const sf::Vector2f& getShapePosition() const;
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

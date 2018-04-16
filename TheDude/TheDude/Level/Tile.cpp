@@ -14,7 +14,7 @@ Tile::Tile(const Tile & other)
 
 void Tile::setPosition(float x, float y)
 {
-	m_tileShape.setPosition(x, y);
+	setShapePosition(x, y);
 	m_pos.x = x;
 	m_pos.y = y;
 }
@@ -24,6 +24,16 @@ void Tile::setPosition(const sf::Vector2f & position)
 	m_tileShape.setPosition(position);
 	m_pos.x = static_cast<int>(position.x + 0.5f);
 	m_pos.y = static_cast<int>(position.y + 0.5f);
+}
+
+void Tile::setShapePosition(float x, float y)
+{
+	setShapePosition(sf::Vector2f(x, y));
+}
+
+void Tile::setShapePosition(const sf::Vector2f & position)
+{
+	m_tileShape.setPosition(position);
 }
 
 void Tile::setSize(float x, float y)
@@ -79,6 +89,11 @@ const sf::Vector2i & Tile::getPosition() const
 	return m_pos;
 }
 
+const sf::Vector2f & Tile::getShapePosition() const
+{
+	return m_tileShape.getPosition();
+}
+
 void Tile::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	target.draw(m_tileShape, states);
@@ -101,6 +116,7 @@ void Tile::_copy(const Tile & other)
 {
 	m_type = other.m_type;
 	m_tileShape = other.m_tileShape;
+	m_pos = other.m_pos;
 }
 
 void Tile::_cleanup()

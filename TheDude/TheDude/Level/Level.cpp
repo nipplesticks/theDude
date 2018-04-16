@@ -5,7 +5,15 @@
 
 Level::Level()
 {
-	m_grid = nullptr;
+	m_camera = new Camera(0, 0, 10,10);
+	m_grid = new Grid();
+	for (int i = 0; i < 32; i++)
+	{
+		for (int k = 0; k < 32; k++)
+		{
+			m_grid->setColorOfTile(i, k, i * 8, k * 8, (i + k) * 4);
+		}
+	}
 	m_levelName = "";
 }
 
@@ -61,6 +69,12 @@ void Level::LoadLevel(const std::string & target)
 	}
 }
 
+void Level::Update()
+{
+	m_camera->update();
+	m_grid->update(m_camera);
+}
+
 Level & Level::operator=(const Level & other)
 {
 	if (this != &other)
@@ -72,11 +86,18 @@ Level & Level::operator=(const Level & other)
 	return *this;
 }
 
+void Level::draw(sf::RenderTarget & target, sf::RenderStates states) const
+{
+	target.draw(*m_grid);
+}
+
 void Level::_cleanup()
 {
 	if (m_grid)
 		delete m_grid;
 	m_grid = nullptr;
+	if (m_camera) delete m_camera;
+	m_camera = nullptr;
 }
 
 void Level::_copy(const Level & other)
