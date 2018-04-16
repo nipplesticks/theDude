@@ -15,6 +15,11 @@ Projectile::Projectile(float x, float y, sf::Color color, float speed) : Entity(
 	m_hasHit = false; 
 }
 
+Projectile::Projectile()
+{
+
+}
+
 Projectile::~Projectile()
 {
 }
