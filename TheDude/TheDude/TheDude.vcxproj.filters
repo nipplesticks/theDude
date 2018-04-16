@@ -41,4 +41,7 @@
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resourses\Levels\test.chef" />
+  </ItemGroup>
 </Project>

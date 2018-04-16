@@ -179,6 +179,9 @@
     <ClInclude Include="Entity\Projectile.hpp" />
     <ClInclude Include="Entity\TheDude.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resourses\Levels\test.chef" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
