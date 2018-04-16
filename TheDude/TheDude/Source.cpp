@@ -98,7 +98,7 @@ int main()
 		
 		if (!stateStack.empty())
 			stateStack.top()->Draw();
-
+		window.draw(lol);
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)
