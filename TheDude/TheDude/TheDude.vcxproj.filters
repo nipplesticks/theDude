@@ -13,6 +13,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Controllers\EnemyController.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Controllers\ItemController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -35,6 +36,7 @@
     <ClInclude Include="Entity\TheDude.h" />
     <ClInclude Include="Controllers\EnemyController.hpp" />
     <ClInclude Include="Camera\Camera.hpp" />
+    <ClInclude Include="Controllers\ItemController.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
