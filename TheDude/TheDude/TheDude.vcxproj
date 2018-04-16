@@ -172,6 +172,7 @@
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
     <ClInclude Include="States\GameState.hpp" />
+    <ClInclude Include="States\MainMenu.hpp" />
     <ClInclude Include="States\State.hpp" />
   </ItemGroup>
   <ItemGroup>

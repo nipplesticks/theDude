@@ -43,6 +43,7 @@
     <ClInclude Include="States\State.hpp" />
     <ClInclude Include="States\GameState.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
+    <ClInclude Include="States\MainMenu.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />

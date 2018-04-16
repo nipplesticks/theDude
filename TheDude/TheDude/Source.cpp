@@ -48,9 +48,9 @@ int main()
 
 	std::stack<State*> stateStack;
 	State::initStatics(&stateStack, &window);
-	GameState s("Resourses/Levels/test.chef");
-	stateStack.push(&s);
-
+	GameState * s = new GameState("Resourses/Levels/test.chef");
+	stateStack.push(s);
+	
 	using namespace std::chrono;
 	auto time = steady_clock::now();
 	auto timer = steady_clock::now();

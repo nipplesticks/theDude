@@ -42,5 +42,5 @@ void GameState::_cleanup()
 void GameState::Pop()
 {
 	State::Pop();
-	_cleanup();
+	delete this;
 }
