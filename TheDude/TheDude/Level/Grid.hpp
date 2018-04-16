@@ -26,8 +26,9 @@ public:
 	sf::Vector2i getDimensions() const;
 	const Tile& getTile(int x, int y);
 
-	void draw(sf::RenderTarget & target, sf::RenderStates states) const;
+	std::string toFile() const;
 
+	void draw(sf::RenderTarget & target, sf::RenderStates states) const;
 	Grid& operator=(const Grid& other);
 private:
 	void _init(int width, int height, float sizeOfTile, int type);

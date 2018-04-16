@@ -10,11 +10,11 @@ private:
 	std::string m_levelName;
 	Camera* m_camera;
 	/*
-	Player ctrl
-	Enemy ctrl
-	Item ctrl
-	Projectile ctrl
-	Camera ctrl
+		Player ctrl
+		Enemy ctrl
+		Item ctrl
+		Projectile ctrl
+		Camera ctrl
 	*/
 
 public:
@@ -29,4 +29,5 @@ public:
 private:
 	void _cleanup();
 	void _copy(const Level& other);
+	void _handleInput();
 };

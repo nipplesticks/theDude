@@ -12,8 +12,9 @@
 #include "lua.h"
 #include <chrono>
 
-#include "Level\Level.hpp"
 #include "Camera\Camera.hpp"
+#include "Level\Level.hpp"
+#include <fstream>
 
 const float REFRESH_RATE = 60.0f;
 const std::string gameTitle = "theDude!";
@@ -38,7 +39,24 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 
 	Level level;
+	level.LoadLevel("Resourses/Levels/test.chef");
+
+	/*Grid g(32, 32, 32);
+
+	for (int i = 0; i < 32; i++)
+	{
+		for (int k = 0; k < 32; k++)
+		{
+			g.setColorOfTile(i, k, i * 8, k * 8, (i + k) * 4);
+		}
+	}
 	
+	std::string map = g.toFile();
+	std::ofstream file;
+	file.open("Resourses/Levels/test.chef");
+	file << map;
+	file.close();*/
+
 	using namespace std::chrono;
 	auto time = steady_clock::now();
 	auto timer = steady_clock::now();
