@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Level\Tile.cpp" />
+    <ClCompile Include="Level\Grid.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="levelEditor">
+      <UniqueIdentifier>{4d38bfc0-c157-48a0-a1ba-25c31c4c81e7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Level\Tile.hpp">
+      <Filter>levelEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Level\Grid.hpp">
+      <Filter>levelEditor</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
