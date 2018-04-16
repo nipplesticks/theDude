@@ -39,7 +39,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 
 	Level level;
-	l1.LoadLevel("Resourses/Levels/test.chef");
+	level.LoadLevel("Resourses/Levels/test.chef");
 
 	/*Grid g(32, 32, 32);
 

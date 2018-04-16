@@ -77,7 +77,7 @@ void Level::LoadLevel(const std::string & target)
 				{
 					// posX, posY, sizeX, sizeY
 					int x, y, sx, sy, r, g, b;
-					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &r, &g, &b);
+					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &r, &g, &b);
 
 					/*
 						Create theDude
@@ -89,11 +89,10 @@ void Level::LoadLevel(const std::string & target)
 				}
 				else if (type == "grid")
 				{
-					int w, h, t;
-					float s;
+					int w, h, s, t;
 
-					sscanf_s(currentLine.c_str(), "%*s %i %i %f %i", &w, &h, &s, &t);
-					m_grid = new Grid(w, h, s, t);
+					sscanf_s(currentLine.c_str(), "%*s %i %i %i %i", &w, &h, &s, &t);
+					m_grid = new Grid(w, h, static_cast<float>(s), t);
 				}
 				
 
@@ -113,6 +112,7 @@ void Level::Update()
 {
 	m_camera->update();
 	m_grid->update(m_camera);
+	_handleInput();
 }
 
 Level & Level::operator=(const Level & other)

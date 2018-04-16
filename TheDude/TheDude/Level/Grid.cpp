@@ -50,14 +50,15 @@ const Tile & Grid::getTile(int x, int y)
 std::string Grid::toFile() const
 {
 	std::string map = "";
+	int size = static_cast<int>(m_tiles[0][0].getSize().x + 0.5f);
 	map += "grid " + std::to_string(m_tiles.size()) + " " + std::to_string(m_tiles[0].size()) + " " +
-		std::to_string(m_tiles[0][0].getSize().x) + " " + std::to_string(0) + '\n';
+		std::to_string(size) + " " + std::to_string(0) + '\n';
 
 	for (size_t i = 0; i < m_tiles.size(); i++)
 	{
 		for (size_t k = 0; k < m_tiles[i].size(); k++)
 		{
-			map += "t " + std::to_string(m_tiles[i][k].getPosition().x) + " " + std::to_string(m_tiles[i][k].getPosition().y) + " " + 
+			map += "t " + std::to_string(m_tiles[i][k].getPosition().x / size) + " " + std::to_string(m_tiles[i][k].getPosition().y / size) + " " + 
 				std::to_string(m_tiles[i][k].getType()) + " ";
 
 			sf::Color c = m_tiles[i][k].getColor();
