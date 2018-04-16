@@ -16,7 +16,8 @@ private:
 public:
 	Item(sf::Vector2f position, sf::Color color, sf::Vector2f speed, std::string effectType);
 	Item(float x, float y, sf::Color color, float speedX, float speedY, std::string effectType); 
-	Item(float x, float y, sf::Color color, float speed, std::string effectType); 
+	Item(float x, float y, sf::Color color, float speed, std::string effectType);
+	Item(); 
 
 	~Item(); 
 
