@@ -39,6 +39,7 @@ void yes()
 }
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	/*lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	std::thread conThread(ConsoleThread, L);*/
@@ -47,8 +48,8 @@ int main()
 
 	std::stack<State*> stateStack;
 	State::initStatics(&stateStack, &window);
-	GameState * s = new GameState("Resourses/Levels/test.chef");
-	stateStack.push(s);
+	GameState s("Resourses/Levels/test.chef");
+	stateStack.push(&s);
 
 	using namespace std::chrono;
 	auto time = steady_clock::now();
@@ -87,9 +88,9 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			if (event.type == sf::Event::KeyPressed)
+			/*if (event.type == sf::Event::KeyPressed)
 				if (event.key.code == sf::Keyboard::Escape)
-					window.close();
+					window.close();*/
 		}
 
 

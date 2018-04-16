@@ -8,12 +8,18 @@ GameState::GameState(const std::string &levelPath)
 
 GameState::~GameState()
 {
-	delete m_currentLevel;
+	if (m_currentLevel)
+		delete m_currentLevel;
 }
 
 void GameState::Update()
 {
 	m_currentLevel->Update();
+	//test
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+	{
+		Pop();
+	}
 }
 
 void GameState::Draw()
@@ -25,4 +31,16 @@ void GameState::_init(const std::string &levelPath)
 {
 	m_currentLevel = new Level(s_window);
 	m_currentLevel->LoadLevel(levelPath);
+}
+
+void GameState::_cleanup()
+{
+	delete m_currentLevel;
+	m_currentLevel = nullptr;
+}
+
+void GameState::Pop()
+{
+	State::Pop();
+	_cleanup();
 }

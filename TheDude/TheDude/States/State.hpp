@@ -18,6 +18,6 @@ public:
 	static void initStatics(std::stack<State*>* stack, sf::RenderWindow* window);
 
 protected:
-	void Pop();
-	void Push(State * state);
+	virtual void Pop();
+	virtual void Push(State * state);
 };
