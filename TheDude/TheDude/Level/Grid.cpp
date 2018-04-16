@@ -49,26 +49,37 @@ const Tile & Grid::getTile(int x, int y)
 
 void Grid::update(Camera* cam)
 {
-	for (auto& v : m_tiles)
+	m_renderableTiles.clear();
+	m_renderableTiles.reserve(m_tiles.size()*m_tiles.size());
+	int scale = m_tiles[0][0].getSize().x;
+	int startX = (-cam->getPosition().x / scale);
+	int startY = (-cam->getPosition().y / scale);
+	int endX = startX + ( (cam->getWindowWidth()) / scale);
+	int endY = startY + ( (cam->getWindowHeight()) / scale);
+//	std::cout << startX << "," << endX << std::endl;
+	//std::cout << startY << "," << endY << std::endl;
+	
+	for (int i = startX; i < endX; i++)
 	{
-		for (auto& v2 : v)
+		if (i < 0 || i >= m_tiles.size()) continue;
+
+		for (int j = startY; j < endY; j++)
 		{
-			v2.setShapePosition(sf::Vector2f(v2.getPosition()) + cam->getPosition());
-			//v2.setSize(v2.getSize() * cam->getZoom());
+			if (j < 0 || j >= m_tiles[i].size()) continue;
+			
+			m_renderableTiles.push_back(&m_tiles[i][j]);
+			m_tiles[i][j].setShapePosition(sf::Vector2f(m_tiles[i][j].getPosition()) + cam->getPosition());
+
 		}
 	}
 }
 
 void Grid::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
+	//std::cout << m_renderableTiles.size() << std::endl;
+	for (auto& tiles : m_renderableTiles)
+		target.draw(*tiles, states);
 	
-	for (size_t i = 0; i < m_tiles.size(); i++)
-	{
-		for (size_t k = 0; k < m_tiles[i].size(); k++)
-		{
-			m_tiles[i][k].draw(target, states);
-		}
-	}
 }
 
 Grid & Grid::operator=(const Grid & other)

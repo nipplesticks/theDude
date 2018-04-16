@@ -19,8 +19,12 @@ public:
 
 	void update();
 
+	int getWindowWidth() const;
+	int getWindowHeight() const;
+
 	const sf::Vector2f& getPosition() const;
 	const sf::Vector2f& getDeltaPosition() const;
+
 	float getZoom() const;
 	
 };

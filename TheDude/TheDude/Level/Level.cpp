@@ -5,7 +5,7 @@
 
 Level::Level()
 {
-	m_camera = new Camera(0, 0, 10,10);
+	m_camera = new Camera(0, 0, 1280,720);
 	m_grid = new Grid();
 	for (int i = 0; i < 32; i++)
 	{

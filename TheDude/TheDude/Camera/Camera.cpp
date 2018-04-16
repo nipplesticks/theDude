@@ -48,6 +48,16 @@ void Camera::update()
 	
 }
 
+int Camera::getWindowWidth() const
+{
+	return m_winWidth;
+}
+
+int Camera::getWindowHeight() const
+{
+	return m_winHeight;
+}
+
 const sf::Vector2f & Camera::getPosition() const
 {
 	return m_pos;
