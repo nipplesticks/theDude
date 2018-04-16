@@ -88,9 +88,6 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			/*if (event.type == sf::Event::KeyPressed)
-				if (event.key.code == sf::Keyboard::Escape)
-					window.close();*/
 		}
 
 
