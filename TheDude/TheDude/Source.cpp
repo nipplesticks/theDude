@@ -14,6 +14,8 @@
 
 #include "Camera\Camera.hpp"
 #include "Level\Level.hpp"
+#include "States\GameState.hpp"
+
 #include <fstream>
 
 const float REFRESH_RATE = 60.0f;
@@ -38,24 +40,11 @@ int main()
 	std::thread conThread(ConsoleThread, L);*/
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 
-	Level level(&window);
-	level.LoadLevel("Resourses/Levels/test.chef");
 
-	/*Grid g(32, 32, 32);
-
-	for (int i = 0; i < 32; i++)
-	{
-		for (int k = 0; k < 32; k++)
-		{
-			g.setColorOfTile(i, k, i * 8, k * 8, (i + k) * 4);
-		}
-	}
-	
-	std::string map = g.toFile();
-	std::ofstream file;
-	file.open("Resourses/Levels/test.chef");
-	file << map;
-	file.close();*/
+	std::stack<State*> stateStack;
+	State::initStatics(&stateStack, &window);
+	GameState * s = new GameState("Resourses/Levels/test.chef");
+	stateStack.push(s);
 
 	using namespace std::chrono;
 	auto time = steady_clock::now();
@@ -65,6 +54,7 @@ int main()
 	float freq = 1000000000.0f / REFRESH_RATE;
 	float unprocessed = 0;
 	
+
 	while (window.isOpen())
 	{
 		auto currentTime = steady_clock::now();
@@ -78,7 +68,10 @@ int main()
 			updates++;
 			unprocessed -= 1;
 			
-			level.Update();
+			if (!stateStack.empty())
+				stateStack.top()->Update();
+			else
+				window.close();
 		}
 
 		sf::Event event;
@@ -91,9 +84,13 @@ int main()
 					window.close();
 		}
 
+
 		window.clear();
 		fpsCounter++;
-		window.draw(level);
+		
+		if (!stateStack.empty())
+			stateStack.top()->Draw();
+
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)

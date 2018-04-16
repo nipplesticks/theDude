@@ -159,6 +159,8 @@
     <ClCompile Include="Entity\Projectile.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Entity\TheDude.cpp" />
+    <ClCompile Include="States\GameState.cpp" />
+    <ClCompile Include="States\State.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
@@ -167,6 +169,8 @@
     <ClInclude Include="Level\Grid.hpp" />
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
+    <ClInclude Include="States\GameState.hpp" />
+    <ClInclude Include="States\State.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
