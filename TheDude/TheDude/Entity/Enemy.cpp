@@ -11,6 +11,10 @@ Enemy::Enemy(float x, float y, sf::Color color, float speedX, float speedY, floa
 Enemy::Enemy(float x, float y, sf::Color color, float speed, float attackStart, float defenceStart) : Character(x,y,color,speed,attackStart,defenceStart)
 {
 }
+Enemy::Enemy() : Character()
+{
+
+}
 
 Enemy::~Enemy()
 {
