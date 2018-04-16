@@ -4,6 +4,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Level\Tile.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
+    <ClCompile Include="Level\Level.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -17,5 +18,9 @@
     <ClInclude Include="Level\Grid.hpp">
       <Filter>levelEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Level\Level.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resourses\Levels\level_template.txt" />
   </ItemGroup>
 </Project>
