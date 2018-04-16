@@ -1,6 +1,6 @@
 #include "Tile.hpp"
 
-Tile::Tile(float sizeX, float sizeY, Type type)
+Tile::Tile(float sizeX, float sizeY, int type)
 {
 	this->setSize(sizeX, sizeY);
 	this->setType(type);
@@ -14,9 +14,9 @@ Tile::Tile(const Tile & other)
 
 void Tile::setPosition(float x, float y)
 {
-	setShapePosition(x, y);
-	m_pos.x = x;
-	m_pos.y = y;
+	m_tileShape.setPosition(x, y);
+	m_pos.x = static_cast<int>(x);
+	m_pos.y = static_cast<int>(y);
 }
 
 void Tile::setPosition(const sf::Vector2f & position)
@@ -46,27 +46,14 @@ void Tile::setSize(const sf::Vector2f & size)
 	m_tileShape.setSize(size);
 }
 
-void Tile::setType(const Type & type)
+void Tile::setType(int type)
 {
 	m_type = type;
-
-	switch (type)
-	{
-	case Type::Ground:
-		this->setColor(sf::Color::Green);
-			break;
-	case Type::Wall:
-		this->setColor(sf::Color::Yellow);
-		break;
-	case Type::Water:
-		this->setColor(sf::Color::Blue);
-		break;
-	}
 }
 
-void Tile::setColor(float r, float g, float b)
+void Tile::setColor(int r, int g, int b)
 {
-	m_tileShape.setFillColor(sf::Color(r, g, b));
+	m_tileShape.setFillColor(sf::Color(static_cast<sf::Uint8>(r), static_cast<sf::Uint8>(g), static_cast<sf::Uint8>(b)));
 }
 
 void Tile::setColor(const sf::Color & color)
@@ -74,7 +61,7 @@ void Tile::setColor(const sf::Color & color)
 	m_tileShape.setFillColor(color);
 }
 
-const Tile::Type & Tile::getType() const
+int Tile::getType() const
 {
 	return m_type;
 }

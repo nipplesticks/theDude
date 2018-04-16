@@ -1,11 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="Level\Tile.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Level\Level.cpp" />
+    <ClCompile Include="Entity\Character.cpp" />
+    <ClCompile Include="Entity\Enemy.cpp" />
+    <ClCompile Include="Entity\Entity.cpp" />
+    <ClCompile Include="Entity\Item.cpp" />
+    <ClCompile Include="Entity\Projectile.cpp" />
+    <ClCompile Include="Entity\TheDude.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -20,6 +26,12 @@
       <Filter>levelEditor</Filter>
     </ClInclude>
     <ClInclude Include="Level\Level.hpp" />
+    <ClInclude Include="Entity\Character.hpp" />
+    <ClInclude Include="Entity\Enemy.h" />
+    <ClInclude Include="Entity\Entity.hpp" />
+    <ClInclude Include="Entity\Item.hpp" />
+    <ClInclude Include="Entity\Projectile.hpp" />
+    <ClInclude Include="Entity\TheDude.h" />
     <ClInclude Include="Camera\Camera.hpp" />
   </ItemGroup>
   <ItemGroup>

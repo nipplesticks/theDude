@@ -14,10 +14,11 @@ public:
 private:
 	sf::RectangleShape	m_tileShape;
 	sf::Vector2i		m_pos;
-	Type				m_type;
+	sf::Vector2f		m_scale;
+	int					m_type;
 
 public:
-	Tile(float sizeX = 16, float sizeY = 16, Type type = Type::Water);
+	Tile(float sizeX = 16, float sizeY = 16, int type = 0);
 	Tile(const Tile & other);
 	virtual ~Tile() {};
 
@@ -28,14 +29,11 @@ public:
 
 	void setSize(float x, float y);
 	void setSize(const sf::Vector2f &size);
-
-	void setType(const Type &type);
-
-	void setColor(float r, float g, float b);
+	void setType(int type);
+	void setColor(int r, int g, int b);
 	void setColor(const sf::Color &color);
 
-	const Type & getType() const;
-
+	int getType() const;
 	const sf::Vector2f& getSize() const;
 	const sf::Vector2i& getPosition() const;
 	const sf::Vector2f& getShapePosition() const;

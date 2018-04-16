@@ -7,6 +7,9 @@ class Camera
 private:
 	sf::Vector2f m_pos;
 	sf::Vector2f m_deltaPos;
+
+	float m_zoom;
+
 	int m_winWidth;
 	int m_winHeight;
 
@@ -18,5 +21,6 @@ public:
 
 	const sf::Vector2f& getPosition() const;
 	const sf::Vector2f& getDeltaPosition() const;
+	float getZoom() const;
 	
 };

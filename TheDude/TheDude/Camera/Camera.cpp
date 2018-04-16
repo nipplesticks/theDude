@@ -8,6 +8,7 @@ Camera::Camera(float startX, float startY, int winWidth, int winHeight)
 	m_speed = 2.0f;
 	m_winHeight = winHeight;
 	m_winWidth = winWidth;
+	m_zoom = 1.0f;
 }
 
 void Camera::update()
@@ -32,6 +33,17 @@ void Camera::update()
 		m_deltaPos.x -= 1 * m_speed;
 	}
 
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
+	{
+		m_zoom -= 0.1f;
+		if (m_zoom <= 0.0f) m_zoom = 0.1f;
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
+	{
+		m_zoom += 0.1f;
+		if (m_zoom >= 2.0f) m_zoom = 2.0f;
+	}
+	
 	m_pos += m_deltaPos;
 	
 }
@@ -44,4 +56,9 @@ const sf::Vector2f & Camera::getPosition() const
 const sf::Vector2f & Camera::getDeltaPosition() const
 {
 	return m_deltaPos;
+}
+
+float Camera::getZoom() const
+{
+	return m_zoom;
 }
