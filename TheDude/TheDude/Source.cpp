@@ -12,7 +12,8 @@
 #include "lua.h"
 #include <chrono>
 
-#include "Level\Grid.hpp"
+#include "Level\Level.hpp"
+#include <fstream>
 
 const float REFRESH_RATE = 60.0f;
 const std::string gameTitle = "theDude!";
@@ -36,7 +37,10 @@ int main()
 	std::thread conThread(ConsoleThread, L);*/
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 
-	Grid g(32, 32, 32);
+	Level l1;
+	l1.LoadLevel("Resourses/Levels/test.chef");
+
+	/*Grid g(32, 32, 32);
 
 	for (int i = 0; i < 32; i++)
 	{
@@ -46,6 +50,12 @@ int main()
 		}
 	}
 	
+	std::string map = g.toFile();
+	std::ofstream file;
+	file.open("Resourses/Levels/test.chef");
+	file << map;
+	file.close();*/
+
 	using namespace std::chrono;
 	auto time = steady_clock::now();
 	auto timer = steady_clock::now();
@@ -78,7 +88,7 @@ int main()
 
 		window.clear();
 		fpsCounter++;
-		window.draw(g);
+		window.draw(l1);
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)

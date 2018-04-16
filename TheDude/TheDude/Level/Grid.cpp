@@ -43,7 +43,28 @@ sf::Vector2i Grid::getDimensions() const
 
 const Tile & Grid::getTile(int x, int y)
 {
-	return m_tiles[y][x];
+	return m_tiles[x][y];
+}
+
+std::string Grid::toFile() const
+{
+	std::string map = "";
+	map += "grid " + std::to_string(m_tiles.size()) + " " + std::to_string(m_tiles[0].size()) + " " +
+		std::to_string(m_tiles[0][0].getSize().x) + " " + std::to_string(0) + '\n';
+
+	for (size_t i = 0; i < m_tiles.size(); i++)
+	{
+		for (size_t k = 0; k < m_tiles[i].size(); k++)
+		{
+			map += "t " + std::to_string(m_tiles[i][k].getPosition().x) + " " + std::to_string(m_tiles[i][k].getPosition().y) + " " + 
+				std::to_string(m_tiles[i][k].getType()) + " ";
+
+			sf::Color c = m_tiles[i][k].getColor();
+			map += std::to_string(c.r) + " " + std::to_string(c.g) + " " + std::to_string(c.b) + '\n';
+		}
+	}
+
+	return map;
 }
 
 void Grid::draw(sf::RenderTarget &target, sf::RenderStates states) const

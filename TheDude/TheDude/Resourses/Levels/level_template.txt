@@ -3,17 +3,22 @@
 # name LevelName
 name LevelName 
 
+# grid
 # grid width height tileSize baseTile
-grid 32 32 16 0 
+grid 32 32 32 0 
 
+# tile
 # t posX posY type r g b
-t 0 0 1 255.0 255.0 255.0
+t 0 0 1 255 255 255
 
+# enemy
 # e posX posY sizeX sizeY type r g b
-e 0 0 16 16 0 255.0 255.0 255.0
+e 0 0 16 16 0 255 255 255
 
+# player
 # theDude posX posY sizeX sizeY r g b
-theDude 0 0 16 16 255.0 255.0 255.0
+theDude 0 0 16 16 255 255 255
 
+# item
 # i posX posY sizeX sizeY type r g b
-i 0 0 5 16 0 255.0 255.0 255.0
+i 0 0 5 16 0 255 255 255

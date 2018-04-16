@@ -40,7 +40,7 @@ void Level::LoadLevel(const std::string & target)
 				if (type == "t")
 				{
 					int x, y, t, r, g, b;
-					scanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d", &x, &y, &t, &r, &g, &b);
+					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d", &x, &y, &t, &r, &g, &b);
 					m_grid->setTypeOfTile(x, y, t);
 					m_grid->setColorOfTile(x, y, r, g, b);
 				}
@@ -48,7 +48,7 @@ void Level::LoadLevel(const std::string & target)
 				{
 					// posX, posY, sizeX, sizeY, type
 					int x, y, sx, sy, t, r, g, b;
-					scanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &t, &r, &g, &b);
+					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &t, &r, &g, &b);
 
 					/*
 						Create Enemy
@@ -59,7 +59,7 @@ void Level::LoadLevel(const std::string & target)
 				{
 					// posX, posY, sizeX, sizeY, type
 					int x, y, sx, sy, t, r, g, b;
-					scanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &t, &r, &g, &b);
+					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &t, &r, &g, &b);
 
 					/*
 						Create item
@@ -69,7 +69,7 @@ void Level::LoadLevel(const std::string & target)
 				{
 					// posX, posY, sizeX, sizeY
 					int x, y, sx, sy, r, g, b;
-					scanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &r, &g, &b);
+					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &r, &g, &b);
 
 					/*
 						Create theDude
@@ -81,9 +81,11 @@ void Level::LoadLevel(const std::string & target)
 				}
 				else if (type == "grid")
 				{
-					int w, h, s, t;
-					scanf_s(currentLine.c_str(), "%*s %d %d %d %d", &w, &h, &s, &t);
-					m_grid = new Grid(w, h, static_cast<float>(s), t);
+					int w, h, t;
+					float s;
+
+					sscanf_s(currentLine.c_str(), "%*s %i %i %f %i", &w, &h, &s, &t);
+					m_grid = new Grid(w, h, s, t);
 				}
 				
 
