@@ -41,10 +41,34 @@ void ConsoleThread(lua_State* L) {
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	/*lua_State* L = luaL_newstate();
+	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
-	std::thread conThread(ConsoleThread, L);*/
-	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
+	
+
+	while (true)
+	{
+
+		luaL_loadfile(L, "Text.lua");
+		lua_pcall(L, 0, 0, 0);
+		lua_getglobal(L, "lol");
+		if (lua_isfunction(L, -1))
+		{
+			lua_pushnumber(L, 10);
+			lua_pushnumber(L, 9);
+			int error = lua_pcall(L, 2, 0, 0);
+			std::cout << lua_tostring(L, -1) << '\n';
+
+		}
+	system("pause");
+		
+		
+		
+			
+	}
+
+
+	system("pause");
+	/*sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 	ImGui::SFML::Init(window);
 
 	std::stack<State*> stateStack;
@@ -64,7 +88,7 @@ int main()
 	shape.setFillColor(sf::Color::Yellow);
 	shape.setSize(sf::Vector2f(10, 10));
 	sf::Clock deltaClock;
-	float col[3] = { 0 };
+
 	while (window.isOpen())
 	{
 		sf::Vector2i mp = sf::Mouse::getPosition(window);
@@ -79,37 +103,35 @@ int main()
 		while (window.pollEvent(event))
 		{
 			ImGui::SFML::ProcessEvent(event);
+
+			if (event.type == sf::Event::KeyPressed)
+				if (event.key.code == sf::Keyboard::P)
+					window.close();
+
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
 		ImGui::SFML::Update(window, deltaClock.restart());
-		ImGui::Begin("Tools");
+		
 		while (unprocessed > 1)
 		{
 			updates++;
 			unprocessed -= 1;
-
-			
 		}
 
 		if (!stateStack.empty())
 			stateStack.top()->Update();
 		else
 			window.close();
-		ImGui::End();
-	
-		
-		
-		
-		
-
 
 		window.clear();
 		fpsCounter++;
 		
 		if (!stateStack.empty())
 			stateStack.top()->Draw();
+
 		ImGui::SFML::Render(window);
+
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)
@@ -126,7 +148,8 @@ int main()
 			timer += milliseconds(1000);
 		}
 	}
-	ImGui::SFML::Shutdown();
+	delete s;
+	ImGui::SFML::Shutdown();*/
 	//conThread.join();
 	return 0;
 }

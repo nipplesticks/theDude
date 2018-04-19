@@ -158,22 +158,53 @@ void Level::_copy(const Level & other)
 #include "imgui-SFML.h"
 void Level::_handleInput()
 {
-	
-	static float col[3] = { 0 };
-
-	
-	ImGui::ColorPicker3("Colors", col);
-	
-
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	ImGui::BeginMainMenuBar();
+		
+	if (ImGui::BeginMenu("File"))
 	{
-		sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
-		sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
-
-		if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+		if (ImGui::BeginMenu("New")) 
 		{
-			m_grid->setColorOfTile(index.x, index.y, col[0] * 256, col[1] * 256, col[2] * 256);
+			
+			ImGui::EndMenu();
+			
 		}
-
+		if (ImGui::MenuItem("Open"))
+		{
+			
+		}
+		if (ImGui::MenuItem("Save"))
+		{
+		
+		}
+		
+		ImGui::EndMenu();
 	}
+		
+	
+	ImGui::EndMainMenuBar();
+	ImGui::Begin("Tools");
+	
+	if (ImGui::Button("PlaceColor"))
+	{
+		static float col[3] = { 0 };
+
+
+		ImGui::ColorPicker3("Colors", col);
+
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
+
+			if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+			{
+				m_grid->setColorOfTile(index.x, index.y, col[0] * 256, col[1] * 256, col[2] * 256);
+			}
+
+		}
+	}
+
+	
+	ImGui::End();
 }
