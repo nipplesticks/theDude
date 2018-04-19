@@ -18,6 +18,11 @@
 [Rr]elease/
 [Rr]eleases/
 x64/
+!theDude/TheDude/lib/x64/
+!theDude/TheDude/Bin/x64/
+theDude/TheDude/Bin/x64/*.exe
+theDude/TheDude/Bin/x64/*.ilk
+theDude/TheDude/Bin/x64/*.pdb
 x86/
 bld/
 [Bb]in/

@@ -10,7 +10,6 @@
     <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
     <ClCompile Include="Entity\TheDude.cpp" />
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="Controllers\EnemyController.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Controllers\ItemController.cpp" />
@@ -18,6 +17,7 @@
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
+    <ClCompile Include="MagnusTestSource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
