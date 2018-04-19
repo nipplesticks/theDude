@@ -17,6 +17,8 @@
 
 #include "Camera\Camera.hpp"
 #include "Level\Level.hpp"
+#include "States\MainMenu.hpp"
+
 #include <fstream>
 #include "Interface\Button.hpp"
 
@@ -42,35 +44,18 @@ void ConsoleThread(lua_State* L) {
 
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	/*lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	std::thread conThread(ConsoleThread, L);*/
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
-	sf::View view1;
-	/*view1.setViewport(sf::FloatRect(0, 0, 0.5f, 0.5f));
-	window.setView(view1);*/
-	
 	ImGui::SFML::Init(window);
+
+	std::stack<State*> stateStack;
+	State::initStatics(&stateStack, &window);
+	MainMenu * s = new MainMenu();
+	stateStack.push(s);
 	
-	Level level(&window);
-	level.LoadLevel("Resourses/Levels/test.chef");
-
-	/*Grid g(32, 32, 32);
-
-	for (int i = 0; i < 32; i++)
-	{
-		for (int k = 0; k < 32; k++)
-		{
-			g.setColorOfTile(i, k, i * 8, k * 8, (i + k) * 4);
-		}
-	}
-	
-	std::string map = g.toFile();
-	std::ofstream file;
-	file.open("Resourses/Levels/test.chef");
-	file << map;
-	file.close();*/
-
 	using namespace std::chrono;
 	auto time = steady_clock::now();
 	auto timer = steady_clock::now();
@@ -94,14 +79,25 @@ int main()
 		time = currentTime;
 		sf::Event event;
 
+		unprocessed += dt / freq;
+
+		while (unprocessed > 1)
+		{
+			updates++;
+			unprocessed -= 1;
+			
+			if (!stateStack.empty())
+				stateStack.top()->Update();
+			else
+				window.close();
+		}
+
+		sf::Event event;
 		while (window.pollEvent(event))
 		{
 			ImGui::SFML::ProcessEvent(event);
 			if (event.type == sf::Event::Closed)
 				window.close();
-			if (event.type == sf::Event::KeyPressed)
-				if (event.key.code == sf::Keyboard::Escape)
-					window.close();
 		}
 		ImGui::SFML::Update(window, deltaClock.restart());
 		unprocessed += dt / freq;
@@ -120,11 +116,13 @@ int main()
 		
 		
 
+
 		window.clear();
 		fpsCounter++;
-		window.draw(level);
-		window.draw(shape);
-		ImGui::SFML::Render(window);
+		
+		if (!stateStack.empty())
+			stateStack.top()->Draw();
+		window.draw(lol);
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)

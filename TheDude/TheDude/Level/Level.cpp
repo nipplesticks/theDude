@@ -5,16 +5,9 @@
 
 Level::Level(sf::RenderWindow* renderWindow)
 {
-	m_camera = new Camera(0, 0, 1280,720);
-	m_grid = new Grid();
 	m_pWindow = renderWindow;
-	for (int i = 0; i < 32; i++)
-	{
-		for (int k = 0; k < 32; k++)
-		{
-			m_grid->setColorOfTile(i, k, i * 8, k * 8, (i + k) * 4);
-		}
-	}
+	m_grid = nullptr;
+	m_camera = nullptr;
 	m_levelName = "";
 }
 
@@ -93,7 +86,23 @@ void Level::LoadLevel(const std::string & target)
 					int w, h, s, t;
 
 					sscanf_s(currentLine.c_str(), "%*s %i %i %i %i", &w, &h, &s, &t);
+
+					if (m_grid)
+						delete m_grid;
+					m_grid = nullptr;
 					m_grid = new Grid(w, h, static_cast<float>(s), t);
+				}
+				else if (type == "cam")
+				{
+					int x, y;
+					sscanf_s(currentLine.c_str(), "%*s %i %i", &x, &y);
+
+					sf::Vector2u wSize = m_pWindow->getSize();
+
+					if (m_camera)
+						delete m_camera;
+					m_camera = nullptr;
+					m_camera = new Camera(x, y, wSize.x, wSize.y);
 				}
 				
 
