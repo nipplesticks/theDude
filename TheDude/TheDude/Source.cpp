@@ -22,10 +22,6 @@
 #include <fstream>
 #include "Interface\Button.hpp"
 
-struct Rect {
-	float x;
-	float y;
-};
 
 const float REFRESH_RATE = 60.0f;
 const std::string gameTitle = "theDude!";
@@ -67,8 +63,6 @@ int main()
 	shape.setPosition(0, 0);
 	shape.setFillColor(sf::Color::Yellow);
 	shape.setSize(sf::Vector2f(10, 10));
-	Rect r{ 0,0};
-	Rect r2{ 10,10 };
 	sf::Clock deltaClock;
 	float col[3] = { 0 };
 	while (window.isOpen())
@@ -77,21 +71,10 @@ int main()
 		auto currentTime = steady_clock::now();
 		auto dt = duration_cast<nanoseconds>(currentTime - time).count();
 		time = currentTime;
-		sf::Event event;
-
+	
 		unprocessed += dt / freq;
-
-		while (unprocessed > 1)
-		{
-			updates++;
-			unprocessed -= 1;
-			
-			if (!stateStack.empty())
-				stateStack.top()->Update();
-			else
-				window.close();
-		}
-
+		
+		
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -100,15 +83,19 @@ int main()
 				window.close();
 		}
 		ImGui::SFML::Update(window, deltaClock.restart());
-		unprocessed += dt / freq;
 		ImGui::Begin("Tools");
 		while (unprocessed > 1)
 		{
 			updates++;
 			unprocessed -= 1;
+
 			
 		}
-		level.Update();
+
+		if (!stateStack.empty())
+			stateStack.top()->Update();
+		else
+			window.close();
 		ImGui::End();
 	
 		
@@ -122,7 +109,7 @@ int main()
 		
 		if (!stateStack.empty())
 			stateStack.top()->Draw();
-		window.draw(lol);
+		ImGui::SFML::Render(window);
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)
