@@ -145,9 +145,17 @@ void Level::_copy(const Level & other)
 {
 	m_grid = new Grid(*other.m_grid);
 }
-
+#include "imgui.h"
+#include "imgui-SFML.h"
 void Level::_handleInput()
 {
+	
+	static float col[3] = { 0 };
+
+	
+	ImGui::ColorPicker3("Colors", col);
+	
+
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
@@ -155,7 +163,7 @@ void Level::_handleInput()
 
 		if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
 		{
-			m_grid->setColorOfTile(index.x, index.y, 255, 255, 255);
+			m_grid->setColorOfTile(index.x, index.y, col[0] * 256, col[1] * 256, col[2] * 256);
 		}
 
 	}

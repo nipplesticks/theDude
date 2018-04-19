@@ -10,11 +10,15 @@
     <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
     <ClCompile Include="Entity\TheDude.cpp" />
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="Controllers\EnemyController.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Controllers\ItemController.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui-SFML.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -39,6 +43,7 @@
     <ClInclude Include="Camera\Camera.hpp" />
     <ClInclude Include="Controllers\ItemController.h" />
     <ClInclude Include="Interface\Button.hpp" />
+    <ClInclude Include="Interface\HeadsUpDisplay.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
