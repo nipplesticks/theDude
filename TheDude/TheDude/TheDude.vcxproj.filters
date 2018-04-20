@@ -17,7 +17,8 @@
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
-    <ClCompile Include="MagnusTestSource.cpp" />
+    <ClCompile Include="Scripts\OurLua.cpp" />
+    <ClCompile Include="SourceTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -45,6 +46,7 @@
     <ClInclude Include="States\GameState.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="States\MainMenu.hpp" />
+    <ClInclude Include="Scripts\OurLua.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />

@@ -158,10 +158,11 @@
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
-    <ClCompile Include="MagnusTestSource.cpp" />
     <ClCompile Include="Entity\TheDude.cpp" />
+    <ClCompile Include="Scripts\OurLua.cpp" />
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
+    <ClCompile Include="SourceTest.cpp" />
     <ClCompile Include="States\State.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +173,7 @@
     <ClInclude Include="Level\Grid.hpp" />
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
+    <ClInclude Include="Scripts\OurLua.h" />
     <ClInclude Include="States\GameState.hpp" />
     <ClInclude Include="States\MainMenu.hpp" />
     <ClInclude Include="States\State.hpp" />

@@ -23,8 +23,9 @@ static int luaSleep(lua_State* L)
 {
 	int time = lua_tointeger(L, -1);
 	lua_pop(L, -1);
+	lua_pushnumber(L, 10);
 	Sleep(time);
-	return 0;
+	return 1;
 }
 
 
@@ -39,7 +40,6 @@ int main()
 	lua_pushcfunction(L, luaSleep);
 	lua_setglobal(L, "luaSleep");
 
-
 	while (!GetAsyncKeyState(VK_ESCAPE))
 	{
 		int error = luaL_loadfile(L, "test.Lua") || lua_pcall(L, 0, 0, 0);
@@ -48,6 +48,7 @@ int main()
 			std::cout << lua_tostring(L, -1) << '\n';
 			lua_pop(L, -1);
 		}
+
 		lua_getglobal(L, "add");
 		lua_pushnumber(L, 10.3f);
 		lua_pushnumber(L, 10.6f);
@@ -65,10 +66,12 @@ int main()
 		
 		int i = lua_gettop(L);
 		
-		system("cls");
-		printf("\r Result: %f, Counter: %d, Stack: %d", number, counter++, i);
+		//system("cls");
+		//printf("\r Result: %f, Counter: %d, Stack: %d", number, counter++, i);
 
 	}
 	
+	lua_close(L);
+
 	return 0;
 }

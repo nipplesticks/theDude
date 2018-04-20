@@ -1,14 +1,11 @@
 
-function logic()
-luaSleep(1000)
-
-
-
+function init()
+	setPos(3)
+	
 end
 
+function update()
+	
 
-function add(i, j)
-	k = i + j
 
-	return k
 end
