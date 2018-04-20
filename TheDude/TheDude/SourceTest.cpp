@@ -18,6 +18,7 @@ public:
 	Fuck() :ol("test.Lua")
 	{
 		m_pos = 0;
+
 		ol.PushClassFunction(this, Fuck::S_setPosition, "setPos");
 		ol.InitLua();
 	};
@@ -26,11 +27,21 @@ public:
 		m_pos = pos;
 	}
 	int getPosition() { return m_pos; };
+
 	static int S_setPosition(lua_State * L)
 	{
-		void * f = nullptr;
-		int newPos = OurLua::GetDataFromLua(L, f);
-		static_cast<Fuck*>(f)->setPosition(newPos);
+		auto f = OurLua::getClassPointer<Fuck>(L);
+		if (f)
+		{
+			auto newPos = OurLua::GetIntegers(L,1);
+
+			f->setPosition(newPos[0]);
+
+		}
+		else
+		{
+			std::cout << "FELL";
+		}
 
 		return 0;
 	}

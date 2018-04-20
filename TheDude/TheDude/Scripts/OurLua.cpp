@@ -25,6 +25,18 @@ void OurLua::PushFunction(int(*function)(lua_State* L), const std::string & name
 	lua_setglobal(m_ls, name.c_str());
 }
 
+void OurLua::PushClassFunctions(const std::string & metaName, luaL_Reg functions[], void(*target),const std::string& luaClassName)
+{
+	lua_pushlightuserdata(m_ls, target);
+
+	luaL_newmetatable(m_ls, metaName.c_str());
+	luaL_setfuncs(m_ls, functions, 1);
+	lua_pushvalue(m_ls, -1);
+	lua_setfield(m_ls, -1, "__index");
+
+	lua_setglobal(m_ls, luaClassName.c_str());
+}
+
 void OurLua::PushClassFunction(void(*target), int(*function)(lua_State *L), const std::string & name)
 {
 	lua_pushlightuserdata(m_ls, target);
@@ -32,13 +44,9 @@ void OurLua::PushClassFunction(void(*target), int(*function)(lua_State *L), cons
 	lua_setglobal(m_ls, name.c_str());
 }
 
-int OurLua::GetDataFromLua(lua_State * L, void(*&target))
-{
-	target = lua_touserdata(L, lua_upvalueindex(1));
-	int result = lua_tointeger(L, -1);
-	lua_pop(L, 2);
-	return result;
-}
+
+
+
 
 void OurLua::Update()
 {
