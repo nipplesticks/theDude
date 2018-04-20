@@ -159,11 +159,21 @@ void Level::_copy(const Level & other)
 void Level::_handleInput()
 {
 	ImGui::BeginMainMenuBar();
-		
 	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::BeginMenu("New")) 
 		{
+			
+				static float dim[2] = { 0 };
+				
+				ImGui::InputFloat2("New Size", dim);
+
+				if (ImGui::Button("Create Level"))
+				{
+					delete m_grid;
+					m_grid = new Grid(dim[0], dim[1]);
+				}
+				
 			
 			ImGui::EndMenu();
 			
@@ -179,8 +189,8 @@ void Level::_handleInput()
 		
 		ImGui::EndMenu();
 	}
-		
-	
+
+
 	ImGui::EndMainMenuBar();
 	ImGui::Begin("Tools");
 	

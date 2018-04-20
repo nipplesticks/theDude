@@ -41,34 +41,12 @@ void ConsoleThread(lua_State* L) {
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	lua_State* L = luaL_newstate();
-	luaL_openlibs(L);
+	//lua_State* L = luaL_newstate();
+	//luaL_openlibs(L);
 	
 
-	while (true)
-	{
 
-		luaL_loadfile(L, "Text.lua");
-		lua_pcall(L, 0, 0, 0);
-		lua_getglobal(L, "lol");
-		if (lua_isfunction(L, -1))
-		{
-			lua_pushnumber(L, 10);
-			lua_pushnumber(L, 9);
-			int error = lua_pcall(L, 2, 0, 0);
-			std::cout << lua_tostring(L, -1) << '\n';
-
-		}
-	system("pause");
-		
-		
-		
-			
-	}
-
-
-	system("pause");
-	/*sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
+	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 	ImGui::SFML::Init(window);
 
 	std::stack<State*> stateStack;
@@ -148,8 +126,7 @@ int main()
 			timer += milliseconds(1000);
 		}
 	}
-	delete s;
-	ImGui::SFML::Shutdown();*/
+	ImGui::SFML::Shutdown();
 	//conThread.join();
 	return 0;
 }
