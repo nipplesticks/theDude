@@ -24,13 +24,18 @@ Character::Character(float x, float y, sf::Color color, float speed, float attac
 	m_defenceStat = defenceStart;
 }
 
-Character::Character()
+Character::Character() : Entity()
 {
 
 }
 
 Character::~Character()
 {
+}
+
+bool Character::isAlive() const
+{
+	return m_health > 0;
 }
 
 float Character::getHealth() const

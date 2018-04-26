@@ -16,6 +16,8 @@ public:
 	
 	~Character(); 
 
+	bool isAlive() const;
+
 	float getHealth() const; 
 	bool getAttacking() const; 
 	float getAttackStat() const; 

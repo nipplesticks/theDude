@@ -1,5 +1,5 @@
 #pragma once
-#include <SFML\Graphics.hpp>
+#include "../RenderQueue.h"
 class Entity : public sf::Drawable
 {
 private:
@@ -41,4 +41,5 @@ public:
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
+	void draw();
 };

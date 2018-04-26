@@ -149,6 +149,7 @@
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Controllers\EnemyController.cpp" />
     <ClCompile Include="Controllers\ItemController.cpp" />
+    <ClCompile Include="Controllers\ProjectileController.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
     <ClCompile Include="Level\Level.cpp" />
@@ -168,11 +169,13 @@
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
     <ClInclude Include="Controllers\EnemyController.hpp" />
-    <ClInclude Include="Controllers\ItemController.h" />
+    <ClInclude Include="Controllers\ItemController.hpp" />
+    <ClInclude Include="Controllers\ProjectileController.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Level\Grid.hpp" />
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
+    <ClInclude Include="RenderQueue.h" />
     <ClInclude Include="Scripts\OurLua.h" />
     <ClInclude Include="States\GameState.hpp" />
     <ClInclude Include="States\MainMenu.hpp" />
@@ -183,7 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity\Character.hpp" />
-    <ClInclude Include="Entity\Enemy.h" />
+    <ClInclude Include="Entity\Enemy.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />

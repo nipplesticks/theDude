@@ -4,6 +4,7 @@ class ItemController
 {
 private:
 	int m_nrOfItems; 
+	int m_nrOfActive; 
 	Item* m_items;
 public:
 	ItemController(int nrOfItems); 
@@ -15,6 +16,7 @@ public:
 
 	void setAsInactive(int index); 
 
-	void updateItems(float dt); 
+	int getNrOfActive() const; 
 
+	void updateItems(float dt); 
 };
