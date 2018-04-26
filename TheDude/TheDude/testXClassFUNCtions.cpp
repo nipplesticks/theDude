@@ -24,6 +24,7 @@ void initEmy(OurLua & ol)
 	{
 		{"Create", Enemy::s_CreateEnemy},
 		{"setPosition", Enemy::s_setPosition},
+		{"getPosition", Enemy::s_getPosition },
 		{"setColor", Enemy::s_setColor},
 		{"move", Enemy::s_move},
 		{"draw", Enemy::s_draw},
