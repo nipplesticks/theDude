@@ -3,12 +3,20 @@
 #include <vector>
 #include <string>
 #include "Entity\Enemy.hpp"
+#include "Entity\TheDude.h"
 #include <chrono>
+#include <Windows.h>
+
+#define NO false
+#define YES true
 
 std::vector<sf::Shape*> Render::renderQueue;
 
 const float REFRESH_RATE = 60.0f;
 const std::string gameTitle = "theDude!";
+
+
+
 
 void initEmy(OurLua & ol)
 {
@@ -17,6 +25,7 @@ void initEmy(OurLua & ol)
 		{"Create", Enemy::s_CreateEnemy},
 		{"setPosition", Enemy::s_setPosition},
 		{"setColor", Enemy::s_setColor},
+		{"move", Enemy::s_move},
 		{"draw", Enemy::s_draw},
 		{"__gc", Enemy::s_DestroyEnemy},
 		{NULL, NULL}
@@ -24,14 +33,45 @@ void initEmy(OurLua & ol)
 	ol.PushClassFunctions(Enemy::meta, func, "Enemy");
 }
 
+int isKeyPressed(lua_State * l)
+{
+	std::string key = OurLua::getStrings(l, 1)[0];
+	std::vector<bool> s;
+	s.push_back(NO);
+	if (GetAsyncKeyState(static_cast<int>(key[0])))
+		s[0] = YES;
+	OurLua::setBooleans(l, s);
+	return 1;
+}
+
+void initPlayer(OurLua & ol)
+{
+	luaL_Reg func[]
+	{
+	{ "Create", TheDude::s_CreateTheDude },
+	{ "setPosition", TheDude::s_setPosition },
+	{ "setColor", TheDude::s_setColor },
+	{ "move", TheDude::s_move },
+	{ "draw", TheDude::s_draw },
+	{ "__gc", TheDude::s_DestroyTheDude },
+	{ NULL, NULL }
+	};
+	ol.PushClassFunctions(TheDude::meta, func, "Player");
+}
+
+
+
 int main()
 {
 	OurLua ol("Scripts/EnemyHandler.Lua");
 	initEmy(ol);
 	ol.InitLua();
 
+	OurLua lo("Scripts/PlayerHandler.Lua");
+	initPlayer(lo);
+	lo.PushFunction(isKeyPressed, "isKeyPressed");
 
-
+	lo.InitLua();
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
@@ -60,6 +100,7 @@ int main()
 			updates++;
 			unprocessed -= 1;
 			ol.Update();
+			lo.Update();
 		}
 
 		sf::Event event;
@@ -70,6 +111,7 @@ int main()
 		}
 
 		ol.Draw();
+		lo.Draw();
 		
 		fpsCounter++;
 		for (size_t i = 0; i < Render::renderQueue.size(); i++)

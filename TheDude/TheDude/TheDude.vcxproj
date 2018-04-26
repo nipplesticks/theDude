@@ -193,6 +193,7 @@
     <ClInclude Include="Entity\TheDude.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Scripts\PlayerHandler.Lua" />
     <None Include="Resourses\Levels\test.chef" />
     <None Include="Scripts\EnemyHandler.Lua" />
     <None Include="test2.Lua" />

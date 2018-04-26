@@ -9,8 +9,13 @@ function init()
 
 end
 
+i = 0
+k = 0
+
 function update()
-	
+	--e1:move(-0.6, -0.9) 
+	--e2:move(-0.3, -0.6) 
+
 end
 
 function draw()
