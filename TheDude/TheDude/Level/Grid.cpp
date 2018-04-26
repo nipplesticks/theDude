@@ -73,9 +73,9 @@ void Grid::update(Camera* cam)
 {
 	m_renderableTiles.clear();
 	m_renderableTiles.reserve(m_tiles.size()*m_tiles.size());
-	int scale = m_tiles[0][0].getSize().x;
-	int startX = (-cam->getPosition().x / scale);
-	int startY = (-cam->getPosition().y / scale);
+	int scale = static_cast<int>(m_tiles[0][0].getSize().x);
+	int startX = static_cast<int>(-cam->getPosition().x / scale);
+	int startY = static_cast<int>(-cam->getPosition().y / scale);
 	int endX = startX + ( (cam->getWindowWidth()) / scale);
 	int endY = startY + ( (cam->getWindowHeight()) / scale);
 //	std::cout << startX << "," << endX << std::endl;

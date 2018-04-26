@@ -24,32 +24,24 @@ public:
 	OurLua(const std::string & script);
 	void InitLua();
 	void PushFunction(int(* function)(lua_State* L), const std::string & name);
-	void PushFunctions();
-	void PushClassFunctions(const std::string& metaName, luaL_Reg functions[], void(*target), const std::string& luaClassName);
+	void PushClassFunctions(const std::string& metaName, luaL_Reg functions[], const std::string& luaClassName);
 	void PushClassFunction(void(*target), int(*function)(lua_State* L), const std::string & name);
 	
 	
-	static std::vector<int> GetIntegers(lua_State * L, int n)
-	{
-		
-		std::vector<int> r;
-		for (int i = 0; i < n; ++i)
-		{
-			if (lua_isnumber(L, -1))
-			{
-			
-				r.push_back(lua_tointeger(L, -1));
-				lua_pop(L, -1);
-				
-			}
+	static std::vector<int> GetIntegers(lua_State * L, int n);
+	static std::vector<std::string> GetStrings(lua_State * L, int n);
+	static std::vector<bool> GetBoolean(lua_State * L, int n);
+	static std::vector<float> GetFloats(lua_State * L, int n);
 
-		}
-		
-		return r;
-	}
+
 	template <typename T>
 	static T* getClassPointer(lua_State * l);
+	
+	template <typename Instance>
+	static Instance* getInstanceOf(lua_State * l, int n, const std::string &meta);
 
+	template <typename Instance>
+	static Instance** createInstanceOf(lua_State* l, const std::string &meta);
 
 	void Update();
 private:
@@ -62,4 +54,25 @@ inline T* OurLua::getClassPointer(lua_State * l)
 {
 	T* r = static_cast<T*>(lua_touserdata(l,lua_upvalueindex(1)));
 	return r;
+}
+
+template<typename Instance>
+inline Instance * OurLua::getInstanceOf(lua_State * l, int n, const std::string &meta)
+{
+	Instance* iPtr = nullptr;
+	void * ptr = luaL_testudata(l, n, meta.c_str());
+	if (ptr)
+		iPtr = *(Instance**)ptr;
+	return iPtr;
+}
+
+template<typename Instance>
+inline Instance ** OurLua::createInstanceOf(lua_State* l, const std::string &meta)
+{
+	Instance** i = reinterpret_cast<Instance**>(lua_newuserData(l, sizeof(Instance*)));
+
+	luaL_getmetatable(l, meta.c_str());
+	lua_setmetatable(l, -2);
+
+	return i;
 }

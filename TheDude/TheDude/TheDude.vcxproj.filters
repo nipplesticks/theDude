@@ -18,7 +18,7 @@
     <ClCompile Include="Interface\Button.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="Scripts\OurLua.cpp" />
-    <ClCompile Include="SourceTest.cpp" />
+    <ClCompile Include="testXClassFUNCtions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -54,5 +54,7 @@
   <ItemGroup>
     <None Include="Resourses\Levels\test.chef" />
     <None Include="test.Lua" />
+    <None Include="test2.Lua" />
+    <None Include="Scripts\EnemyHandler.Lua" />
   </ItemGroup>
 </Project>

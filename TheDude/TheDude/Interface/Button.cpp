@@ -2,8 +2,8 @@
 
 Button::Button(int x, int y, int sizeX, int sizeY)
 {
-	m_buttonShape.setPosition(x, y);
-	m_buttonShape.setSize(sf::Vector2f(sizeX, sizeY));
+	m_buttonShape.setPosition(static_cast<float>(x), static_cast<float>(y));
+	m_buttonShape.setSize(sf::Vector2f(static_cast<float>(sizeX), static_cast<float>(sizeY)));
 	m_buttonShape.setFillColor(sf::Color::Yellow);
 }
 

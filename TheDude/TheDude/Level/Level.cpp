@@ -102,7 +102,7 @@ void Level::LoadLevel(const std::string & target)
 					if (m_camera)
 						delete m_camera;
 					m_camera = nullptr;
-					m_camera = new Camera(x, y, wSize.x, wSize.y);
+					m_camera = new Camera(static_cast<float>(x), static_cast<float>(y), wSize.x, wSize.y);
 				}
 				
 

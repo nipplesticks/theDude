@@ -162,8 +162,8 @@
     <ClCompile Include="Scripts\OurLua.cpp" />
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
-    <ClCompile Include="SourceTest.cpp" />
     <ClCompile Include="States\State.cpp" />
+    <ClCompile Include="testXClassFUNCtions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
@@ -191,6 +191,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resourses\Levels\test.chef" />
+    <None Include="Scripts\EnemyHandler.Lua" />
+    <None Include="test2.Lua" />
     <None Include="test.Lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
