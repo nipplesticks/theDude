@@ -1,9 +1,10 @@
 #pragma once
-#include "../Entity/Enemy.h"
+#include "../Entity/Enemy.hpp"
 class EnemyController
 {
 private:
 	int m_nrOfEnemies;
+	int m_nrOfActive; 
 	Enemy* m_enemies;
 
 public:
@@ -17,7 +18,7 @@ public:
 
 	void setAsInactive(int index);
 
-	int getNrOfEnemies();
+	int getNrOfActive();
 
 	void updateEnemies(float dt);
 };

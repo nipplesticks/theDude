@@ -17,6 +17,7 @@ OurLua::OurLua(const std::string & script)
 	{
 		std::cout << m_fileName << " Opened\n";
 	}
+	
 }
 
 void OurLua::PushFunction(int(*function)(lua_State* L), const std::string & name)
@@ -32,6 +33,7 @@ void OurLua::PushClassFunctions(const std::string & metaName, luaL_Reg functions
 	lua_pushvalue(m_ls, -1);
 	lua_setfield(m_ls, -1, "__index");
 	lua_setglobal(m_ls, luaClassName.c_str());
+	
 }
 
 void OurLua::PushClassFunction(void(*target), int(*function)(lua_State *L), const std::string & name)
@@ -41,67 +43,82 @@ void OurLua::PushClassFunction(void(*target), int(*function)(lua_State *L), cons
 	lua_setglobal(m_ls, name.c_str());
 }
 
-std::vector<int> OurLua::GetIntegers(lua_State * L, int n)
+std::vector<int> OurLua::getIntegers(lua_State * L, int n)
 {
 	std::vector<int> r;
 	for (int i = 0; i < n; i++)
 	{
-		if (lua_isnumber(L, -1))
-		{
-
-			r.push_back(static_cast<int>(lua_tointeger(L, -1)));
-			lua_pop(L, -1);
-
-		}
-
+		r.push_back(static_cast<int>(lua_tointeger(L, -(i + 1))));
 	}
 
 	return r;
 }
 
-std::vector<std::string> OurLua::GetStrings(lua_State * L, int n)
+std::vector<std::string> OurLua::getStrings(lua_State * L, int n)
 {
 	std::vector<std::string> r;
 	for (int i = 0; i < n; i++)
 	{
-		if (lua_isnumber(L, -1))
-		{
-			r.push_back(lua_tostring(L, -1));
-			lua_pop(L, -1);
-		}
+		r.push_back(lua_tostring(L, -(i + 1)));
 	}
 
 	return r;
 }
 
-std::vector<bool> OurLua::GetBoolean(lua_State * L, int n)
+std::vector<bool> OurLua::getBoolean(lua_State * L, int n)
 {
 	std::vector<bool> r;
 	for (int i = 0; i < n; i++)
 	{
-		if (lua_isnumber(L, -1))
-		{
-			r.push_back(lua_toboolean(L, -1));
-			lua_pop(L, -1);
-		}
+		r.push_back(lua_toboolean(L, -(i + 1)));
 	}
 
 	return r;
 }
 
-std::vector<float> OurLua::GetFloats(lua_State * L, int n)
-{
+std::vector<float> OurLua::getFloats(lua_State * L, int n)
+{	
 	std::vector<float> r;
 	for (int i = 0; i < n; i++)
 	{
-		if (lua_isnumber(L, -1))
-		{
-			r.push_back(static_cast<float>(lua_tonumber(L, -1)));
-			lua_pop(L, -1);
-		}
+		r.push_back(static_cast<float>(lua_tonumber(L, -(i + 1))));
 	}
+	
+	
 
 	return r;
+}
+
+void OurLua::setIntegers(lua_State * L, const std::vector<int>& ints)
+{
+	for (int i : ints)
+	{
+		lua_pushinteger(L, i);
+	}
+}
+
+void OurLua::setStrings(lua_State * L, const std::vector<std::string>& strings)
+{
+	for (std::string s : strings)
+	{
+		lua_pushstring(L, s.c_str());
+	}
+}
+
+void OurLua::setBooleans(lua_State * L, const std::vector<bool>& booleans)
+{
+	for (bool b : booleans)
+	{
+		lua_pushboolean(L, b);
+	}
+}
+
+void OurLua::setFloats(lua_State * L, const std::vector<float>& floats)
+{
+	for (float f : floats)
+	{
+		lua_pushnumber(L, f);
+	}
 }
 
 void OurLua::Update()
@@ -111,6 +128,17 @@ void OurLua::Update()
 	int error = lua_pcall(m_ls, 0, 0, 0);
 	if (error)
 		_handleError();
+	
+}
+
+void OurLua::Draw()
+{
+	_updateScript();
+	lua_getglobal(m_ls, "draw");
+	int error = lua_pcall(m_ls, 0, 0, 0);
+	if (error)
+		_handleError();
+	
 }
 
 void OurLua::_updateScript()
@@ -149,7 +177,7 @@ void OurLua::InitLua()
 	int error = lua_pcall(m_ls, 0, 0, 0);
 	if (error)
 		_handleError();
-
+	std::cout << lua_gettop(m_ls) << std::endl;
 }
 
 void OurLua::_handleError()

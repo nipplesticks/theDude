@@ -19,6 +19,7 @@
     <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="Scripts\OurLua.cpp" />
     <ClCompile Include="testXClassFUNCtions.cpp" />
+    <ClCompile Include="Controllers\ProjectileController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -34,19 +35,21 @@
     </ClInclude>
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Entity\Character.hpp" />
-    <ClInclude Include="Entity\Enemy.h" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
     <ClInclude Include="Entity\TheDude.h" />
     <ClInclude Include="Controllers\EnemyController.hpp" />
     <ClInclude Include="Camera\Camera.hpp" />
-    <ClInclude Include="Controllers\ItemController.h" />
+    <ClInclude Include="Controllers\ProjectileController.hpp" />
+    <ClInclude Include="Controllers\ItemController.hpp" />
     <ClInclude Include="States\State.hpp" />
     <ClInclude Include="States\GameState.hpp" />
-    <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="States\MainMenu.hpp" />
     <ClInclude Include="Scripts\OurLua.h" />
+    <ClInclude Include="Interface\Button.hpp" />
+    <ClInclude Include="Entity\Enemy.hpp" />
+    <ClInclude Include="RenderQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />

@@ -26,6 +26,9 @@ Entity::Entity(float x, float y, sf::Color color, float speed)
 
 Entity::Entity()
 {
+	m_self.setPosition(sf::Vector2f(0, 0));
+	m_self.setFillColor(sf::Color::Blue);
+	m_self.setSize(sf::Vector2f(100, 100));
 }
 
 Entity::~Entity()
@@ -99,6 +102,7 @@ void Entity::setIsActive(bool isActive)
 void Entity::setColor(sf::Color color)
 {
 	m_color = color;
+	m_self.setFillColor(m_color);
 }
 
 void Entity::move(float x, float y)
@@ -119,4 +123,9 @@ bool Entity::checkIntersection() const
 void Entity::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	target.draw(m_self);
+}
+
+void Entity::draw()
+{
+	Render::renderQueue.push_back(&m_self);
 }

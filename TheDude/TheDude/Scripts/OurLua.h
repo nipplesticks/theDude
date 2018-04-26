@@ -28,11 +28,15 @@ public:
 	void PushClassFunction(void(*target), int(*function)(lua_State* L), const std::string & name);
 	
 	
-	static std::vector<int> GetIntegers(lua_State * L, int n);
-	static std::vector<std::string> GetStrings(lua_State * L, int n);
-	static std::vector<bool> GetBoolean(lua_State * L, int n);
-	static std::vector<float> GetFloats(lua_State * L, int n);
+	static std::vector<int> getIntegers(lua_State * L, int n);
+	static std::vector<std::string> getStrings(lua_State * L, int n);
+	static std::vector<bool> getBoolean(lua_State * L, int n);
+	static std::vector<float> getFloats(lua_State * L, int n);
 
+	static void setIntegers(lua_State * L, const std::vector<int> & ints);
+	static void setStrings(lua_State * L, const std::vector<std::string> &strings);
+	static void setBooleans(lua_State * L, const std::vector<bool> & booleans);
+	static void setFloats(lua_State * L, const std::vector<float> & floats);
 
 	template <typename T>
 	static T* getClassPointer(lua_State * l);
@@ -44,6 +48,7 @@ public:
 	static Instance** createInstanceOf(lua_State* l, const std::string &meta);
 
 	void Update();
+	void Draw();
 private:
 	void _updateScript();
 	void _handleError();
@@ -69,7 +74,7 @@ inline Instance * OurLua::getInstanceOf(lua_State * l, int n, const std::string 
 template<typename Instance>
 inline Instance ** OurLua::createInstanceOf(lua_State* l, const std::string &meta)
 {
-	Instance** i = reinterpret_cast<Instance**>(lua_newuserData(l, sizeof(Instance*)));
+	Instance** i = reinterpret_cast<Instance**>(lua_newuserdata(l, sizeof(Instance*)));
 
 	luaL_getmetatable(l, meta.c_str());
 	lua_setmetatable(l, -2);
