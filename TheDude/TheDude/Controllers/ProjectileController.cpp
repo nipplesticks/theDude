@@ -34,6 +34,7 @@ void ProjectileController::removeProjectileAt(int index)
 {
 	if (m_nrOfActive > 0)
 	{
+		m_projectiles.at(index).setIsActive(false); 
 		m_nrOfActive--;
 	}
 }
