@@ -32,6 +32,7 @@ public:
 	void setType(int type);
 	void setColor(int r, int g, int b);
 	void setColor(const sf::Color &color);
+	void setTexture(const sf::Texture & texture, const sf::IntRect& rect);
 	const sf::Color& getColor() const;
 
 	int getType() const;

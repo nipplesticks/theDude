@@ -18,6 +18,7 @@ public:
 	void setTypeOfTile(int x, int y, int type);
 	void setColorOfTile(int x, int y, int r, int g, int b);
 	void setColorOfTile(int x, int y, const sf::Vector3i& color);
+	void setTextureOfTile(int x, int y, const sf::Texture & texture, const sf::IntRect& rect);
 
 	void update(Camera* cam);
 

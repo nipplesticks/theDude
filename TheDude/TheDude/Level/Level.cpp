@@ -9,6 +9,7 @@ Level::Level(sf::RenderWindow* renderWindow)
 	m_grid = nullptr;
 	m_camera = nullptr;
 	m_levelName = "";
+	
 }
 
 Level::Level(const Level & other)
@@ -156,65 +157,142 @@ void Level::_copy(const Level & other)
 }
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include <iostream>
 void Level::_handleInput()
 {
+	
 	ImGui::BeginMainMenuBar();
+	
 	if (ImGui::BeginMenu("File"))
 	{
-		if (ImGui::BeginMenu("New")) 
+		if (ImGui::BeginMenu("New"))
 		{
-			
-				static float dim[2] = { 0 };
-				
-				ImGui::InputFloat2("New Size", dim);
 
-				if (ImGui::Button("Create Level"))
-				{
-					delete m_grid;
-					m_grid = new Grid(dim[0], dim[1]);
-				}
-				
-			
+			static float dim[2] = { 0 };
+
+			ImGui::InputFloat2("New Size", dim);
+
+			if (ImGui::Button("Create Level"))
+			{
+				delete m_grid;
+				m_grid = new Grid(dim[0], dim[1]);
+			}
+
+
 			ImGui::EndMenu();
-			
+
 		}
-		if (ImGui::MenuItem("Open"))
+		if (ImGui::BeginMenu("Open"))
 		{
-			
+			static char name[20] = {};
+			ImGui::InputText("File path", name, 20);
+			if (ImGui::Button("Open file"))
+			{
+				LoadLevel(std::string(name));
+			}
+			ImGui::EndMenu();
 		}
 		if (ImGui::MenuItem("Save"))
 		{
-		
+
 		}
-		
+
+		if (ImGui::MenuItem("Exit"))
+		{
+			// Exit here
+		}
 		ImGui::EndMenu();
 	}
 
 
 	ImGui::EndMainMenuBar();
-	ImGui::Begin("Tools");
-	
-	if (ImGui::Button("PlaceColor"))
+	static 	sf::Image image;
+	static bool loadedSpirteSheet = false;
+	ImGui::Begin("SpriteSheet");
+	if (!loadedSpirteSheet)
 	{
-		static float col[3] = { 0 };
-
-
-		ImGui::ColorPicker3("Colors", col);
-
-
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		static char path[20];
+		ImGui::InputText("Path: ", path, 20, ImGuiInputTextFlags_CharsNoBlank);
+		std::cout << path << std::endl;
+		if (ImGui::Button("Load"))
 		{
-			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
-			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
+			
+			std::string fullPath = "Resources/Spritesheet/";
+			fullPath += std::string(path);
 
-			if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+			
+			image.loadFromFile(fullPath.c_str());
+			m_spriteSheet.loadFromImage(image);
+
+			for (int i = 0; i < 1; i++)
 			{
-				m_grid->setColorOfTile(index.x, index.y, col[0] * 256, col[1] * 256, col[2] * 256);
+				sf::Sprite sprite;
+				sprite.setTexture(m_spriteSheet);
+				//sprite.setTextureRect(sf::IntRect(256, 0, 32, 32));
+				m_sprites.push_back(sprite);
 			}
+			loadedSpirteSheet = true;
+		}
 
+		
+	}
+	else
+	{
+		ImVec2 p = ImGui::GetCursorScreenPos();
+		ImVec2 l = ImGui::GetMousePos();
+		l = ImVec2(l.x - p.x, l.y - p.y);
+		
+		ImGui::Image(m_sprites[0]);
+		if (ImGui::Button("Load new spritesheet"))
+			loadedSpirteSheet = false;
+		static bool used = false;
+		static sf::IntRect rect;
+		if (used)
+			ImGui::GetWindowDrawList()->AddRect(ImVec2(p.x + rect.left, p.y + rect.top), ImVec2(p.x + rect.left + rect.width, p.y + rect.top + rect.height), IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
+
+		
+		if (l.x > 0 && l.y > 0 && ImGui::IsMouseClicked(0))
+		{
+
+			rect.left = ((int)l.x >> 5) << 5;
+			rect.top = ((int)l.y >> 5) << 5;
+			rect.width = 32;
+			rect.height = 32;
+			used = true;
+		}
+
+		if (l.x < 0 || l.y < 0)
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+				sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
+
+				if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+				{
+					if (used)
+					{
+						m_grid->setTextureOfTile(index.x, index.y, m_spriteSheet, rect);
+
+					}
+				}
+
+			}
 		}
 	}
 
 	
+	
+	
+		
+	
+
+	
+	ImGui::End();
+
+	static char name[20];
+	ImGui::Begin("Entities");
+	ImGui::InputText("Lua File", name, 20);
+	ImGui::Button("Load Entity");
 	ImGui::End();
 }

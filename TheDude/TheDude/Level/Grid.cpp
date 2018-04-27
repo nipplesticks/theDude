@@ -27,6 +27,12 @@ void Grid::setColorOfTile(int x, int y, const sf::Vector3i& color)
 	this->setColorOfTile(x, y, color.x, color.y, color.z);
 }
 
+void Grid::setTextureOfTile(int x, int y, const sf::Texture & texture, const sf::IntRect& rect)
+{
+	m_tiles[x][y].setTexture(texture, rect);
+	
+}
+
 int Grid::getWidth() const
 {
 	return static_cast<int>(m_tiles[0].size());

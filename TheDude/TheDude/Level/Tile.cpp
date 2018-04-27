@@ -61,6 +61,13 @@ void Tile::setColor(const sf::Color & color)
 	m_tileShape.setFillColor(color);
 }
 
+void Tile::setTexture(const sf::Texture & texture, const sf::IntRect& rect)
+{
+	m_tileShape.setTexture(&texture);
+	m_tileShape.setTextureRect(rect);
+	m_tileShape.setFillColor(sf::Color::White);
+}
+
 const sf::Color & Tile::getColor() const
 {
 	return m_tileShape.getFillColor();

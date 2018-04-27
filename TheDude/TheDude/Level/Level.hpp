@@ -10,6 +10,8 @@ private:
 	std::string m_levelName;
 	Camera* m_camera;
 	sf::RenderWindow* m_pWindow;
+	sf::Texture m_spriteSheet;
+	std::vector<sf::Sprite> m_sprites;
 
 	/*
 		Player ctrl
