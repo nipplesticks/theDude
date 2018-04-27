@@ -18,54 +18,55 @@ struct Particle
 
 // Globals
 const std::string gameTitle = "PBF!";
-sf::RenderWindow g_window(sf::VideoMode(1280, 720), gameTitle);
-const int COUNT = 10;
+sf::RenderWindow g_window(sf::VideoMode(800, 600), gameTitle);
+const int COUNT = 200;
 Particle p[COUNT];
 
 void init()
 {
 	sf::CircleShape s;
-	s.setRadius(10.0f);
+	s.setRadius(3.0f);
 	s.setOrigin(s.getRadius(), s.getRadius());
 	s.setFillColor(sf::Color::Blue);
 
-	for (int i = 0; i < COUNT; i++)
+	for (int i = 0; i < COUNT / 2; i++)
 	{
 		p[i].shape = s;
 		p[i].shape.setFillColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
-		p[i].mass = 0.001f;
+		p[i].mass = 0.1f;
 		p[i].position.x = (g_window.getSize().x / 2) - ((COUNT / 2) * p[i].shape.getRadius() * 2) + (i * p[i].shape.getRadius() * 2);
 		p[i].position.y = g_window.getSize().y / 2;
 		p[i].velocity.x = rand() % 20 * ((rand() % 2 == 0) ? -1 : 1);
 		p[i].velocity.y = rand() % 20 * ((rand() % 2 == 0) ? -1 : 1);
 		p[i].shape.setPosition(p[i].position.x, p[i].position.y);
 	}
+	for (int i = 0; i < COUNT / 2; i++)
+	{
+		int k = i + COUNT / 2;
 
-	/*p[0].position.x = 500;
-	p[0].position.y = 500;
-	p[0].velocity.x = 1;
-	p[0].velocity.y = 0;
-	p[0].shape.setPosition(p[0].position.x, p[0].position.y);
-
-	p[1].position.x = 600;
-	p[1].position.y = 500;
-	p[1].velocity.x = -1;
-	p[1].velocity.y = 0;
-	p[1].shape.setPosition(p[1].position.x, p[1].position.y);*/
-
+		p[k].shape = s;
+		p[k].shape.setFillColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
+		p[k].mass = 0.1f;
+		p[k].position.x = (g_window.getSize().x / 2) - ((COUNT / 2) * p[k].shape.getRadius() * 2) + (i * p[k].shape.getRadius() * 2);
+		p[k].position.y = g_window.getSize().y / 2 + p[k].shape.getRadius() * 2;
+		p[k].velocity.x = rand() % 20 * ((rand() % 2 == 0) ? -1 : 1);
+		p[k].velocity.y = rand() % 20 * ((rand() % 2 == 0) ? -1 : 1);
+		p[k].shape.setPosition(p[k].position.x, p[k].position.y);
+	}
 }
 
 void calculateForces(float dt)
 {
 	bool inside = true;
-
-	for (auto & par : p)
+	while (inside)
 	{
-		sf::Vector2f force;
-		force += par.mass * GRAVITY;
-		while (inside)
+		//printf("inside First\n");
+
+		inside = false;
+		for (auto & par : p)
 		{
-			inside = false;
+			sf::Vector2f force;
+			force += par.mass * GRAVITY;
 			for (auto & par2 : p)
 			{
 				sf::Vector2f p1 = par.position;
@@ -75,60 +76,80 @@ void calculateForces(float dt)
 
 					sf::Vector2f dist = p2 - p1;
 
-					float dstSqrd = abs(dist.x * dist.x + dist.y * dist.y);
+					float dstSqrd = dist.x * dist.x + dist.y * dist.y;
 					float radSqrd = (par.shape.getRadius() + par2.shape.getRadius()) * (par.shape.getRadius() + par2.shape.getRadius());
 
 					if (dstSqrd < radSqrd)
 					{
 						// Collision
-						inside = true;
-						
-						sf::Vector2f hw = (p1 + p2) * 0.5f;
-						par2.position = hw + (dist / (sqrt(dstSqrd))) * (par2.shape.getRadius() * 1.01f);
-						par2.shape.setPosition(par2.position);
-						par.position = hw - (dist / (sqrt(dstSqrd))) * (par.shape.getRadius() * 1.01f);
-						par.shape.setPosition(par.position);
+						//inside = true;
+						bool once = true;
+						while (dstSqrd < radSqrd && once)
+						{
+							par2.position += dist / (sqrt(dstSqrd));
+							par2.shape.setPosition(par2.position);
+							par.position -= dist / (sqrt(dstSqrd));
+							par.shape.setPosition(par.position);
 
-						sf::Vector2f force2 = (par2.velocity / dt) * par2.mass;
-						force += force2;
+							p1 = par.position;
+							p2 = par2.position;
+							dist = p2 - p1;
+							dstSqrd = dist.x * dist.x + dist.y * dist.y;
+							//printf("Distance: %f Must me Larger than %f\n", dstSqrd, radSqrd);
+						}
+
+						sf::Vector2f v1 = par.velocity;
+						sf::Vector2f v2 = par2.velocity;
+						float m1 = par.mass;
+						float m2 = par2.mass;
+						float e = 0.0f;
+						sf::Vector2f newV1 = (v1 * (m1 - m2 * e) + m2 * v2 * (1 + e)) / (m1 + m2);
+						sf::Vector2f newV2 = (v2 * (m2 - m1 * e) + m1 * v1 * (1 + e)) / (m1 + m2);
+
+						par.velocity = newV1;
+						par2.velocity = newV2;
 					}
 
 
 				}
 			}
-		}
-		
 
-		sf::Vector2f acc = force / par.mass;
-		par.velocity += (acc * dt);
+
+
+			sf::Vector2f acc = force / par.mass;
+			par.velocity += (acc * dt);
+		}
 	}
 }
 
+float wallB = 0.1;
+
 void move(Particle &par)
 {
-	if (par.position.y + par.shape.getRadius() * 2 > g_window.getSize().y)
+	par.position += par.velocity;
+
+	if (par.position.y + par.shape.getRadius() > g_window.getSize().y)
 	{
-		par.position.y = g_window.getSize().y - par.shape.getRadius();
-		par.velocity.y *= -0.7;
+		par.position.y = g_window.getSize().y - (par.shape.getRadius());
+		par.velocity.y *= -wallB;
 	}
 	else if (par.position.y < 0)
 	{
-		par.position.y = par.shape.getRadius();
-		par.velocity.y *= -0.7;
+		par.position.y = (par.shape.getRadius());
+		par.velocity.y *= -wallB;
 	}
 
-	if (par.position.x + par.shape.getRadius() * 2 > g_window.getSize().x)
+	if (par.position.x + par.shape.getRadius() > g_window.getSize().x)
 	{
-		par.position.x = g_window.getSize().x - par.shape.getRadius();
-		par.velocity.x *= -0.7;
+		par.position.x = g_window.getSize().x - (par.shape.getRadius());
+		par.velocity.x *= -wallB;
 	}
 	else if (par.position.x < 0)
 	{
-		par.position.x = par.shape.getRadius();
-		par.velocity.x *= -0.7;
+		par.position.x = (par.shape.getRadius());
+		par.velocity.x *= -wallB;
 	}
 
-	par.position += par.velocity;
 	par.shape.setPosition(par.position.x, par.position.y);
 
 	int i = 0;
@@ -183,6 +204,7 @@ int main()
 			updates++;
 			unprocessed -= 1;
 
+			if (wasPressed == true)
 				update(1.0f / REFRESH_RATE);
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !wasPressed)
 			{
