@@ -36,5 +36,5 @@ public:
 	void decreaseHP(float damage); 
 	void attack(); 
 
-	void update(float dt); 
+	void update(float dt) override; 
 };

@@ -24,7 +24,7 @@ Enemy::~Enemy()
 
 void Enemy::update(float dt)
 {
-	Character::update(dt); 
+	//Character::update(dt); 
 }
 
 int Enemy::s_getPosition(lua_State * l)

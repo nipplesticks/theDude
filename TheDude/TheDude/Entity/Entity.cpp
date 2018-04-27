@@ -35,11 +35,11 @@ Entity::~Entity()
 {
 }
 
-void Entity::update(float dt)
-{
-	m_self.move(m_speed.x, m_speed.y);
-	m_position = m_position + m_speed;
-}
+//void Entity::update(float dt)
+//{
+//	m_self.move(m_speed.x, m_speed.y);
+//	m_position = m_position + m_speed;
+//}
 
 sf::Vector2f Entity::getPosition() const
 {

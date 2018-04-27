@@ -64,5 +64,5 @@ void Item::setEffect(std::string effectType)
 
 void Item::update(float dt)
 {
-	Entity::update(dt); 
+	//Entity::update(dt); 
 }

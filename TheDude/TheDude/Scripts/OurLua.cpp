@@ -43,6 +43,12 @@ void OurLua::PushClassFunction(void(*target), int(*function)(lua_State *L), cons
 	lua_setglobal(m_ls, name.c_str());
 }
 
+void OurLua::PushInstancePtr(void(*ptr), const std::string & name)
+{
+	lua_pushlightuserdata(m_ls, ptr);
+	lua_setglobal(m_ls, name.c_str());
+}
+
 std::vector<int> OurLua::getIntegers(lua_State * L, int n)
 {
 	std::vector<int> r;
@@ -83,8 +89,6 @@ std::vector<float> OurLua::getFloats(lua_State * L, int n)
 	{
 		r.push_back(static_cast<float>(lua_tonumber(L, -(i + 1))));
 	}
-	
-	
 
 	return r;
 }

@@ -60,19 +60,50 @@ void initPlayer(OurLua & ol)
 	ol.PushClassFunctions(TheDude::meta, func, "Player");
 }
 
+int isCollision(lua_State * l)
+{
+	Entity** e1 = (Entity**)(lua_touserdata(l, 1));
+	Entity** e2 = (Entity**)(lua_touserdata(l, 2));
 
+	std::vector<bool> col;
+	col.push_back(false);
+
+	sf::Vector2f p1, p2;
+	p1 = (*e1)->getSelf().getPosition();
+	p2 = (*e2)->getSelf().getPosition();
+	sf::Vector2f s1, s2;
+	s1 = (*e1)->getSelf().getSize();
+	s2 = (*e2)->getSelf().getSize();
+
+	//e2->setColor(sf::Color::Green);
+
+	if (!(p2.x > p1.x + s1.x
+		|| p2.x + s2.x < p1.x
+		|| p2.y > p1.y + s1.y
+		|| p2.y + s2.y < p1.y))
+	{
+		col[0] = true;
+	}
+
+	OurLua::setBooleans(l, col);
+
+	return 1;
+}
 
 int main()
 {
-	OurLua ol("Scripts/EnemyHandler.Lua");
-	initEmy(ol);
-	ol.InitLua();
+	OurLua collision("Scripts/CollisionHandler.Lua");
+	collision.InitLua();
 
-	OurLua lo("Scripts/PlayerHandler.Lua");
-	initPlayer(lo);
-	lo.PushFunction(isKeyPressed, "isKeyPressed");
+	OurLua playerHandler("Scripts/PlayerHandler.Lua");
+	initPlayer(playerHandler);
+	playerHandler.PushFunction(isKeyPressed, "isKeyPressed");
+	playerHandler.InitLua();
 
-	lo.InitLua();
+	OurLua enemyHandler("Scripts/EnemyHandler.Lua");
+	enemyHandler.PushFunction(isCollision, "isCollision");
+	initEmy(enemyHandler);
+	enemyHandler.InitLua();
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
@@ -100,8 +131,8 @@ int main()
 		{
 			updates++;
 			unprocessed -= 1;
-			ol.Update();
-			lo.Update();
+			enemyHandler.Update();
+			playerHandler.Update();
 		}
 
 		sf::Event event;
@@ -111,8 +142,8 @@ int main()
 				window.close();
 		}
 
-		ol.Draw();
-		lo.Draw();
+		enemyHandler.Draw();
+		playerHandler.Draw();
 		
 		fpsCounter++;
 		for (size_t i = 0; i < Render::renderQueue.size(); i++)

@@ -12,7 +12,7 @@ public:
 
 	~Enemy(); 
 
-	void update(float dt); 
+	void update(float dt) override; 
 
 public:			//Lua stuff
 	// Entity stuff

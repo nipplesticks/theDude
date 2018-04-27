@@ -25,7 +25,7 @@ TheDude::~TheDude()
 
 void TheDude::update(float dt)
 {
-	Character::update(dt); 
+	//Character::update(dt); 
 }
 
 int TheDude::s_getPosition(lua_State * l)

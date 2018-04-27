@@ -34,7 +34,7 @@ void Projectile::setHasHit(bool hasHit)
 	m_hasHit = hasHit; 
 }
 
-void Projectile::Update(float dt)
+void Projectile::update(float dt)
 {
-	Entity::update(dt); 
+	//Entity::update(dt); 
 }

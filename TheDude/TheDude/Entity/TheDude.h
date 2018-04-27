@@ -17,7 +17,7 @@ public:
 
 	~TheDude(); 
 
-	void update(float dt); 
+	void update(float dt) override; 
 
 public:
 	// Entity stuff

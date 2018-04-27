@@ -17,7 +17,7 @@ public:
 
 	~Entity();
 
-	virtual void update(float dt);
+	virtual void update(float dt) = 0;
 
 	sf::Vector2f getPosition() const;
 	sf::Vector2f getSpeed() const;

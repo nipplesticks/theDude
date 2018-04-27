@@ -110,5 +110,5 @@ void Character::attack()
 
 void Character::update(float dt)
 {
-	Entity::update(dt); 
+	//Entity::update(dt); 
 }

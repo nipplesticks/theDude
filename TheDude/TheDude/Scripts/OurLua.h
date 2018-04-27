@@ -26,8 +26,9 @@ public:
 	void PushFunction(int(* function)(lua_State* L), const std::string & name);
 	void PushClassFunctions(const std::string& metaName, luaL_Reg functions[], const std::string& luaClassName);
 	void PushClassFunction(void(*target), int(*function)(lua_State* L), const std::string & name);
-	
-	
+	void PushInstancePtr(void(*ptr), const std::string & name);
+
+
 	static std::vector<int> getIntegers(lua_State * L, int n);
 	static std::vector<std::string> getStrings(lua_State * L, int n);
 	static std::vector<bool> getBoolean(lua_State * L, int n);
@@ -37,6 +38,7 @@ public:
 	static void setStrings(lua_State * L, const std::vector<std::string> &strings);
 	static void setBooleans(lua_State * L, const std::vector<bool> & booleans);
 	static void setFloats(lua_State * L, const std::vector<float> & floats);
+
 
 	template <typename T>
 	static T* getClassPointer(lua_State * l);

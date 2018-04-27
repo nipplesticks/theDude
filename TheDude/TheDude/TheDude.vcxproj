@@ -196,6 +196,7 @@
     <None Include="Scripts\PlayerHandler.Lua" />
     <None Include="Resourses\Levels\test.chef" />
     <None Include="Scripts\EnemyHandler.Lua" />
+    <None Include="Scripts\CollisionHandler.lua" />
     <None Include="test2.Lua" />
     <None Include="test.Lua" />
   </ItemGroup>

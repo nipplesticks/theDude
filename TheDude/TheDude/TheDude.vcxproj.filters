@@ -60,5 +60,6 @@
     <None Include="test2.Lua" />
     <None Include="Scripts\EnemyHandler.Lua" />
     <None Include="Scripts\PlayerHandler.Lua" />
+    <None Include="Scripts\CollisionHandler.lua" />
   </ItemGroup>
 </Project>
