@@ -24,6 +24,7 @@ private:
 
 public:
 	OurLua(const std::string & script);
+	~OurLua();
 	void InitLua();
 	void PushFunction(int(* function)(lua_State* L), const std::string & name);
 	void PushClassFunctions(const std::string& metaName, luaL_Reg functions[], const std::string& luaClassName);

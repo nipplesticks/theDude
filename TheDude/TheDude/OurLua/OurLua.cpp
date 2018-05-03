@@ -20,6 +20,11 @@ OurLua::OurLua(const std::string & script)
 	
 }
 
+OurLua::~OurLua()
+{
+	lua_close(m_ls);
+}
+
 void OurLua::PushFunction(int(*function)(lua_State* L), const std::string & name)
 {
 	lua_pushcfunction(m_ls, function);

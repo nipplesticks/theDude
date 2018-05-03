@@ -51,8 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resourses\Levels\test.chef" />
-    <None Include="Scripts\CollisionHandler.lua" />
-    <None Include="Scripts\EnemyHandler.Lua" />
-    <None Include="Scripts\PlayerHandler.Lua" />
+    <None Include="Scripts\DVD.Lua" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,3 @@
--- Vars
-local theDude
-local playerSpeed
-local enemy
-local s1x
-local s1y
-
 -- Local Functions
 local function _initPlayer()
 	theDude = Character.Create()
@@ -16,17 +9,14 @@ end
 
 local function _initEnemies()
 	--Should be put inside table
-	enemy = Character.Create()
-	enemy:setColor(255, 0, 0)
-	enemy:setPosition(100, 100)
-	s1x = 1
-	s1y = 1
+	Enemy_Scripted = Character.Create()
+	Enemy_Scripted:AddScript("Scripts/DVD.Lua")
 end
 
 local function _updatePlayer()
 	local tempSpeed = playerSpeed
 	if isKeyPressed("LSHIFT") then
-		tempSpeed = tempSpeed * 1.5
+		tempSpeed = tempSpeed * 3.0
 	end
 
 	if isKeyPressed("UP") then
@@ -43,29 +33,17 @@ local function _updatePlayer()
 end
 
 local function _updateEnemies()
-	x1, y1 = enemy:getPosition()
-	if (x1 + 100) > 1280 then
-	s1x = s1x * (-1)
-	elseif x1 < 0 then
-	s1x = s1x * (-1)
-	end
-	if (y1 + 100) > 720 then
-	s1y = s1y * (-1)
-	elseif (y1 < 0) then
-	s1y = s1y * (-1)
-	end
-	enemy:Move(s1x, s1y)
+	Enemy_Scripted:Update()
 
 end
 
 local function _drawEnemies()
-	enemy:Draw()
-
+	Enemy_Scripted:Draw()
 end
 
 local function _collisionHandling()
 
-	isCollision = CheckCollision(theDude, enemy)
+	isCollision = CheckCollision(theDude, Enemy_Scripted)
 
 	if isCollision then
 		print("Enemy hit player")

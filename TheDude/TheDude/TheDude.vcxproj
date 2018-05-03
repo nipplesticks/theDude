@@ -188,10 +188,8 @@
     <ClInclude Include="Entity\Projectile.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\PlayerHandler.Lua" />
     <None Include="Resourses\Levels\test.chef" />
-    <None Include="Scripts\EnemyHandler.Lua" />
-    <None Include="Scripts\CollisionHandler.lua" />
+    <None Include="Scripts\DVD.Lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
