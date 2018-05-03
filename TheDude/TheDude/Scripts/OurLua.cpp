@@ -132,7 +132,6 @@ void OurLua::Update()
 	int error = lua_pcall(m_ls, 0, 0, 0);
 	if (error)
 		_handleError();
-	
 }
 
 void OurLua::Draw()

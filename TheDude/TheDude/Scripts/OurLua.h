@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#define LUA_FUNC static int
+
 class OurLua
 {
 private:
@@ -49,6 +51,9 @@ public:
 	template <typename Instance>
 	static Instance** createInstanceOf(lua_State* l, const std::string &meta);
 
+	template <typename Instance>
+	static std::vector<Instance**> getInstancePointer(lua_State* l, int amount);
+
 	void Update();
 	void Draw();
 private:
@@ -82,4 +87,15 @@ inline Instance ** OurLua::createInstanceOf(lua_State* l, const std::string &met
 	lua_setmetatable(l, -2);
 
 	return i;
+}
+
+template<typename Instance>
+inline std::vector<Instance**> OurLua::getInstancePointer(lua_State * l, int amount)
+{
+	std::vector<Instance**> instances;
+	for (int i = 0; i < amount; i++)
+		instances.push_back((Instance**)lua_touserdata(l, i + 1));
+
+
+	return instances;
 }

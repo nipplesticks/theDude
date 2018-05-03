@@ -150,6 +150,8 @@
     <ClCompile Include="Controllers\EnemyController.cpp" />
     <ClCompile Include="Controllers\ItemController.cpp" />
     <ClCompile Include="Controllers\ProjectileController.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
     <ClCompile Include="Level\Level.cpp" />
@@ -160,17 +162,19 @@
     <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
     <ClCompile Include="Entity\TheDude.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Scripts\OurLua.cpp" />
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="States\State.cpp" />
-    <ClCompile Include="testXClassFUNCtions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
     <ClInclude Include="Controllers\EnemyController.hpp" />
     <ClInclude Include="Controllers\ItemController.hpp" />
     <ClInclude Include="Controllers\ProjectileController.hpp" />
+    <ClInclude Include="Game.hpp" />
+    <ClInclude Include="GameTime.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Level\Grid.hpp" />
     <ClInclude Include="Level\Level.hpp" />
@@ -183,6 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
+    <Text Include="Scripts\EntityHandler.Lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity\Character.hpp" />
