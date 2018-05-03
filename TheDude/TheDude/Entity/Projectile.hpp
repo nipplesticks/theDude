@@ -16,5 +16,5 @@ public:
 
 	void setHasHit(bool hasHit); 
 
-	void update(float dt) override; 
+	void Update() override; 
 }; 

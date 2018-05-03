@@ -1,6 +1,7 @@
 #include <chrono>
 #include "Game.hpp"
 #include "GameTime.hpp"
+#include "RenderQueue.hpp"
 
 #define CHECK_MEMORY_LEAKS _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF)
 
@@ -22,7 +23,7 @@ int main()
 	while (window.isOpen())
 	{
 		window.clear();
-		Render::renderQueue.clear();
+		Render::g_renderQueue.clear();
 
 		gameTime.UpdateGameTime();
 

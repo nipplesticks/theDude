@@ -1,6 +1,7 @@
 #include "Game.hpp"
+#include "RenderQueue.hpp"
 
-std::vector<sf::Shape*> Render::renderQueue;
+std::vector<Entity*> Render::g_renderQueue;
 bool Game::s_isGameRunning = true;
 
 Game::Game()
@@ -37,8 +38,15 @@ void Game::draw()
 	m_entityHandler->Draw();
 
 
-	for (auto & thing : Render::renderQueue)
-		p_wnd->draw(*thing);
+	// TEMP
+	sf::Vector2f camPos(0.0f, 0.0f);
+
+	for (auto & entity : Render::g_renderQueue)
+	{
+		sf::Vector2f worldPos = entity->getPosition();
+		entity->setViewPos(worldPos - camPos);
+		p_wnd->draw(entity->getShape());
+	}
 	p_wnd->display();
 }
 
@@ -56,35 +64,36 @@ void Game::_initEntityHandler()
 
 void Game::_pushFunctions()
 {
-	m_entityHandler->PushFunction(CheckCollision, "CheckCollision");
-	m_entityHandler->PushFunction(isKeyPressed, "isKeyPressed");
-	m_entityHandler->PushFunction(ExitGame, "ExitGame");
+	m_entityHandler->PushFunction(CheckCollision,	"CheckCollision");
+	m_entityHandler->PushFunction(isKeyPressed,		"isKeyPressed");
+	m_entityHandler->PushFunction(ExitGame,			"ExitGame");
 
-	luaL_Reg enemyFunctions[]
+	luaL_Reg characterFunctions[]
 	{
-		{ "Create", Enemy::s_CreateEnemy },
-		{ "setPosition", Enemy::s_setPosition },
-		{ "getPosition", Enemy::s_getPosition },
-		{ "setColor", Enemy::s_setColor },
-		{ "move", Enemy::s_move },
-		{ "draw", Enemy::s_draw },
-		{ "__gc", Enemy::s_DestroyEnemy },
-		{ NULL, NULL }
+		{ "Create"		,Character::s_Create		},
+		{ "setColor"	,Character::s_setColor		},
+		{ "setPosition"	,Character::s_setPosition	},
+		{ "Move"		,Character::s_Move			},
+		{ "setSize"		,Character::s_setSize		},
+		{ "setOrigin"	,Character::s_setOrigin		},
+		{ "getPosition"	,Character::s_getPosition	},
+		{ "getSize"		,Character::s_getSize		},
+		{ "getColor"	,Character::s_getColor		},
+		{ "Draw"		,Character::s_Draw			},
+		{ "AddScript"	,Character::s_AddScript		},
+		{ "isDead"		,Character::s_isDead		},
+		{ "setHealth"	,Character::s_setHealth		},
+		{ "setAttack"	,Character::s_setAttack		},
+		{ "setDefence"	,Character::s_setDefence	},
+		{ "AlterHealth"	,Character::s_AlterHealth	},
+		{ "getHealth"	,Character::s_getHealth		},
+		{ "getAttack"	,Character::s_getAttack		},
+		{ "getDefence"	,Character::s_getDefence	},
+		{ "Update"		,Character::s_Update		},
+		{ "__gc"		,Character::s_Destroy		},
+		{ NULL			,NULL						}
 	};
-	m_entityHandler->PushClassFunctions(Enemy::meta, enemyFunctions, "Enemy");
-
-	luaL_Reg playerfunctions[]
-	{
-		{ "Create", TheDude::s_CreateTheDude },
-		{ "setPosition", TheDude::s_setPosition },
-		{ "setColor", TheDude::s_setColor },
-		{ "move", TheDude::s_move },
-		{ "draw", TheDude::s_draw },
-		{ "__gc", TheDude::s_DestroyTheDude },
-		{ NULL, NULL }
-	};
-	m_entityHandler->PushClassFunctions(TheDude::meta, playerfunctions, "Player");
-
+	m_entityHandler->PushClassFunctions(Character::metaTable, characterFunctions, "Character");
 }
 
 int Game::isKeyPressed(lua_State * l)
@@ -124,10 +133,10 @@ int Game::CheckCollision(lua_State * l)
 	std::vector<bool> col;
 	col.push_back(false);
 	sf::Vector2f p0, p1, s0, s1;
-	p0 = (*e[0])->getSelf().getPosition();
-	p1 = (*e[1])->getSelf().getPosition();
-	s0 = (*e[0])->getSelf().getSize();
-	s1 = (*e[1])->getSelf().getSize();
+	p0 = (*e[0])->getPosition();
+	p1 = (*e[1])->getPosition();
+	s0 = (*e[0])->getSize();
+	s1 = (*e[1])->getSize();
 
 	if (!(p1.x > p0.x + s0.x
 		|| p1.x + s1.x < p0.x

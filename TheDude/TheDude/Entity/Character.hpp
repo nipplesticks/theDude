@@ -1,40 +1,62 @@
 #pragma once
 #include "Entity.hpp"
+#include "../OurLua/OurLua.hpp"
 class Character : public Entity
 {
+public:
+	static std::string metaTable;
+
 private:
-	float m_health; 
-	float m_attackStat; 
-	float m_defenceStat; 
-	bool m_attacking; 
+	int m_health; 
+	int m_attack; 
+	int m_defence; 
+	OurLua * m_script;
 
 public:
-	Character(sf::Vector2f position, sf::Color color,sf::Vector2f speed, float attackStart, float defenceStart); 
-	Character(float x, float y, sf::Color color, float speedX, float speedy, float attackStart, float defenceStart);
-	Character(float x, float y, sf::Color color, float speed, float attackStart, float defenceStart);
 	Character();
-	
 	~Character(); 
 
-	bool isAlive() const;
+	void AddScript(const std::string &path);
 
-	float getHealth() const; 
-	bool getAttacking() const; 
-	float getAttackStat() const; 
-	float getDefenceStat() const; 
-
-	void setHealth(float newHealth); 
-	void setAttacking(bool isAttacking); 
-	void setAttackStat(float attackStat); 
-	void setDefenceStat(float defenceStat); 
+	bool isDead() const;
+	void setHealth(int health); 
+	void setAttack(int attack); 
+	void setDefence(int defence); 
 	
-	void increaseAttack(float increaseStat); 
-	void increaseDefence(float increaseStat); 
-	void decreaseAttack(float decreaseStat); 
-	void decreaseDefence(float decreaseStat); 
-	
-	void decreaseHP(float damage); 
-	void attack(); 
+	void AlterHealth(int health); 
 
-	void update(float dt) override; 
+	int getHealth() const; 
+	int getAttack() const; 
+	int getDefence() const; 
+
+	void Update() override;
+
+private:
+	// Helpt Funcitons
+	void _initLua();
+
+
+public:
+	// Lua funcitons
+	LUA_FUNC s_setColor(lua_State * l);
+	LUA_FUNC s_setPosition(lua_State * l);
+	LUA_FUNC s_Move(lua_State * l);
+	LUA_FUNC s_setSize(lua_State * l);
+	LUA_FUNC s_setOrigin(lua_State * l);
+	LUA_FUNC s_getPosition(lua_State * l);
+	LUA_FUNC s_getSize(lua_State * l);
+	LUA_FUNC s_getColor(lua_State * l);
+	LUA_FUNC s_Draw(lua_State * l);
+	LUA_FUNC s_AddScript(lua_State * l);
+	LUA_FUNC s_isDead(lua_State * l);
+	LUA_FUNC s_setHealth(lua_State * l);
+	LUA_FUNC s_setAttack(lua_State * l);
+	LUA_FUNC s_setDefence(lua_State * l);
+	LUA_FUNC s_AlterHealth(lua_State * l);
+	LUA_FUNC s_getHealth(lua_State * l);
+	LUA_FUNC s_getAttack(lua_State * l);
+	LUA_FUNC s_getDefence(lua_State * l);
+	LUA_FUNC s_Update(lua_State * l);
+	LUA_FUNC s_Create(lua_State * l);
+	LUA_FUNC s_Destroy(lua_State * l);
 };

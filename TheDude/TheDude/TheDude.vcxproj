@@ -147,9 +147,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
-    <ClCompile Include="Controllers\EnemyController.cpp" />
-    <ClCompile Include="Controllers\ItemController.cpp" />
-    <ClCompile Include="Controllers\ProjectileController.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
@@ -157,30 +154,25 @@
     <ClCompile Include="Level\Level.cpp" />
     <ClCompile Include="Level\Tile.cpp" />
     <ClCompile Include="Entity\Character.cpp" />
-    <ClCompile Include="Entity\Enemy.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
-    <ClCompile Include="Entity\TheDude.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Scripts\OurLua.cpp" />
+    <ClCompile Include="OurLua\OurLua.cpp" />
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="States\State.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
-    <ClInclude Include="Controllers\EnemyController.hpp" />
-    <ClInclude Include="Controllers\ItemController.hpp" />
-    <ClInclude Include="Controllers\ProjectileController.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameTime.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Level\Grid.hpp" />
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
-    <ClInclude Include="RenderQueue.h" />
-    <ClInclude Include="Scripts\OurLua.h" />
+    <ClInclude Include="RenderQueue.hpp" />
+    <ClInclude Include="OurLua\OurLua.hpp" />
     <ClInclude Include="States\GameState.hpp" />
     <ClInclude Include="States\MainMenu.hpp" />
     <ClInclude Include="States\State.hpp" />
@@ -191,19 +183,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity\Character.hpp" />
-    <ClInclude Include="Entity\Enemy.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
-    <ClInclude Include="Entity\TheDude.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\PlayerHandler.Lua" />
     <None Include="Resourses\Levels\test.chef" />
     <None Include="Scripts\EnemyHandler.Lua" />
     <None Include="Scripts\CollisionHandler.lua" />
-    <None Include="test2.Lua" />
-    <None Include="test.Lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

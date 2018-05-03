@@ -7,7 +7,7 @@ local s1y
 
 -- Local Functions
 local function _initPlayer()
-	theDude = Player.Create()
+	theDude = Character.Create()
 	theDude:setPosition(500, 500)
 	theDude:setColor(0, 255 ,0)
 	playerSpeed = 2.5
@@ -16,7 +16,7 @@ end
 
 local function _initEnemies()
 	--Should be put inside table
-	enemy = Enemy.Create()
+	enemy = Character.Create()
 	enemy:setColor(255, 0, 0)
 	enemy:setPosition(100, 100)
 	s1x = 1
@@ -30,15 +30,15 @@ local function _updatePlayer()
 	end
 
 	if isKeyPressed("UP") then
-		theDude:move(0,-tempSpeed)
+		theDude:Move(0,-tempSpeed)
 	elseif isKeyPressed("DOWN") then
-		theDude:move(0,tempSpeed)
+		theDude:Move(0,tempSpeed)
 	end
 
 	if isKeyPressed("RIGHT") then
-		theDude:move(tempSpeed,0)
+		theDude:Move(tempSpeed,0)
 	elseif isKeyPressed("LEFT") then
-		theDude:move(-tempSpeed,0)
+		theDude:Move(-tempSpeed,0)
 	end
 end
 
@@ -54,12 +54,12 @@ local function _updateEnemies()
 	elseif (y1 < 0) then
 	s1y = s1y * (-1)
 	end
-	enemy:move(s1x, s1y)
+	enemy:Move(s1x, s1y)
 
 end
 
 local function _drawEnemies()
-	enemy:draw()
+	enemy:Draw()
 
 end
 
@@ -93,7 +93,7 @@ function update()
 end
 
 function draw()
-	theDude:draw()
+	theDude:Draw()
 	_drawEnemies()
 end
 

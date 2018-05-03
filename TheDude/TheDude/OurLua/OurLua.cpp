@@ -1,4 +1,4 @@
-#include "OurLua.h"
+#include "OurLua.hpp"
 #include <iostream>
 #include <Windows.h>
 OurLua::OurLua(const std::string & script)

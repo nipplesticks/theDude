@@ -1,18 +1,18 @@
 #include "Item.hpp"
 
-Item::Item(sf::Vector2f position, sf::Color color,sf::Vector2f speed, std::string effectType) : Entity(position, color, speed)
+Item::Item(sf::Vector2f position, sf::Color color,sf::Vector2f speed, std::string effectType) : Entity()
 {
 	m_isPicked = false; 
 	setEffect(effectType); 
 }
 
-Item::Item(float x, float y, sf::Color color, float speedX, float speedY, std::string effectType) : Entity(x, y, color, speedX, speedY)
+Item::Item(float x, float y, sf::Color color, float speedX, float speedY, std::string effectType) : Entity()
 {
 	m_isPicked = false; 
 	setEffect(effectType); 
 }
 
-Item::Item(float x, float y, sf::Color color, float speed, std::string effectType) : Entity(x,y,color,speed)
+Item::Item(float x, float y, sf::Color color, float speed, std::string effectType) : Entity()
 {
 	m_isPicked = false; 
 	setEffect(effectType); 
@@ -62,7 +62,7 @@ void Item::setEffect(std::string effectType)
 	}
 }
 
-void Item::update(float dt)
+void Item::Update()
 {
 	//Entity::update(dt); 
 }
