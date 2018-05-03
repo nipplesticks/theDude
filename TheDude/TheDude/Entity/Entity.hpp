@@ -1,45 +1,27 @@
 #pragma once
-#include "../RenderQueue.h"
-class Entity : public sf::Drawable
+#include <SFML/Graphics.hpp>
+class Entity
 {
 private:
-	sf::Vector2f m_speed;
-	sf::RectangleShape m_self;
+	sf::RectangleShape m_shape;
 	sf::Vector2f m_position;
-	sf::Color m_color;
-	bool m_isActive;
 
 public:
-	Entity(sf::Vector2f position, sf::Color color, sf::Vector2f speed);
-	Entity(float x, float y, sf::Color color, float speedX, float speedY);
-	Entity(float x, float y, sf::Color color, float speed);
 	Entity();
+	virtual ~Entity() {};
 
-	~Entity();
+	virtual void setColor(int r, int g, int b, int a = 255);
+	virtual void setViewPos(sf::Vector2f viewPos);
+	virtual void setPosition(float x, float y);
+	virtual void Move(float x, float y);
+	virtual void setSize(float x, float y);
+	virtual void setOrigin(float x, float y);
 
-	virtual void update(float dt) = 0;
+	virtual const sf::Vector2f getPosition() const;
+	virtual const sf::Vector2f getSize() const;
+	virtual const sf::Color getColor() const;
+	virtual const sf::RectangleShape& getShape() const;
 
-	sf::Vector2f getPosition() const;
-	sf::Vector2f getSpeed() const;
-	sf::RectangleShape& getSelf();
-	sf::Color getColor() const;
-	bool getIsActive() const;
-
-	void setPosition(float x, float y);
-	void setPosition(sf::Vector2f newPosXY);
-	void setSpeed(float x, float y);
-	void setSpeed(sf::Vector2f newSpeedXY);
-	void setSpeed(float newSpeed);
-	void setIsActive(bool isActive);
-
-	void setColor(sf::Color color);
-
-	void move(float x, float y);
-	void move(sf::Vector2f moveXY);
-
-	bool checkIntersection() const;
-
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
-	void draw();
+	virtual void Update() = 0;
+	virtual void Draw();
 };

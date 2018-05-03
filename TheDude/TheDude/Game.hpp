@@ -1,10 +1,9 @@
 #pragma once
-#include "Scripts/OurLua.h"
+#include "OurLua/OurLua.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
-#include "Entity\Enemy.hpp"
-#include "Entity\TheDude.h"
+#include "Entity\Character.hpp"
 #include <Windows.h>
 #include <SFML\Graphics.hpp>
 
