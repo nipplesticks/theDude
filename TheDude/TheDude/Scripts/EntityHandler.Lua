@@ -12,17 +12,13 @@ end
 
 local function _initEnemies()
 	--Should be put inside table
-	local Enemy_Scripted = Character.Create()
-	Enemy_Scripted:AddScript("Scripts/DVD.Lua")
-	table.insert(Enemies, Enemy_Scripted)
 
-	local Enemy_Scripted2 = Character.Create()
-	Enemy_Scripted2:AddScript("Scripts/DVD.Lua")
-	table.insert(Enemies, Enemy_Scripted2)
-
-	Enemies[1]:setPosition(10,10)
-
-
+	for i = 1, 10, 1 do 
+		local Enemy_Scripted = Character.Create()
+		Enemy_Scripted:AddScript("Scripts/DVD.Lua")
+		Enemy_Scripted:setPosition(i * 75, i * 75)
+		table.insert(Enemies, Enemy_Scripted)
+	end
 	
 end
 
