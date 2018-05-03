@@ -82,10 +82,6 @@ int main()
 		{
 			ImGui::SFML::ProcessEvent(event);
 
-			if (event.type == sf::Event::KeyPressed)
-				if (event.key.code == sf::Keyboard::P)
-					window.close();
-
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
