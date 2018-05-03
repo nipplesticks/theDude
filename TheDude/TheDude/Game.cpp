@@ -90,6 +90,7 @@ void Game::_pushFunctions()
 		{ "getAttack"	,Character::s_getAttack		},
 		{ "getDefence"	,Character::s_getDefence	},
 		{ "Update"		,Character::s_Update		},
+		{ "setSprite"	,Character::s_SetSprite		},
 		{ "__gc"		,Character::s_Destroy		},
 		{ NULL			,NULL						}
 	};

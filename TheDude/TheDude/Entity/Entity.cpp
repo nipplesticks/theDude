@@ -42,6 +42,13 @@ void Entity::setOrigin(float x, float y)
 	m_shape.setOrigin(x, y);
 }
 
+void Entity::setSprite(const std::string & sprite)
+{
+	m_texture.loadFromFile(sprite);
+	m_shape.setTexture(&m_texture);
+	
+}
+
 const sf::Vector2f Entity::getPosition() const
 {
 	return m_position;

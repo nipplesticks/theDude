@@ -37,6 +37,7 @@ private:
 
 
 public:
+
 	// Lua funcitons
 	LUA_FUNC s_setColor(lua_State * l);
 	LUA_FUNC s_setPosition(lua_State * l);
@@ -59,4 +60,5 @@ public:
 	LUA_FUNC s_Update(lua_State * l);
 	LUA_FUNC s_Create(lua_State * l);
 	LUA_FUNC s_Destroy(lua_State * l);
+	LUA_FUNC s_SetSprite(lua_State* l);
 };

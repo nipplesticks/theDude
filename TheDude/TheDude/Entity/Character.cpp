@@ -90,6 +90,7 @@ void Character::_initLua()
 	m_script->PushClassFunction(this, Character::s_getHealth, "getHealth");
 	m_script->PushClassFunction(this, Character::s_getAttack, "getAttack");
 	m_script->PushClassFunction(this, Character::s_getDefence, "getDefence");
+	m_script->PushClassFunction(this, Character::s_SetSprite, "setSprite");
 	m_script->InitLua();
 	//m_script->PushClassFunction(this, Character::s_Update, "Update");
 }
@@ -484,6 +485,29 @@ int Character::s_Destroy(lua_State * l)
 	if (c)
 	{
 		delete c;
+	}
+
+	return 0;
+}
+
+int Character::s_SetSprite(lua_State * l)
+{
+
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<std::string> path = OurLua::getStrings(l, 1);
+		c->setSprite(path[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<std::string> path = OurLua::getStrings(l, 1);
+			c->setSprite(path[0]);
+		}
 	}
 
 	return 0;

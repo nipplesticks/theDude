@@ -11,14 +11,6 @@ private:
 	Camera* m_camera;
 	sf::RenderWindow* m_pWindow;
 
-	/*
-		Player ctrl
-		Enemy ctrl
-		Item ctrl
-		Projectile ctrl
-		Camera ctrl
-	*/
-
 public:
 	Level(sf::RenderWindow* renderWindow);
 	Level(const Level& other);

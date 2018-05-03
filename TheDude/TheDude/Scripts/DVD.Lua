@@ -1,7 +1,7 @@
 function init()
 	setColor(255, 0, 255)
 	setPosition(50, 50)
-
+	setSprite("jew.jpg")
 	s1x = -1
 	s1y = -1
 end
