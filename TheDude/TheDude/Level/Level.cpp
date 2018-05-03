@@ -217,7 +217,7 @@ void Level::_handleInput()
 		if (ImGui::Button("Load"))
 		{
 			
-			std::string fullPath = "Resourses/";
+			std::string fullPath = "Resourses/SpriteSheet/";
 			fullPath += std::string(path);
 
 			
