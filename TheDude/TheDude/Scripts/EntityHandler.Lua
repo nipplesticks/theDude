@@ -1,3 +1,6 @@
+
+local Enemies = {}
+
 -- Local Functions
 local function _initPlayer()
 	theDude = Character.Create()
@@ -9,8 +12,18 @@ end
 
 local function _initEnemies()
 	--Should be put inside table
-	Enemy_Scripted = Character.Create()
+	local Enemy_Scripted = Character.Create()
 	Enemy_Scripted:AddScript("Scripts/DVD.Lua")
+	table.insert(Enemies, Enemy_Scripted)
+
+	local Enemy_Scripted2 = Character.Create()
+	Enemy_Scripted2:AddScript("Scripts/DVD.Lua")
+	table.insert(Enemies, Enemy_Scripted2)
+
+	Enemies[1]:setPosition(10,10)
+
+
+	
 end
 
 local function _updatePlayer()
@@ -33,20 +46,28 @@ local function _updatePlayer()
 end
 
 local function _updateEnemies()
-	Enemy_Scripted:Update()
+	
+	for i = 1, #Enemies, 1 do
+		Enemies[i]:Update()
+	end
 
 end
 
 local function _drawEnemies()
-	Enemy_Scripted:Draw()
+
+	for i = 1, #Enemies, 1 do
+		Enemies[i]:Draw()
+	end
 end
 
 local function _collisionHandling()
 
-	isCollision = CheckCollision(theDude, Enemy_Scripted)
+	for i = 1, #Enemies, 1 do
+		isCollision = CheckCollision(theDude, Enemies[i])
 
-	if isCollision then
-		print("Enemy hit player")
+		if isCollision then
+			print("Enemy#" .. i .. " hit player")
+		end
 	end
 
 end
