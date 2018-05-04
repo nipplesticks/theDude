@@ -52,5 +52,6 @@
   <ItemGroup>
     <None Include="Resourses\Levels\test.chef" />
     <None Include="Scripts\DVD.Lua" />
+    <None Include="Scripts\PlayerModule.Lua" />
   </ItemGroup>
 </Project>

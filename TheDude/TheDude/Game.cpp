@@ -64,40 +64,42 @@ void Game::_initEntityHandler()
 
 void Game::_pushFunctions()
 {
-	m_entityHandler->PushFunction(CheckCollision,	"CheckCollision");
-	m_entityHandler->PushFunction(isKeyPressed,		"isKeyPressed");
-	m_entityHandler->PushFunction(ExitGame,			"ExitGame");
+	m_entityHandler->PushFunction(s_CheckCollision,	"CheckCollision");
+	m_entityHandler->PushFunction(s_isKeyPressed,	"isKeyPressed");
+	m_entityHandler->PushFunction(s_ExitGame,		"ExitGame");
+	m_entityHandler->PushFunction(s_setPlayerPos,	"setPlayerPosition");
 
 	luaL_Reg characterFunctions[]
 	{
-		{ "Create"		,Character::s_Create		},
-		{ "setColor"	,Character::s_setColor		},
-		{ "setPosition"	,Character::s_setPosition	},
-		{ "Move"		,Character::s_Move			},
-		{ "setSize"		,Character::s_setSize		},
-		{ "setOrigin"	,Character::s_setOrigin		},
-		{ "getPosition"	,Character::s_getPosition	},
-		{ "getSize"		,Character::s_getSize		},
-		{ "getColor"	,Character::s_getColor		},
-		{ "Draw"		,Character::s_Draw			},
-		{ "AddScript"	,Character::s_AddScript		},
-		{ "isDead"		,Character::s_isDead		},
-		{ "setHealth"	,Character::s_setHealth		},
-		{ "setAttack"	,Character::s_setAttack		},
-		{ "setDefence"	,Character::s_setDefence	},
-		{ "AlterHealth"	,Character::s_AlterHealth	},
-		{ "getHealth"	,Character::s_getHealth		},
-		{ "getAttack"	,Character::s_getAttack		},
-		{ "getDefence"	,Character::s_getDefence	},
-		{ "Update"		,Character::s_Update		},
-		{ "setSprite"	,Character::s_SetSprite		},
-		{ "__gc"		,Character::s_Destroy		},
-		{ NULL			,NULL						}
+		{ "Create"				,Character::s_Create				},
+		{ "setColor"			,Character::s_setColor				},
+		{ "setPosition"			,Character::s_setPosition			},
+		{ "Move"				,Character::s_Move					},
+		{ "setSize"				,Character::s_setSize				},
+		{ "setOrigin"			,Character::s_setOrigin				},
+		{ "getPosition"			,Character::s_getPosition			},
+		{ "getSize"				,Character::s_getSize				},
+		{ "getColor"			,Character::s_getColor				},
+		{ "Draw"				,Character::s_Draw					},
+		{ "AddScript"			,Character::s_AddScript				},
+		{ "isDead"				,Character::s_isDead				},
+		{ "setHealth"			,Character::s_setHealth				},
+		{ "setAttack"			,Character::s_setAttack				},
+		{ "setDefence"			,Character::s_setDefence			},
+		{ "AlterHealth"			,Character::s_AlterHealth			},
+		{ "getHealth"			,Character::s_getHealth				},
+		{ "getAttack"			,Character::s_getAttack				},
+		{ "getDefence"			,Character::s_getDefence			},
+		{ "Update"				,Character::s_Update				},
+		{ "setSprite"			,Character::s_SetSprite				},
+		{ "getDistanceToPlayer"	,Character::s_getDistanceToPlayer	},
+		{ "__gc"				,Character::s_Destroy				},
+		{ NULL					,NULL								}
 	};
 	m_entityHandler->PushClassFunctions(Character::metaTable, characterFunctions, "Character");
 }
 
-int Game::isKeyPressed(lua_State * l)
+int Game::s_isKeyPressed(lua_State * l)
 {
 	std::string key = OurLua::getStrings(l, 1)[0];
 	std::vector<bool> s;
@@ -128,7 +130,7 @@ int Game::isKeyPressed(lua_State * l)
 	return 1;
 }
 
-int Game::CheckCollision(lua_State * l)
+int Game::s_CheckCollision(lua_State * l)
 {
 	std::vector<Entity**> e = OurLua::getInstancePointer<Entity>(l, 2);
 	std::vector<bool> col;
@@ -151,8 +153,17 @@ int Game::CheckCollision(lua_State * l)
 	return 1;
 }
 
-int Game::ExitGame(lua_State * l)
+int Game::s_ExitGame(lua_State * l)
 {
 	Game::s_isGameRunning = false;
+	return 0;
+}
+
+int Game::s_setPlayerPos(lua_State * l)
+{
+	std::vector<float> position = OurLua::getFloats(l, 2);
+	Character::playerPos.x = position[1];
+	Character::playerPos.y = position[0];
+
 	return 0;
 }
