@@ -4,24 +4,24 @@
     <ClCompile Include="Level\Tile.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
     <ClCompile Include="Level\Level.cpp" />
-    <ClCompile Include="Entity\Character.cpp" />
-    <ClCompile Include="Entity\Enemy.cpp" />
-    <ClCompile Include="Entity\Entity.cpp" />
-    <ClCompile Include="Entity\Item.cpp" />
-    <ClCompile Include="Entity\Projectile.cpp" />
-    <ClCompile Include="Entity\TheDude.cpp" />
-    <ClCompile Include="Controllers\EnemyController.cpp" />
-    <ClCompile Include="Camera\Camera.cpp" />
-    <ClCompile Include="Controllers\ItemController.cpp" />
     <ClCompile Include="States\State.cpp" />
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
+    <ClCompile Include="States\MainMenu.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Entity\Character.cpp" />
+    <ClCompile Include="Entity\Entity.cpp" />
+    <ClCompile Include="Entity\Item.cpp" />
+    <ClCompile Include="Entity\Projectile.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
     <ClCompile Include="imgui-SFML.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
+    <ClCompile Include="OurLua\OurLua.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -36,26 +36,28 @@
       <Filter>levelEditor</Filter>
     </ClInclude>
     <ClInclude Include="Level\Level.hpp" />
+    <ClInclude Include="States\State.hpp" />
+    <ClInclude Include="States\GameState.hpp" />
+    <ClInclude Include="States\MainMenu.hpp" />
+    <ClInclude Include="Interface\Button.hpp" />
+    <ClInclude Include="Camera\Camera.hpp" />
     <ClInclude Include="Entity\Character.hpp" />
-    <ClInclude Include="Entity\Enemy.h" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
-    <ClInclude Include="Entity\TheDude.h" />
-    <ClInclude Include="Controllers\EnemyController.hpp" />
-    <ClInclude Include="Camera\Camera.hpp" />
-    <ClInclude Include="Controllers\ItemController.h" />
-    <ClInclude Include="States\State.hpp" />
-    <ClInclude Include="States\GameState.hpp" />
+    <ClInclude Include="Game.hpp" />
+    <ClInclude Include="GameTime.hpp" />
+    <ClInclude Include="RenderQueue.hpp" />
+    <ClInclude Include="OurLua\OurLua.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Interface\HeadsUpDisplay.h" />
-    <ClInclude Include="States\MainMenu.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
+    <Text Include="Scripts\EntityHandler.Lua" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resourses\Levels\test.chef" />
-    <None Include="Text.lua" />
+    <None Include="Scripts\DVD.Lua" />
   </ItemGroup>
 </Project>

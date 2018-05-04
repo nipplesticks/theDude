@@ -1,18 +1,23 @@
 #include "Projectile.hpp"
 
-Projectile::Projectile(sf::Vector2f position, sf::Color color, sf::Vector2f speed) : Entity(position, color, speed)
+Projectile::Projectile(sf::Vector2f position, sf::Color color, sf::Vector2f speed) : Entity()
 {
 	m_hasHit = false; 
 }
 
-Projectile::Projectile(float x, float y, sf::Color color, float speedX, float speedY) : Entity(x, y, color, speedX, speedY)
+Projectile::Projectile(float x, float y, sf::Color color, float speedX, float speedY) : Entity()
 {
 	m_hasHit = false; 
 }
 
-Projectile::Projectile(float x, float y, sf::Color color, float speed) : Entity(x, y, color, speed)
+Projectile::Projectile(float x, float y, sf::Color color, float speed) : Entity()
 {
 	m_hasHit = false; 
+}
+
+Projectile::Projectile()
+{
+
 }
 
 Projectile::~Projectile()
@@ -29,7 +34,7 @@ void Projectile::setHasHit(bool hasHit)
 	m_hasHit = hasHit; 
 }
 
-void Projectile::Update(float dt)
+void Projectile::Update()
 {
-	Entity::update(dt); 
+	//Entity::update(dt); 
 }

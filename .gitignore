@@ -17,6 +17,10 @@
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+Obj/x64/
+theDude/TheDude/Bin/x64/*.exe
+theDude/TheDude/Bin/x64/*.ilk
+theDude/TheDude/Bin/x64/*.pdb
 *.exe
 *.ilk
 *.pdb

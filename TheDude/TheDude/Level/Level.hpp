@@ -13,14 +13,6 @@ private:
 	sf::Texture m_spriteSheet;
 	std::vector<sf::Sprite> m_sprites;
 
-	/*
-		Player ctrl
-		Enemy ctrl
-		Item ctrl
-		Projectile ctrl
-		Camera ctrl
-	*/
-
 public:
 	Level(sf::RenderWindow* renderWindow);
 	Level(const Level& other);

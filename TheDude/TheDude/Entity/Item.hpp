@@ -24,9 +24,9 @@ public:
 	bool getIsPicked() const; 
 	Effect getEffect() const; 
 
+	void Update() override;
+
 	void setIsPicked(bool isPicked); 
 	void setEffect(std::string effectType); 
-
-	void update(float dt); 
 
 };

@@ -104,7 +104,7 @@ void Level::LoadLevel(const std::string & target)
 					if (m_camera)
 						delete m_camera;
 					m_camera = nullptr;
-					m_camera = new Camera(x, y, wSize.x, wSize.y);
+					m_camera = new Camera(static_cast<float>(x), static_cast<float>(y), wSize.x, wSize.y);
 				}
 				
 
@@ -311,12 +311,15 @@ void Level::_handleInput()
 	namespace fs = std::experimental::filesystem;
 	for (auto& p : fs::directory_iterator(folderPath))
 	{
-		std::stringstream ss;
-		std::string filelol;
-		ss << p << std::endl;
-		ss >> filelol;
-		std::cout << filelol << std::endl;
-		
+		std::stringstream s;
+		s << p << std::endl;
+		std::string lol(s.str());
+		std::string relative;
+		for (size_t i = lol.find_last_of('/'); i < lol.size(); i++)
+			relative += lol[i];
+
+		std::cout << relative << std::endl;
+
 	}
 	ImGui::Button("Load Entity");
 	ImGui::End();

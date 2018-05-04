@@ -431,7 +431,7 @@ int luaD_precall (lua_State *L, StkId func, int nresults) {
       if (L->hookmask & LUA_MASKCALL)
         luaD_hook(L, LUA_HOOKCALL, -1);
       lua_unlock(L);
-      n = (*f)(L);  /* do the actual call */
+      n = (*f)(L);  /* do the actual call plz plz */
       lua_lock(L);
       api_checknelems(L, n);
       luaD_poscall(L, ci, L->top - n, n);
