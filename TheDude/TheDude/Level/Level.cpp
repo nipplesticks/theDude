@@ -2,6 +2,7 @@
 #include <fstream> 
 #include <sstream> 
 #include <iostream> 
+#include <filesystem>
 
 Level::Level(sf::RenderWindow* renderWindow)
 {
@@ -158,6 +159,7 @@ void Level::_copy(const Level & other)
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include <iostream>
+#include <sstream>
 void Level::_handleInput()
 {
 	
@@ -208,12 +210,16 @@ void Level::_handleInput()
 	ImGui::EndMainMenuBar();
 	static 	sf::Image image;
 	static bool loadedSpirteSheet = false;
+	static sf::Vector2u imgSize;
+	static int size = 32;
 	ImGui::Begin("SpriteSheet");
 	if (!loadedSpirteSheet)
 	{
 		static char path[20];
-		ImGui::InputText("Path: ", path, 20, ImGuiInputTextFlags_CharsNoBlank);
-		std::cout << path << std::endl;
+		
+		ImGui::InputText("Path", path, 20, ImGuiInputTextFlags_CharsNoBlank);
+		ImGui::InputInt("Sprite Size", &size);
+
 		if (ImGui::Button("Load"))
 		{
 			
@@ -223,6 +229,7 @@ void Level::_handleInput()
 			
 			image.loadFromFile(fullPath.c_str());
 			m_spriteSheet.loadFromImage(image);
+			imgSize = m_spriteSheet.getSize();
 
 			for (int i = 0; i < 1; i++)
 			{
@@ -248,16 +255,22 @@ void Level::_handleInput()
 		static bool used = false;
 		static sf::IntRect rect;
 		if (used)
-			ImGui::GetWindowDrawList()->AddRect(ImVec2(p.x + rect.left, p.y + rect.top), ImVec2(p.x + rect.left + rect.width, p.y + rect.top + rect.height), IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
+		{
+			ImVec2 a = ImVec2(p.x + rect.left, p.y + rect.top);
+			ImVec2 b = ImVec2(p.x + rect.left + rect.width, p.y + rect.top + rect.height);
+
+			ImGui::GetWindowDrawList()->AddRect(a,b , IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
+		}
 
 		
-		if (l.x > 0 && l.y > 0 && ImGui::IsMouseClicked(0))
+		if (l.x > 0 && l.y > 0 && l.x <= imgSize.x && l.y <= imgSize.y&& ImGui::IsMouseClicked(0))
 		{
-
-			rect.left = ((int)l.x >> 5) << 5;
-			rect.top = ((int)l.y >> 5) << 5;
-			rect.width = 32;
-			rect.height = 32;
+			
+			int poweroftwo = std::log(size) / std::log(2);
+			rect.left = ((int)l.x >> poweroftwo) << poweroftwo;
+			rect.top = ((int)l.y >> poweroftwo) << poweroftwo;
+			rect.width = size;
+			rect.height = size;
 			used = true;
 		}
 
@@ -293,6 +306,18 @@ void Level::_handleInput()
 	static char name[20];
 	ImGui::Begin("Entities");
 	ImGui::InputText("Lua File", name, 20);
+	std::string folderPath = __FILE__;
+	folderPath += "/../../Resourses/Characters";
+	namespace fs = std::experimental::filesystem;
+	for (auto& p : fs::directory_iterator(folderPath))
+	{
+		std::stringstream ss;
+		std::string filelol;
+		ss << p << std::endl;
+		ss >> filelol;
+		std::cout << filelol << std::endl;
+		
+	}
 	ImGui::Button("Load Entity");
 	ImGui::End();
 }

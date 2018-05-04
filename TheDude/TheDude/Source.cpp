@@ -46,7 +46,7 @@ int main()
 	
 
 
-	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
+	sf::RenderWindow window(sf::VideoMode(1280,720), gameTitle);
 	ImGui::SFML::Init(window);
 
 	std::stack<State*> stateStack;
