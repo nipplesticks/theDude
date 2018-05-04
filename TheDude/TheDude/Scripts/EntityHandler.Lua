@@ -1,5 +1,5 @@
 local Enemies = {}
-local ENEMY_AMOUNT = 1
+local ENEMY_AMOUNT = 5
 local function _initPlayer()
 	theDude = Character.Create()
 	theDude:setPosition(500, 500)
