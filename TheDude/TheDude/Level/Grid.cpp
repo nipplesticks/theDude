@@ -64,11 +64,13 @@ std::string Grid::toFile() const
 	{
 		for (size_t k = 0; k < m_tiles[i].size(); k++)
 		{
-			map += "t " + std::to_string(m_tiles[i][k].getPosition().x / size) + " " + std::to_string(m_tiles[i][k].getPosition().y / size) + " " + 
+			map += "t " + std::to_string(i) + " " + std::to_string(k) + " " + 
 				std::to_string(m_tiles[i][k].getType()) + " ";
 
 			sf::Color c = m_tiles[i][k].getColor();
-			map += std::to_string(c.r) + " " + std::to_string(c.g) + " " + std::to_string(c.b) + '\n';
+			map += std::to_string(c.r) + " " + std::to_string(c.g) + " " + std::to_string(c.b) + " ";
+			sf::IntRect ir = m_tiles[i][k].getTextureRect();
+			map += std::to_string(ir.left) + " " + std::to_string(ir.top) + "\n";
 		}
 	}
 

@@ -93,6 +93,11 @@ const sf::Vector2f & Tile::getShapePosition() const
 	return m_tileShape.getPosition();
 }
 
+const sf::IntRect & Tile::getTextureRect() const
+{
+	return m_tileShape.getTextureRect();
+}
+
 void Tile::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	target.draw(m_tileShape, states);

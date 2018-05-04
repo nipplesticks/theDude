@@ -6,6 +6,7 @@
 
 Level::Level(sf::RenderWindow* renderWindow)
 {
+	typing = true;
 	m_pWindow = renderWindow;
 	m_grid = nullptr;
 	m_camera = nullptr;
@@ -40,13 +41,34 @@ void Level::LoadLevel(const std::string & target)
 				std::stringstream stream(currentLine);
 
 				stream >> type;
-
-				if (type == "t")
+				if (type == "SpriteSheet")
 				{
-					int x, y, t, r, g, b;
-					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d", &x, &y, &t, &r, &g, &b);
+					std::string path;
+					stream >> path;
+		
+					static sf::Image image;
+					image.loadFromFile(path.c_str());
+					m_spriteSheet.loadFromImage(image);
+
+
+					for (int i = 0; i < 1; i++)
+					{
+						sf::Sprite sprite;
+						sprite.setTexture(m_spriteSheet);
+						//sprite.setTextureRect(sf::IntRect(256, 0, 32, 32));
+						m_sprites.push_back(sprite);
+					}
+
+				}
+				else if (type == "t")
+				{
+					int x, y, t, r, g, b, itx, ity;
+					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &t, &r, &g, &b, &itx, &ity);
 					m_grid->setTypeOfTile(x, y, t);
 					m_grid->setColorOfTile(x, y, r, g, b);
+					m_grid->setTextureOfTile(x, y, m_spriteSheet, sf::IntRect(itx, ity, 32, 32));
+
+					
 				}
 				else if (type == "e")
 				{
@@ -120,11 +142,25 @@ void Level::LoadLevel(const std::string & target)
 	}
 }
 
+bool Level::SaveLevel(const std::string & target)
+{
+	std::ofstream map;
+	map.open(target);
+	if (map)
+	{
+		map << "SpriteSheet ";
+		map << m_spritesheetPath << "\n";
+		map << "cam 100 0\n";
+		map << m_grid->toFile();
+		return true;
+	}
+	return false;
+}
+
 void Level::Update()
 {
 	m_camera->update();
 	m_grid->update(m_camera);
-	_handleInput();
 }
 
 Level & Level::operator=(const Level & other)
@@ -164,7 +200,7 @@ void Level::_handleInput()
 {
 	
 	ImGui::BeginMainMenuBar();
-	
+
 	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::BeginMenu("New"))
@@ -190,14 +226,30 @@ void Level::_handleInput()
 			ImGui::InputText("File path", name, 20);
 			if (ImGui::Button("Open file"))
 			{
-				LoadLevel(std::string(name));
+				std::string path = "Resourses/Levels/";
+				LoadLevel(path + std::string(name));
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::MenuItem("Save"))
+		static bool saved = false;
+		if (ImGui::BeginMenu("Save"))
 		{
+			static char name[20] = {};
+			
+			ImGui::InputText("File path", name, 20);
+			if (ImGui::Button("Save"))
+			{
+				std::string path = "Resourses/Levels/";
+				saved = SaveLevel(path + std::string(name));
 
+
+			}
+			if (saved)
+				ImGui::BulletText("Saved Succ");
+			ImGui::EndMenu();
 		}
+		else
+			saved = false;
 
 		if (ImGui::MenuItem("Exit"))
 		{
@@ -216,17 +268,18 @@ void Level::_handleInput()
 	if (!loadedSpirteSheet)
 	{
 		static char path[20];
-		
+
 		ImGui::InputText("Path", path, 20, ImGuiInputTextFlags_CharsNoBlank);
+		
 		ImGui::InputInt("Sprite Size", &size);
 
 		if (ImGui::Button("Load"))
 		{
-			
+
 			std::string fullPath = "Resourses/SpriteSheet/";
 			fullPath += std::string(path);
+			m_spritesheetPath = fullPath;
 
-			
 			image.loadFromFile(fullPath.c_str());
 			m_spriteSheet.loadFromImage(image);
 			imgSize = m_spriteSheet.getSize();
@@ -241,14 +294,14 @@ void Level::_handleInput()
 			loadedSpirteSheet = true;
 		}
 
-		
+
 	}
 	else
 	{
 		ImVec2 p = ImGui::GetCursorScreenPos();
 		ImVec2 l = ImGui::GetMousePos();
 		l = ImVec2(l.x - p.x, l.y - p.y);
-		
+
 		ImGui::Image(m_sprites[0]);
 		if (ImGui::Button("Load new spritesheet"))
 			loadedSpirteSheet = false;
@@ -259,13 +312,13 @@ void Level::_handleInput()
 			ImVec2 a = ImVec2(p.x + rect.left, p.y + rect.top);
 			ImVec2 b = ImVec2(p.x + rect.left + rect.width, p.y + rect.top + rect.height);
 
-			ImGui::GetWindowDrawList()->AddRect(a,b , IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
+			ImGui::GetWindowDrawList()->AddRect(a, b, IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
 		}
 
-		
+
 		if (l.x > 0 && l.y > 0 && l.x <= imgSize.x && l.y <= imgSize.y&& ImGui::IsMouseClicked(0))
 		{
-			
+
 			int poweroftwo = std::log(size) / std::log(2);
 			rect.left = ((int)l.x >> poweroftwo) << poweroftwo;
 			rect.top = ((int)l.y >> poweroftwo) << poweroftwo;
@@ -294,13 +347,13 @@ void Level::_handleInput()
 		}
 	}
 
-	
-	
-	
-		
-	
 
-	
+
+
+
+
+
+
 	ImGui::End();
 
 	static char name[20];
@@ -318,7 +371,7 @@ void Level::_handleInput()
 		for (size_t i = lol.find_last_of('/'); i < lol.size(); i++)
 			relative += lol[i];
 
-		std::cout << relative << std::endl;
+	//	std::cout << relative << std::endl;
 
 	}
 	ImGui::Button("Load Entity");

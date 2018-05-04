@@ -12,8 +12,6 @@ local function _initPlayer()
 end
 
 local function _initEnemies()
-	--Should be put inside table
-
 	for i = 1, 10, 1 do 
 		local Enemy_Scripted = Character.Create()
 		Enemy_Scripted:AddScript("Scripts/DVD.Lua")

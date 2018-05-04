@@ -39,6 +39,7 @@ public:
 	const sf::Vector2f& getSize() const;
 	const sf::Vector2i& getPosition() const;
 	const sf::Vector2f& getShapePosition() const;
+	const sf::IntRect& getTextureRect() const;
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
