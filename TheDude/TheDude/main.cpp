@@ -50,7 +50,6 @@ int main()
 			level.Update();
 		}
 		level.EditorRender();
-		
 		window.draw(level);
 		ImGui::SFML::Render(window);
 		window.display();

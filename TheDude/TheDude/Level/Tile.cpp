@@ -49,6 +49,7 @@ void Tile::setSize(const sf::Vector2f & size)
 void Tile::setType(int type)
 {
 	m_type = type;
+	ApplyTypeColor();
 }
 
 void Tile::setColor(int r, int g, int b)
@@ -96,6 +97,27 @@ const sf::Vector2f & Tile::getShapePosition() const
 const sf::IntRect & Tile::getTextureRect() const
 {
 	return m_tileShape.getTextureRect();
+}
+
+void Tile::ApplyTypeColor()
+{
+	switch (m_type)
+	{
+	case Solid:
+		m_tileShape.setFillColor(sf::Color::Blue);
+		return;
+	case None:
+		m_tileShape.setFillColor(sf::Color::White);
+		return;
+	case Dangerous:
+		m_tileShape.setFillColor(sf::Color::Red);
+		return;
+	}
+}
+
+void Tile::RemoveColors()
+{
+	m_tileShape.setFillColor(sf::Color::White);
 }
 
 void Tile::draw(sf::RenderTarget & target, sf::RenderStates states) const

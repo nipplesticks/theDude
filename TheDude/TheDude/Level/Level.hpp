@@ -12,6 +12,12 @@ private:
 
 	// EDITOR {
 		bool m_closeFlag;
+		bool m_spritePaletteOpen;
+		bool m_entityPaletteOpen;
+		bool m_tileTypePaletteOpen;
+
+		std::string m_currentTool;
+		bool		m_activeTool[3];
 	// }
 
 public:
@@ -36,8 +42,9 @@ private:
 		void _toolbarRender();
 		void _spritePaletteRender();
 		void _entityPaletteRender();
+		void _tileTypePaletteRender();
+		bool isInside() const;
 	// }
-	void _handleInput();
 	void _cleanup();
 	void _copy(const Level& other);
 };

@@ -12,6 +12,8 @@ Level::Level(sf::RenderWindow* renderWindow)
 	m_grid = nullptr;
 	m_camera = nullptr;
 	m_closeFlag = false;
+	m_spritePaletteOpen = true;
+	m_entityPaletteOpen = true;
 	
 }
 
@@ -152,8 +154,13 @@ void Level::Update()
 void Level::EditorRender()
 {	
 	_toolbarRender();
-	_spritePaletteRender();
-	_entityPaletteRender();
+	
+	if(m_spritePaletteOpen)
+		_spritePaletteRender();
+	if(m_entityPaletteOpen)
+		_entityPaletteRender();
+
+	_tileTypePaletteRender();
 
 }
 
@@ -238,18 +245,36 @@ void Level::_toolbarRender()
 		}
 		ImGui::EndMenu();
 	}
+	if (ImGui::BeginMenu("Tools"))
+	{
+		m_spritePaletteOpen = ImGui::MenuItem("Spritesheet") ? true : m_spritePaletteOpen;
+		m_entityPaletteOpen = ImGui::MenuItem("Entities") ? true : m_entityPaletteOpen;
 
+		ImGui::EndMenu();
+	}
+
+	ImGui::BulletText(m_currentTool.c_str());
 
 	ImGui::EndMainMenuBar();
 }
 
 void Level::_spritePaletteRender()
 {
-	static 	sf::Image image;
 	static sf::Vector2u imgSize;
 	static int size = 32;
+	
 
-	ImGui::Begin("SpriteSheet");
+	ImGui::Begin("SpriteSheet", &m_spritePaletteOpen);
+	static bool functional = false;
+	if (isInside())
+	{
+		m_currentTool = "Current Tool: Sprite Palette";
+		m_activeTool[0] = true;
+		m_activeTool[1] = false;
+		m_activeTool[2] = false;
+		m_grid->NormalMode();
+
+	}
 
 	if (!m_grid->isSpritesheetLoaded())
 	{
@@ -277,24 +302,21 @@ void Level::_spritePaletteRender()
 	{
 		ImVec2 p = ImGui::GetCursorScreenPos();
 		ImVec2 l = ImGui::GetMousePos();
+		ImVec2 s = ImGui::GetWindowSize();
+
 		l = ImVec2(l.x - p.x, l.y - p.y);
 		imgSize = m_grid->getSheetImageSize();
 
 		// Get the full spriteSheet from grid
 
 		ImGui::Image(m_grid->getDisplaySprite());
-
-		/*	if (ImGui::Button("Load new spritesheet"))
-				loadedSpirteSheet = false;*/
-
-				// TODO HENRIK
-		static bool used = false;
+		
 		static sf::IntRect rect = sf::IntRect(0,0,size,size);
 
 
 		if (l.x > 0 && l.y > 0 && l.x <= imgSize.x && l.y <= imgSize.y&& ImGui::IsMouseClicked(0))
 		{
-
+			std::cout << "Inside" << std::endl;
 			int poweroftwo = std::log(size) / std::log(2);
 			rect.left = ((int)l.x >> poweroftwo) << poweroftwo;
 			rect.top = ((int)l.y >> poweroftwo) << poweroftwo;
@@ -309,39 +331,46 @@ void Level::_spritePaletteRender()
 
 		ImGui::GetWindowDrawList()->AddRect(a, b, IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
 
-		if (l.x < 0 || l.y < 0)
+		if (m_activeTool[0])
 		{
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			if (l.x < 0 || l.y < 0)
 			{
-				sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
-				sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
-
-				if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 				{
-					
-					m_grid->setTextureOfTile(index.x, index.y, rect);
-					
-				}
+					sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+					sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
 
+					if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+					{
+
+						m_grid->setTextureOfTile(index.x, index.y, rect);
+
+					}
+
+				}
 			}
 		}
+		
 	}
-
-
-
-
-
-
-
-
 	ImGui::End();
 }
 
 void Level::_entityPaletteRender()
 {
+
+	ImGui::Begin("Entities", &m_entityPaletteOpen);
+	if (isInside())
+	{
+		m_currentTool = "Current Tool: Entity Palette";
+		m_activeTool[0] = false;
+		m_activeTool[1] = true;
+		m_activeTool[2] = false;
+		m_grid->NormalMode();
+	}
 	static char name[20];
-	ImGui::Begin("Entities");
 	ImGui::InputText("Lua File", name, 20);
+
+
 	std::string folderPath = __FILE__;
 	folderPath += "/../../Resourses/Characters";
 	namespace fs = std::experimental::filesystem;
@@ -358,7 +387,65 @@ void Level::_entityPaletteRender()
 
 	}
 	ImGui::Button("Load Entity");
+
 	ImGui::End();
+}
+
+void Level::_tileTypePaletteRender()
+{
+	ImGui::Begin("Tile Type", &m_tileTypePaletteOpen);
+	if (isInside())
+	{
+		m_currentTool = "Current Tool: Tile Type";
+		m_activeTool[0] = false;
+		m_activeTool[1] = false;
+		m_activeTool[2] = true;
+		m_grid->MarkMode();
+	}
+
+	static bool selectables[3] = { 1, 0, 0 };
+	static int currentType = 0;
+	if (ImGui::Selectable("None", &selectables[0]))
+	{
+		selectables[1] = selectables[2] = false;
+		currentType = 0;
+	}
+	if (ImGui::Selectable("Dangerous", &selectables[1]))
+	{
+		selectables[0] = selectables[2] = false;
+		currentType = 1;
+	}
+	if (ImGui::Selectable("Solid", &selectables[2]))
+	{
+		selectables[0] = selectables[1] = false;
+		currentType = 2;
+	}
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+		sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
+
+		if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+		{
+
+			m_grid->setTypeOfTile(index.x, index.y, currentType);
+
+		}
+
+	}
+
+	ImGui::End();
+}
+
+bool Level::isInside() const
+{
+	ImVec2 p = ImGui::GetCursorScreenPos();
+	ImVec2 l = ImGui::GetMousePos();
+	ImVec2 s = ImGui::GetWindowSize();
+	l = ImVec2(l.x - p.x, l.y - p.y);
+
+	return l.x > 0 && l.y > 0 && l.x <= s.x && l.y <= s.y&& ImGui::IsMouseClicked(0);
 }
 
 void Level::_cleanup()
@@ -373,10 +460,4 @@ void Level::_cleanup()
 void Level::_copy(const Level & other)
 {
 	m_grid = new Grid(*other.m_grid);
-}
-
-void Level::_handleInput()
-{
-	
-	
 }

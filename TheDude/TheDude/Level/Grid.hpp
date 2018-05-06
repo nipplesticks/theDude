@@ -1,7 +1,6 @@
 #pragma once
 #include "Tile.hpp"
 #include <vector>
-#include <deque>
 #include "..\Camera\Camera.hpp"
 
 class Grid : public sf::Drawable
@@ -13,6 +12,8 @@ private:
 
 	std::vector<std::vector<Tile>> m_tiles;	
 	std::vector<Tile*> m_renderableTiles;
+
+	bool m_cullTiles;
 
 public:
 	Grid(int width = 32, int height = 32, float sizeOfTile = 32.0f, int type = 0);
@@ -39,9 +40,11 @@ public:
 	void LoadSpriteSheet(const std::string& path);
 
 	// EDITOR {
-	const sf::Sprite& getDisplaySprite() const;
-	bool isSpritesheetLoaded() const;
-	sf::Vector2u getSheetImageSize() const;
+		const sf::Sprite& getDisplaySprite() const;
+		bool isSpritesheetLoaded() const;
+		sf::Vector2u getSheetImageSize() const;
+		void MarkMode();
+		void NormalMode();
 	// }
 private:
 	void _init(int width, int height, float sizeOfTile, int type);

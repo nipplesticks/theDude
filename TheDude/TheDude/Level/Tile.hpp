@@ -6,9 +6,9 @@ class Tile : public sf::Drawable
 public:
 	enum Type
 	{
-		Water,
-		Ground,
-		Wall
+		None,
+		Dangerous,
+		Solid
 	};
 
 private:
@@ -40,6 +40,9 @@ public:
 	const sf::Vector2i& getPosition() const;
 	const sf::Vector2f& getShapePosition() const;
 	const sf::IntRect& getTextureRect() const;
+
+	void ApplyTypeColor();
+	void RemoveColors();
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
