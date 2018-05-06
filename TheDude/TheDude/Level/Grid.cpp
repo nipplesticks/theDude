@@ -72,9 +72,7 @@ std::string Grid::toFile() const
 	map += "grid " + std::to_string(m_tiles.size()) + " " + std::to_string(m_tiles[0].size()) + " " +
 		std::to_string(size) + " " + std::to_string(0) + '\n';
 
-	// grid sizeX sizeY tileSize 0 
-	// sheet <PATH>
-	map += "sheet" + m_spritesheetPath + "\n";
+	map += "sheet " + m_spritesheetPath + "\n";
 
 	for (size_t i = 0; i < m_tiles.size(); i++)
 	{

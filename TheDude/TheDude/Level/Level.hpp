@@ -15,9 +15,14 @@ private:
 		bool m_spritePaletteOpen;
 		bool m_entityPaletteOpen;
 		bool m_tileTypePaletteOpen;
+		bool m_tileColorPaletteOpen;
 
 		std::string m_currentTool;
-		bool		m_activeTool[3];
+		bool		m_activeTool[4];
+#define TOOL_SPRITE 0
+#define TOOL_ENTITY 1
+#define TOOL_TYPE 2
+#define TOOL_COLOR 3
 	// }
 
 public:
@@ -43,7 +48,10 @@ private:
 		void _spritePaletteRender();
 		void _entityPaletteRender();
 		void _tileTypePaletteRender();
+		void _tileColorPaletteRender();
 		bool isInside() const;
+		std::vector<std::string> filesInDir(std::string path);
+		void _changeCurrentTool(int index, std::string tool, bool NormalMode);
 	// }
 	void _cleanup();
 	void _copy(const Level& other);

@@ -30,6 +30,8 @@ Level::~Level()
 
 void Level::LoadLevel(const std::string & target)
 {
+	delete m_grid;
+	m_grid = nullptr;
 	std::ifstream map;
 	map.open(target);
 	if (map)
@@ -159,8 +161,8 @@ void Level::EditorRender()
 		_spritePaletteRender();
 	if(m_entityPaletteOpen)
 		_entityPaletteRender();
-
-	_tileTypePaletteRender();
+	if(m_tileTypePaletteOpen)
+		_tileTypePaletteRender();
 
 }
 
@@ -194,8 +196,9 @@ void Level::_toolbarRender()
 	{
 		if (ImGui::BeginMenu("New"))
 		{
-			static float dim[2] = { 0 };
-
+			static float dim[2] = { 1, 1 };
+			dim[0] = std::max(dim[0], 1.0f);
+			dim[1] = std::max(dim[1], 1.0f);
 			ImGui::InputFloat2("New Size", dim);
 
 			if (ImGui::Button("Create Level"))
@@ -210,12 +213,16 @@ void Level::_toolbarRender()
 		}
 		if (ImGui::BeginMenu("Open"))
 		{
-			static char name[20] = {};
-			ImGui::InputText("File path", name, 20);
-			if (ImGui::Button("Open file"))
+			static auto files = filesInDir("Resourses/Levels/");
+			
+			for (auto& s : files)
 			{
-				std::string path = "Resourses/Levels/";
-				LoadLevel(path + std::string(name));
+				if (ImGui::MenuItem(s.c_str()))
+				{
+					s.erase(s.begin());
+					LoadLevel("Resourses/Levels/" + s);
+				}
+
 			}
 			ImGui::EndMenu();
 		}
@@ -249,12 +256,13 @@ void Level::_toolbarRender()
 	{
 		m_spritePaletteOpen = ImGui::MenuItem("Spritesheet") ? true : m_spritePaletteOpen;
 		m_entityPaletteOpen = ImGui::MenuItem("Entities") ? true : m_entityPaletteOpen;
+		m_tileTypePaletteOpen = ImGui::MenuItem("Tile Type") ? true : m_tileTypePaletteOpen;
 
 		ImGui::EndMenu();
 	}
 
 	ImGui::BulletText(m_currentTool.c_str());
-
+	
 	ImGui::EndMainMenuBar();
 }
 
@@ -266,9 +274,10 @@ void Level::_spritePaletteRender()
 
 	ImGui::Begin("SpriteSheet", &m_spritePaletteOpen);
 	static bool functional = false;
-	if (isInside())
+	if (isClickInside())
 	{
 		m_currentTool = "Current Tool: Sprite Palette";
+		_changeCurrentTool()
 		m_activeTool[0] = true;
 		m_activeTool[1] = false;
 		m_activeTool[2] = false;
@@ -359,33 +368,15 @@ void Level::_entityPaletteRender()
 {
 
 	ImGui::Begin("Entities", &m_entityPaletteOpen);
-	if (isInside())
-	{
-		m_currentTool = "Current Tool: Entity Palette";
-		m_activeTool[0] = false;
-		m_activeTool[1] = true;
-		m_activeTool[2] = false;
-		m_grid->NormalMode();
-	}
+	
+	if (isClickInside())
+		_changeCurrentTool(TOOL_ENTITY, "Entity Palette", true);
+	
 	static char name[20];
 	ImGui::InputText("Lua File", name, 20);
 
-
-	std::string folderPath = __FILE__;
-	folderPath += "/../../Resourses/Characters";
-	namespace fs = std::experimental::filesystem;
-	for (auto& p : fs::directory_iterator(folderPath))
-	{
-		std::stringstream s;
-		s << p << std::endl;
-		std::string lol(s.str());
-		std::string relative;
-		for (size_t i = lol.find_last_of('/'); i < lol.size(); i++)
-			relative += lol[i];
-
-		//	std::cout << relative << std::endl;
-
-	}
+	auto strs = filesInDir("Resourses/Levels");
+	
 	ImGui::Button("Load Entity");
 
 	ImGui::End();
@@ -394,7 +385,7 @@ void Level::_entityPaletteRender()
 void Level::_tileTypePaletteRender()
 {
 	ImGui::Begin("Tile Type", &m_tileTypePaletteOpen);
-	if (isInside())
+	if (isClickInside())
 	{
 		m_currentTool = "Current Tool: Tile Type";
 		m_activeTool[0] = false;
@@ -438,7 +429,16 @@ void Level::_tileTypePaletteRender()
 	ImGui::End();
 }
 
-bool Level::isInside() const
+void Level::_tileColorPaletteRender()
+{
+	ImGui::Begin("Colors", &m_tileColorPaletteOpen);
+
+
+
+	ImGui::End();
+}
+
+bool Level::isClickInside() const
 {
 	ImVec2 p = ImGui::GetCursorScreenPos();
 	ImVec2 l = ImGui::GetMousePos();
@@ -446,6 +446,38 @@ bool Level::isInside() const
 	l = ImVec2(l.x - p.x, l.y - p.y);
 
 	return l.x > 0 && l.y > 0 && l.x <= s.x && l.y <= s.y&& ImGui::IsMouseClicked(0);
+}
+
+std::vector<std::string> Level::filesInDir(std::string path)
+{
+	std::vector<std::string> files;
+
+	// Stupid but works
+	std::string folderPath = __FILE__;
+	folderPath += "/../../" + path;
+	namespace fs = std::experimental::filesystem;
+	for (auto& p : fs::directory_iterator(folderPath))
+	{
+		std::stringstream s;
+		s << p << std::endl;
+		std::string lol(s.str());
+		std::string relative;
+		for (size_t i = lol.find_last_of('\\'); i < lol.size() - 1; i++)
+			relative += lol[i];
+
+		files.push_back(relative);
+
+	}
+
+	return files;
+}
+
+void Level::_changeCurrentTool(int index, std::string tool, bool NormalMode)
+{
+	m_currentTool = "Current Tool: " + tool;
+	memset(m_activeTool, 0, sizeof(m_activeTool));
+	m_activeTool[index] = true;
+	m_grid->NormalMode();
 }
 
 void Level::_cleanup()
