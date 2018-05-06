@@ -269,26 +269,16 @@ void Level::_toolbarRender()
 void Level::_spritePaletteRender()
 {
 	static sf::Vector2u imgSize;
-	static int size = 32;
-	
 
 	ImGui::Begin("SpriteSheet", &m_spritePaletteOpen);
-	static bool functional = false;
-	if (isClickInside())
-	{
-		m_currentTool = "Current Tool: Sprite Palette";
-		_changeCurrentTool()
-		m_activeTool[0] = true;
-		m_activeTool[1] = false;
-		m_activeTool[2] = false;
-		m_grid->NormalMode();
 
-	}
+	if (isClickInside())
+		_changeCurrentTool(TOOL_SPRITE, "Sprite Palette", true);
 
 	if (!m_grid->isSpritesheetLoaded())
 	{
 		static char path[20];
-
+		static int size;
 		ImGui::InputText("Path", path, 20, ImGuiInputTextFlags_CharsNoBlank);
 
 		ImGui::InputInt("Sprite Size", &size);
@@ -312,25 +302,28 @@ void Level::_spritePaletteRender()
 		ImVec2 p = ImGui::GetCursorScreenPos();
 		ImVec2 l = ImGui::GetMousePos();
 		ImVec2 s = ImGui::GetWindowSize();
+		static int tSize = m_grid->getTile(0, 0).getSize().x;
 
 		l = ImVec2(l.x - p.x, l.y - p.y);
 		imgSize = m_grid->getSheetImageSize();
+		
 
 		// Get the full spriteSheet from grid
 
 		ImGui::Image(m_grid->getDisplaySprite());
+	
 		
-		static sf::IntRect rect = sf::IntRect(0,0,size,size);
+		static sf::IntRect rect = sf::IntRect(0,0, tSize, tSize);
 
 
 		if (l.x > 0 && l.y > 0 && l.x <= imgSize.x && l.y <= imgSize.y&& ImGui::IsMouseClicked(0))
 		{
 			std::cout << "Inside" << std::endl;
-			int poweroftwo = std::log(size) / std::log(2);
+			int poweroftwo = std::log(tSize) / std::log(2);
 			rect.left = ((int)l.x >> poweroftwo) << poweroftwo;
 			rect.top = ((int)l.y >> poweroftwo) << poweroftwo;
-			rect.width = size;
-			rect.height = size;
+			rect.width = tSize;
+			rect.height = tSize;
 
 			
 		}
@@ -340,7 +333,7 @@ void Level::_spritePaletteRender()
 
 		ImGui::GetWindowDrawList()->AddRect(a, b, IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
 
-		if (m_activeTool[0])
+		if (m_activeTool[TOOL_SPRITE])
 		{
 			if (l.x < 0 || l.y < 0)
 			{
@@ -387,11 +380,7 @@ void Level::_tileTypePaletteRender()
 	ImGui::Begin("Tile Type", &m_tileTypePaletteOpen);
 	if (isClickInside())
 	{
-		m_currentTool = "Current Tool: Tile Type";
-		m_activeTool[0] = false;
-		m_activeTool[1] = false;
-		m_activeTool[2] = true;
-		m_grid->MarkMode();
+		_changeCurrentTool(TOOL_TYPE, "Tile Type", false);
 	}
 
 	static bool selectables[3] = { 1, 0, 0 };
@@ -477,7 +466,9 @@ void Level::_changeCurrentTool(int index, std::string tool, bool NormalMode)
 	m_currentTool = "Current Tool: " + tool;
 	memset(m_activeTool, 0, sizeof(m_activeTool));
 	m_activeTool[index] = true;
-	m_grid->NormalMode();
+	
+	if(NormalMode)	m_grid->NormalMode();
+	else m_grid->MarkMode();
 }
 
 void Level::_cleanup()

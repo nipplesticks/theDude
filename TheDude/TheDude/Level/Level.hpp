@@ -49,7 +49,7 @@ private:
 		void _entityPaletteRender();
 		void _tileTypePaletteRender();
 		void _tileColorPaletteRender();
-		bool isInside() const;
+		bool isClickInside() const;
 		std::vector<std::string> filesInDir(std::string path);
 		void _changeCurrentTool(int index, std::string tool, bool NormalMode);
 	// }
