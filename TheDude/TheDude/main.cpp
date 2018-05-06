@@ -33,7 +33,8 @@ int main()
 
 	gameTime.Init();
 	sf::Clock clock;
-	while (window.isOpen())
+							// V THIS IS FOR THE MENU LATER
+	while (window.isOpen() && level.isClose())
 	{
 		window.clear();
 
@@ -42,14 +43,13 @@ int main()
 		gameTime.UpdateGameTime();
 		CheckPollEvents(&window);
 		ImGui::SFML::Update(window, clock.restart());
-		level._handleInput();
 
 		while (gameTime.AllowedToUpdate())
 		{
 			//game.update();
 			level.Update();
 		}
-		
+		level.EditorRender();
 		
 		window.draw(level);
 		ImGui::SFML::Render(window);
@@ -64,7 +64,7 @@ int main()
 			window.setTitle(sf::String(title));
 		}
 	}
-
+	ImGui::SFML::Shutdown();
 	return 0;
 }
 

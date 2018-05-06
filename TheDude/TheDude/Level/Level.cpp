@@ -3,14 +3,15 @@
 #include <sstream> 
 #include <iostream> 
 #include <filesystem>
+#include "imgui.h"
+#include "imgui-SFML.h"
 
 Level::Level(sf::RenderWindow* renderWindow)
 {
-	typing = true;
 	m_pWindow = renderWindow;
 	m_grid = nullptr;
 	m_camera = nullptr;
-	m_levelName = "";
+	m_closeFlag = false;
 	
 }
 
@@ -41,24 +42,14 @@ void Level::LoadLevel(const std::string & target)
 				std::stringstream stream(currentLine);
 
 				stream >> type;
-				if (type == "SpriteSheet")
+				if (type == "sheet")
 				{
 					std::string path;
 					stream >> path;
-		
-					static sf::Image image;
-					image.loadFromFile(path.c_str());
-					m_spriteSheet.loadFromImage(image);
-
-
-					for (int i = 0; i < 1; i++)
-					{
-						sf::Sprite sprite;
-						sprite.setTexture(m_spriteSheet);
-						//sprite.setTextureRect(sf::IntRect(256, 0, 32, 32));
-						m_sprites.push_back(sprite);
-					}
-
+					//TODO HENRIK
+					m_grid->LoadSpriteSheet(path);
+					
+							
 				}
 				else if (type == "t")
 				{
@@ -66,7 +57,8 @@ void Level::LoadLevel(const std::string & target)
 					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &t, &r, &g, &b, &itx, &ity);
 					m_grid->setTypeOfTile(x, y, t);
 					m_grid->setColorOfTile(x, y, r, g, b);
-					m_grid->setTextureOfTile(x, y, m_spriteSheet, sf::IntRect(itx, ity, 32, 32));
+
+					m_grid->setTextureOfTile(x, y, sf::IntRect(itx, ity, 32, 32));
 
 					
 				}
@@ -100,10 +92,6 @@ void Level::LoadLevel(const std::string & target)
 					/*
 						Create theDude
 					*/
-				}
-				else if (type == "name")
-				{
-					std::getline(stream, m_levelName);
 				}
 				else if (type == "grid")
 				{
@@ -148,8 +136,6 @@ bool Level::SaveLevel(const std::string & target)
 	map.open(target);
 	if (map)
 	{
-		map << "SpriteSheet ";
-		map << m_spritesheetPath << "\n";
 		map << "cam 100 0\n";
 		map << m_grid->toFile();
 		return true;
@@ -161,6 +147,19 @@ void Level::Update()
 {
 	m_camera->update();
 	m_grid->update(m_camera);
+}
+
+void Level::EditorRender()
+{	
+	_toolbarRender();
+	_spritePaletteRender();
+	_entityPaletteRender();
+
+}
+
+bool Level::isClose()
+{
+	return !m_closeFlag;
 }
 
 Level & Level::operator=(const Level & other)
@@ -176,36 +175,18 @@ Level & Level::operator=(const Level & other)
 
 void Level::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
+	
 	target.draw(*m_grid, states);
 }
 
-void Level::_cleanup()
+void Level::_toolbarRender()
 {
-	if (m_grid)
-		delete m_grid;
-	m_grid = nullptr;
-	if (m_camera) delete m_camera;
-	m_camera = nullptr;
-}
-
-void Level::_copy(const Level & other)
-{
-	m_grid = new Grid(*other.m_grid);
-}
-#include "imgui.h"
-#include "imgui-SFML.h"
-#include <iostream>
-#include <sstream>
-void Level::_handleInput()
-{
-	
 	ImGui::BeginMainMenuBar();
 
 	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::BeginMenu("New"))
 		{
-
 			static float dim[2] = { 0 };
 
 			ImGui::InputFloat2("New Size", dim);
@@ -235,7 +216,7 @@ void Level::_handleInput()
 		if (ImGui::BeginMenu("Save"))
 		{
 			static char name[20] = {};
-			
+
 			ImGui::InputText("File path", name, 20);
 			if (ImGui::Button("Save"))
 			{
@@ -253,24 +234,29 @@ void Level::_handleInput()
 
 		if (ImGui::MenuItem("Exit"))
 		{
-			// Exit here
+			m_closeFlag = true;
 		}
 		ImGui::EndMenu();
 	}
 
 
 	ImGui::EndMainMenuBar();
+}
+
+void Level::_spritePaletteRender()
+{
 	static 	sf::Image image;
-	static bool loadedSpirteSheet = false;
 	static sf::Vector2u imgSize;
 	static int size = 32;
+
 	ImGui::Begin("SpriteSheet");
-	if (!loadedSpirteSheet)
+
+	if (!m_grid->isSpritesheetLoaded())
 	{
 		static char path[20];
 
 		ImGui::InputText("Path", path, 20, ImGuiInputTextFlags_CharsNoBlank);
-		
+
 		ImGui::InputInt("Sprite Size", &size);
 
 		if (ImGui::Button("Load"))
@@ -278,20 +264,11 @@ void Level::_handleInput()
 
 			std::string fullPath = "Resourses/SpriteSheet/";
 			fullPath += std::string(path);
-			m_spritesheetPath = fullPath;
-
-			image.loadFromFile(fullPath.c_str());
-			m_spriteSheet.loadFromImage(image);
-			imgSize = m_spriteSheet.getSize();
-
-			for (int i = 0; i < 1; i++)
-			{
-				sf::Sprite sprite;
-				sprite.setTexture(m_spriteSheet);
-				//sprite.setTextureRect(sf::IntRect(256, 0, 32, 32));
-				m_sprites.push_back(sprite);
-			}
-			loadedSpirteSheet = true;
+		
+			m_grid->LoadSpriteSheet(fullPath);
+			imgSize = m_grid->getSheetImageSize();
+			
+			
 		}
 
 
@@ -301,19 +278,18 @@ void Level::_handleInput()
 		ImVec2 p = ImGui::GetCursorScreenPos();
 		ImVec2 l = ImGui::GetMousePos();
 		l = ImVec2(l.x - p.x, l.y - p.y);
+		imgSize = m_grid->getSheetImageSize();
 
-		ImGui::Image(m_sprites[0]);
-		if (ImGui::Button("Load new spritesheet"))
-			loadedSpirteSheet = false;
+		// Get the full spriteSheet from grid
+
+		ImGui::Image(m_grid->getDisplaySprite());
+
+		/*	if (ImGui::Button("Load new spritesheet"))
+				loadedSpirteSheet = false;*/
+
+				// TODO HENRIK
 		static bool used = false;
-		static sf::IntRect rect;
-		if (used)
-		{
-			ImVec2 a = ImVec2(p.x + rect.left, p.y + rect.top);
-			ImVec2 b = ImVec2(p.x + rect.left + rect.width, p.y + rect.top + rect.height);
-
-			ImGui::GetWindowDrawList()->AddRect(a, b, IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
-		}
+		static sf::IntRect rect = sf::IntRect(0,0,size,size);
 
 
 		if (l.x > 0 && l.y > 0 && l.x <= imgSize.x && l.y <= imgSize.y&& ImGui::IsMouseClicked(0))
@@ -324,8 +300,14 @@ void Level::_handleInput()
 			rect.top = ((int)l.y >> poweroftwo) << poweroftwo;
 			rect.width = size;
 			rect.height = size;
-			used = true;
+
+			
 		}
+
+		ImVec2 a = ImVec2(p.x + rect.left, p.y + rect.top);
+		ImVec2 b = ImVec2(p.x + rect.left + rect.width, p.y + rect.top + rect.height);
+
+		ImGui::GetWindowDrawList()->AddRect(a, b, IM_COL32(255, 0, 0, 255), 3.0f, 15, 3.0f);
 
 		if (l.x < 0 || l.y < 0)
 		{
@@ -336,11 +318,9 @@ void Level::_handleInput()
 
 				if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
 				{
-					if (used)
-					{
-						m_grid->setTextureOfTile(index.x, index.y, m_spriteSheet, rect);
-
-					}
+					
+					m_grid->setTextureOfTile(index.x, index.y, rect);
+					
 				}
 
 			}
@@ -355,7 +335,10 @@ void Level::_handleInput()
 
 
 	ImGui::End();
+}
 
+void Level::_entityPaletteRender()
+{
 	static char name[20];
 	ImGui::Begin("Entities");
 	ImGui::InputText("Lua File", name, 20);
@@ -371,9 +354,29 @@ void Level::_handleInput()
 		for (size_t i = lol.find_last_of('/'); i < lol.size(); i++)
 			relative += lol[i];
 
-	//	std::cout << relative << std::endl;
+		//	std::cout << relative << std::endl;
 
 	}
 	ImGui::Button("Load Entity");
 	ImGui::End();
+}
+
+void Level::_cleanup()
+{
+	if (m_grid)
+		delete m_grid;
+	m_grid = nullptr;
+	if (m_camera) delete m_camera;
+	m_camera = nullptr;
+}
+
+void Level::_copy(const Level & other)
+{
+	m_grid = new Grid(*other.m_grid);
+}
+
+void Level::_handleInput()
+{
+	
+	
 }

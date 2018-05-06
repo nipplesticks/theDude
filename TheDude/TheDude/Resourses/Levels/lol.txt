@@ -1,6 +1,6 @@
-SpriteSheet Resourses/SpriteSheet/spritesheet3.png
 cam 100 0
 grid 32 32 32 0
+sheet Resourses/SpriteSheet/spritesheet3.png
 t 0 0 0 255 255 255 32 32
 t 0 1 0 255 255 255 32 32
 t 0 2 0 255 255 255 128 64

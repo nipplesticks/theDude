@@ -2,6 +2,7 @@
 #include <iostream>
 
 Grid::Grid(int width, int height, float sizeOfTile, int type)
+	: m_spriteSheet(nullptr)
 {
 	_init(width, height, sizeOfTile, type);
 }
@@ -10,6 +11,12 @@ Grid::Grid(const Grid & other)
 {
 	_cleanup();
 	_copy(other);
+}
+
+Grid::~Grid()
+{
+	delete m_spriteSheet;
+
 }
 
 void Grid::setTypeOfTile(int x, int y, int type)
@@ -27,10 +34,15 @@ void Grid::setColorOfTile(int x, int y, const sf::Vector3i& color)
 	this->setColorOfTile(x, y, color.x, color.y, color.z);
 }
 
-void Grid::setTextureOfTile(int x, int y, const sf::Texture & texture, const sf::IntRect& rect)
+void Grid::setTextureOfTile(int x, int y, const sf::IntRect& rect)
 {
-	m_tiles[x][y].setTexture(texture, rect);
+	if (nullptr == m_spriteSheet)
+	{
+		std::cout << __LINE__ << ": Spritesheet not loaded!";
+		return;
+	}
 	
+	m_tiles[x][y].setTexture(*m_spriteSheet, rect);
 }
 
 int Grid::getWidth() const
@@ -59,6 +71,10 @@ std::string Grid::toFile() const
 	int size = static_cast<int>(m_tiles[0][0].getSize().x + 0.5f);
 	map += "grid " + std::to_string(m_tiles.size()) + " " + std::to_string(m_tiles[0].size()) + " " +
 		std::to_string(size) + " " + std::to_string(0) + '\n';
+
+	// grid sizeX sizeY tileSize 0 
+	// sheet <PATH>
+	map += "sheet" + m_spritesheetPath + "\n";
 
 	for (size_t i = 0; i < m_tiles.size(); i++)
 	{
@@ -123,6 +139,33 @@ Grid & Grid::operator=(const Grid & other)
 	return *this;
 }
 
+void Grid::LoadSpriteSheet(const std::string & path)
+{
+	m_spritesheetPath = path;
+	if (!m_spriteSheet)
+	{
+		m_spriteSheet = new sf::Texture();
+	}
+	m_spriteSheet->loadFromFile(m_spritesheetPath);
+	m_displaySprite.setTexture(*m_spriteSheet);
+
+}
+
+const sf::Sprite & Grid::getDisplaySprite() const
+{
+	return m_displaySprite;
+}
+
+bool Grid::isSpritesheetLoaded() const
+{
+	return m_spriteSheet != nullptr;
+}
+
+sf::Vector2u Grid::getSheetImageSize() const
+{
+	return m_spriteSheet->getSize();
+}
+
 void Grid::_init(int width, int height, float sizeOfTile, int type)
 {
 	for (int i = 0; i < height; i++)
@@ -157,4 +200,5 @@ void Grid::_cleanup()
 		v.clear();
 	}
 	m_tiles.clear();
+	delete m_spriteSheet;
 }
