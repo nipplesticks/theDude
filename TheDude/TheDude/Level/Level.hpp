@@ -52,6 +52,14 @@ private:
 		bool isClickInside() const;
 		std::vector<std::string> filesInDir(std::string path);
 		void _changeCurrentTool(int index, std::string tool, bool NormalMode);
+		
+		template<std::size_t N1>
+		void _resetArray(std::array<bool, N1> & a, int index)
+		{
+			memset(&a, 0, N1);
+			a[index] = true;
+		}
+		std::string getTexturePath(std::string luafile) const;
 	// }
 	void _cleanup();
 	void _copy(const Level& other);

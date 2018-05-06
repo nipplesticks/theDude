@@ -32,7 +32,8 @@ private:
 
 public:
 // Lua Functions
-	LUA_FUNC isKeyPressed(lua_State * l);
-	LUA_FUNC CheckCollision(lua_State * l);
-	LUA_FUNC ExitGame(lua_State * l);
+	LUA_FUNC s_isKeyPressed(lua_State * l);
+	LUA_FUNC s_CheckCollision(lua_State * l);
+	LUA_FUNC s_ExitGame(lua_State * l);
+	LUA_FUNC s_setPlayerPos(lua_State * l);
 };

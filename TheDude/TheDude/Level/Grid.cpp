@@ -24,14 +24,14 @@ void Grid::setTypeOfTile(int x, int y, int type)
 	m_tiles[x][y].setType(type);
 }
 
-void Grid::setColorOfTile(int x, int y, int r, int g, int b)
+void Grid::setColorOfTile(int x, int y, int r, int g, int b, bool perm)
 {
-	m_tiles[x][y].setColor(r, g, b);
+	m_tiles[x][y].setColor(r, g, b, perm);
 }
 
-void Grid::setColorOfTile(int x, int y, const sf::Vector3i& color)
+void Grid::setColorOfTile(int x, int y, const sf::Vector3i& color, bool perm)
 {
-	this->setColorOfTile(x, y, color.x, color.y, color.z);
+	this->setColorOfTile(x, y, color.x, color.y, color.z, perm);
 }
 
 void Grid::setTextureOfTile(int x, int y, const sf::IntRect& rect)
@@ -41,8 +41,19 @@ void Grid::setTextureOfTile(int x, int y, const sf::IntRect& rect)
 		std::cout << __LINE__ << ": Spritesheet not loaded!";
 		return;
 	}
-	
-	m_tiles[x][y].setTexture(*m_spriteSheet, rect);
+
+	if (rect.left == -1)
+	{
+		m_tiles[x][y].RemoveTexture();
+		
+	}
+	else
+		m_tiles[x][y].setTexture(*m_spriteSheet, rect);
+}
+
+void Grid::removeTextureOfTile(int x, int y)
+{
+	m_tiles[x][y].RemoveTexture();
 }
 
 int Grid::getWidth() const
@@ -83,8 +94,13 @@ std::string Grid::toFile() const
 
 			sf::Color c = m_tiles[i][k].getColor();
 			map += std::to_string(c.r) + " " + std::to_string(c.g) + " " + std::to_string(c.b) + " ";
-			sf::IntRect ir = m_tiles[i][k].getTextureRect();
-			map += std::to_string(ir.left) + " " + std::to_string(ir.top) + "\n";
+			if (m_tiles[i][k].hasTexture())
+			{
+				sf::IntRect ir = m_tiles[i][k].getTextureRect();
+				map += std::to_string(ir.left) + " " + std::to_string(ir.top) + "\n";
+			}
+			else
+				map += "-1 -1\n";
 		}
 	}
 

@@ -5,7 +5,7 @@ class Character : public Entity
 {
 public:
 	static std::string metaTable;
-
+	static sf::Vector2f playerPos;
 private:
 	int m_health; 
 	int m_attack; 
@@ -61,4 +61,7 @@ public:
 	LUA_FUNC s_Create(lua_State * l);
 	LUA_FUNC s_Destroy(lua_State * l);
 	LUA_FUNC s_SetSprite(lua_State* l);
+	LUA_FUNC s_getDistanceToPlayer(lua_State * l);
+
+	LUA_FUNC s_getPlayerPos(lua_State * l);
 };

@@ -5,6 +5,7 @@
 #include <filesystem>
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include <array>
 
 Level::Level(sf::RenderWindow* renderWindow)
 {
@@ -163,6 +164,8 @@ void Level::EditorRender()
 		_entityPaletteRender();
 	if(m_tileTypePaletteOpen)
 		_tileTypePaletteRender();
+	if (m_tileColorPaletteOpen)
+		_tileColorPaletteRender();
 
 }
 
@@ -257,6 +260,7 @@ void Level::_toolbarRender()
 		m_spritePaletteOpen = ImGui::MenuItem("Spritesheet") ? true : m_spritePaletteOpen;
 		m_entityPaletteOpen = ImGui::MenuItem("Entities") ? true : m_entityPaletteOpen;
 		m_tileTypePaletteOpen = ImGui::MenuItem("Tile Type") ? true : m_tileTypePaletteOpen;
+		m_tileColorPaletteOpen = ImGui::MenuItem("Tile Colors") ? true : m_tileColorPaletteOpen;
 
 		ImGui::EndMenu();
 	}
@@ -359,18 +363,40 @@ void Level::_spritePaletteRender()
 
 void Level::_entityPaletteRender()
 {
-
 	ImGui::Begin("Entities", &m_entityPaletteOpen);
 	
 	if (isClickInside())
 		_changeCurrentTool(TOOL_ENTITY, "Entity Palette", true);
-	
-	static char name[20];
-	ImGui::InputText("Lua File", name, 20);
 
-	auto strs = filesInDir("Resourses/Levels");
+	static std::string path = "Scripts/";
+	static auto strs = filesInDir(path);
 	
-	ImGui::Button("Load Entity");
+	static std::array<bool, 10> selectable{ 0,0,0,0,0,0 };
+	static bool found = false;
+	static sf::Texture tex;
+	static sf::Sprite sp;
+	if (found)
+	{
+		ImGui::Image(sp);
+	}
+	for (int i = 0; i < strs.size(); i++)
+	{
+		if (ImGui::Selectable(strs[i].c_str(), &selectable[i]))
+		{
+			_resetArray(selectable, i);
+			std::string path = "Scripts/";
+			path += strs[i].c_str();
+			std::string yes = getTexturePath(path);
+			tex.loadFromFile("sample.png");
+			sp.setTexture(tex);
+			tex.loadFromFile(yes);
+			sp.setTexture(tex);
+			
+			found = true;
+		}
+
+	}
+
 
 	ImGui::End();
 }
@@ -383,37 +409,40 @@ void Level::_tileTypePaletteRender()
 		_changeCurrentTool(TOOL_TYPE, "Tile Type", false);
 	}
 
-	static bool selectables[3] = { 1, 0, 0 };
+	static std::array<bool,3> selectables = { 1, 0, 0 };
 	static int currentType = 0;
 	if (ImGui::Selectable("None", &selectables[0]))
 	{
-		selectables[1] = selectables[2] = false;
+		_resetArray(selectables, 0);
 		currentType = 0;
 	}
 	if (ImGui::Selectable("Dangerous", &selectables[1]))
 	{
-		selectables[0] = selectables[2] = false;
+		_resetArray(selectables, 1);
 		currentType = 1;
 	}
 	if (ImGui::Selectable("Solid", &selectables[2]))
 	{
-		selectables[0] = selectables[1] = false;
+		_resetArray(selectables, 2);
 		currentType = 2;
 	}
-
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	if (m_activeTool[TOOL_TYPE])
 	{
-		sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
-		sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
-
-		if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
+			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
 
-			m_grid->setTypeOfTile(index.x, index.y, currentType);
+			if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+			{
+
+				m_grid->setTypeOfTile(index.x, index.y, currentType);
+
+			}
 
 		}
-
 	}
+	
 
 	ImGui::End();
 }
@@ -421,8 +450,31 @@ void Level::_tileTypePaletteRender()
 void Level::_tileColorPaletteRender()
 {
 	ImGui::Begin("Colors", &m_tileColorPaletteOpen);
+	if (isClickInside())
+		_changeCurrentTool(TOOL_COLOR, "Tile Colors", true);
+	static std::array<float, 4> colors;
+	static bool removeSprite = false;
+	ImGui::ColorPicker4("Colors", colors.data());
+	ImGui::Selectable("Remove Sprite", &removeSprite);
+	
+	if (m_activeTool[TOOL_COLOR])
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
 
+			if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+			{
+				if (removeSprite)
+					m_grid->removeTextureOfTile(index.x, index.y);
+				m_grid->setColorOfTile(index.x, index.y,sf::Vector3i(colors[0] * 255,colors[1] * 255,colors[2] * 255), true);
 
+			}
+
+		}
+	}
+	
 
 	ImGui::End();
 }
@@ -469,6 +521,21 @@ void Level::_changeCurrentTool(int index, std::string tool, bool NormalMode)
 	
 	if(NormalMode)	m_grid->NormalMode();
 	else m_grid->MarkMode();
+}
+
+std::string Level::getTexturePath(std::string luafile) const
+{
+	std::ifstream luaFile(luafile);
+	std::string shaderText((std::istreambuf_iterator<char>(luaFile)), std::istreambuf_iterator<char>());
+	luaFile.close();
+	int i = shaderText.find("setSprite", 0);
+	std::string spritePath = "";
+	if (i != -1)
+	{
+		for (int j = i +11; j < i + 20 && shaderText[j] != '"'; j++)
+			spritePath += shaderText[j];
+	}
+	return spritePath;
 }
 
 void Level::_cleanup()

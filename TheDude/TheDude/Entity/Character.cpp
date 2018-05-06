@@ -1,6 +1,7 @@
 #include "Character.hpp"
 
 std::string Character::metaTable = "Character";
+sf::Vector2f Character::playerPos = sf::Vector2f(0.0f, 0.0f);
 
 Character::Character() : Entity()
 {
@@ -91,6 +92,8 @@ void Character::_initLua()
 	m_script->PushClassFunction(this, Character::s_getAttack, "getAttack");
 	m_script->PushClassFunction(this, Character::s_getDefence, "getDefence");
 	m_script->PushClassFunction(this, Character::s_SetSprite, "setSprite");
+	m_script->PushClassFunction(this, Character::s_getDistanceToPlayer, "getDistanceToPlayer");
+	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
 	m_script->InitLua();
 	//m_script->PushClassFunction(this, Character::s_Update, "Update");
 }
@@ -457,7 +460,6 @@ int Character::s_getDefence(lua_State * l)
 		if (c)
 		{
 			d.push_back(c->getDefence());
-
 			OurLua::setIntegers(l, d);
 		}
 	}
@@ -511,5 +513,40 @@ int Character::s_SetSprite(lua_State * l)
 	}
 
 	return 0;
+}
+
+int Character::s_getDistanceToPlayer(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	float dist = 9999999.0f;
+	if (c)
+	{
+		sf::Vector2f ePos = c->getPosition();
+		sf::Vector2f toPlayer = ePos - Character::playerPos;
+		dist = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			sf::Vector2f ePos = c->getPosition();
+			sf::Vector2f toPlayer = ePos - Character::playerPos;
+			dist = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+		}
+	}
+	std::vector<float> d;
+	d.push_back(dist);
+	OurLua::setFloats(l, d);
+	return 1;
+}
+
+int Character::s_getPlayerPos(lua_State * l)
+{
+	std::vector<float> position;
+	position.push_back(Character::playerPos.x);
+	position.push_back(Character::playerPos.y);
+	OurLua::setFloats(l, position);
+	return 2;
 }
 

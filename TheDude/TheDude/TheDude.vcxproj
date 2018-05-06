@@ -195,6 +195,7 @@
   <ItemGroup>
     <None Include="Resourses\Levels\test.chef" />
     <None Include="Scripts\DVD.Lua" />
+    <None Include="Scripts\PlayerModule.Lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
