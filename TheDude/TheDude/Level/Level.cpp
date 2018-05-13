@@ -31,8 +31,7 @@ Level::~Level()
 
 void Level::LoadLevel(const std::string & target)
 {
-	delete m_grid;
-	m_grid = nullptr;
+	_cleanup();
 	std::ifstream map;
 	map.open(target);
 	if (map)
@@ -116,9 +115,6 @@ void Level::LoadLevel(const std::string & target)
 
 					sf::Vector2u wSize = m_pWindow->getSize();
 
-					if (m_camera)
-						delete m_camera;
-					m_camera = nullptr;
 					m_camera = new Camera(static_cast<float>(x), static_cast<float>(y), wSize.x, wSize.y);
 				}
 				
@@ -152,6 +148,12 @@ void Level::Update()
 {
 	m_camera->update();
 	m_grid->update(m_camera);
+
+	for (int  i = 0; i < m_entityShapes.size(); i++)
+	{
+		m_entityShapes[i].setPosition(m_entityPositions[i] + m_camera->getPosition());
+	}
+	
 }
 
 void Level::EditorRender()
@@ -167,6 +169,7 @@ void Level::EditorRender()
 	if (m_tileColorPaletteOpen)
 		_tileColorPaletteRender();
 
+	
 }
 
 bool Level::isClose()
@@ -189,6 +192,8 @@ void Level::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	
 	target.draw(*m_grid, states);
+	for (auto& e : m_entityShapes)
+		target.draw(e,states);
 }
 
 void Level::_toolbarRender()
@@ -276,7 +281,7 @@ void Level::_spritePaletteRender()
 
 	ImGui::Begin("SpriteSheet", &m_spritePaletteOpen);
 
-	if (isClickInside())
+	if (_IsClickInside())
 		_changeCurrentTool(TOOL_SPRITE, "Sprite Palette", true);
 
 	if (!m_grid->isSpritesheetLoaded())
@@ -322,7 +327,6 @@ void Level::_spritePaletteRender()
 
 		if (l.x > 0 && l.y > 0 && l.x <= imgSize.x && l.y <= imgSize.y&& ImGui::IsMouseClicked(0))
 		{
-			std::cout << "Inside" << std::endl;
 			int poweroftwo = std::log(tSize) / std::log(2);
 			rect.left = ((int)l.x >> poweroftwo) << poweroftwo;
 			rect.top = ((int)l.y >> poweroftwo) << poweroftwo;
@@ -339,22 +343,21 @@ void Level::_spritePaletteRender()
 
 		if (m_activeTool[TOOL_SPRITE])
 		{
-			if (l.x < 0 || l.y < 0)
+			
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_IsMouseInside())
 			{
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+				sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
+
+				if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
 				{
-					sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
-					sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
 
-					if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
-					{
-
-						m_grid->setTextureOfTile(index.x, index.y, rect);
-
-					}
+					m_grid->setTextureOfTile(index.x, index.y, rect);
 
 				}
+
 			}
+			
 		}
 		
 	}
@@ -364,37 +367,81 @@ void Level::_spritePaletteRender()
 void Level::_entityPaletteRender()
 {
 	ImGui::Begin("Entities", &m_entityPaletteOpen);
-	
-	if (isClickInside())
+	bool wasClickedInside = _IsClickInside();
+	if (wasClickedInside)
 		_changeCurrentTool(TOOL_ENTITY, "Entity Palette", true);
 
 	static std::string path = "Scripts/";
-	static auto strs = filesInDir(path);
+	static std::vector<std::string> strs = filesInDir(path);
+	static bool loadedSprites = false;
+	static int currentTextureIndex = -1;
+	static sf::Sprite displayTexure;
+	static sf::Texture sampleTexture;
+	if (!loadedSprites)
+	{
+		sampleTexture.loadFromFile("sample.png");
+		displayTexure.setTexture(sampleTexture);
+		for (auto& s : strs)
+		{
+			std::string currentPath;
+
+			currentPath += path + s.c_str();
+			std::string yes = getTexturePath(currentPath);
+			m_entityTextures.push_back(sf::Texture());
+			if (yes != "")
+				m_entityTextures.back().loadFromFile(yes);
+			else
+				m_entityTextures.back() = sampleTexture;
+		}
+		loadedSprites = true;
+
+	}
+	
+	ImGui::Image(displayTexure);
 	
 	static std::array<bool, 10> selectable{ 0,0,0,0,0,0 };
-	static bool found = false;
-	static sf::Texture tex;
-	static sf::Sprite sp;
-	if (found)
-	{
-		ImGui::Image(sp);
-	}
+
 	for (int i = 0; i < strs.size(); i++)
 	{
 		if (ImGui::Selectable(strs[i].c_str(), &selectable[i]))
 		{
 			_resetArray(selectable, i);
-			std::string path = "Scripts/";
-			path += strs[i].c_str();
-			std::string yes = getTexturePath(path);
-			tex.loadFromFile("sample.png");
-			sp.setTexture(tex);
-			tex.loadFromFile(yes);
-			sp.setTexture(tex);
-			
-			found = true;
+			currentTextureIndex = i;
+			displayTexure.setTexture(m_entityTextures[i]);
 		}
 
+	}
+
+	if (m_activeTool[TOOL_ENTITY])
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_IsMouseInside())
+		{
+			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
+
+			if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
+			{
+				sf::Vector2f position = sf::Vector2f(index.x << 5, index.y << 5);
+				bool existing = false;
+				for(auto& currentPos : m_entityPositions )
+					if (currentPos == position)
+					{
+						existing = true;
+						break;
+					}
+				if (!existing)
+				{
+					
+					m_entityShapes.push_back(sf::RectangleShape(sf::Vector2f(32, 32)));
+					m_entityShapes.back().setTexture(&m_entityTextures[currentTextureIndex]);
+					m_entityShapes.back().setPosition(position + m_camera->getPosition());
+					m_entityPositions.push_back(position);
+				}
+				
+
+			}
+
+		}
 	}
 
 
@@ -404,7 +451,7 @@ void Level::_entityPaletteRender()
 void Level::_tileTypePaletteRender()
 {
 	ImGui::Begin("Tile Type", &m_tileTypePaletteOpen);
-	if (isClickInside())
+	if (_IsClickInside())
 	{
 		_changeCurrentTool(TOOL_TYPE, "Tile Type", false);
 	}
@@ -428,7 +475,7 @@ void Level::_tileTypePaletteRender()
 	}
 	if (m_activeTool[TOOL_TYPE])
 	{
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_IsMouseInside())
 		{
 			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
 			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
@@ -450,7 +497,7 @@ void Level::_tileTypePaletteRender()
 void Level::_tileColorPaletteRender()
 {
 	ImGui::Begin("Colors", &m_tileColorPaletteOpen);
-	if (isClickInside())
+	if (_IsClickInside())
 		_changeCurrentTool(TOOL_COLOR, "Tile Colors", true);
 	static std::array<float, 4> colors;
 	static bool removeSprite = false;
@@ -459,7 +506,7 @@ void Level::_tileColorPaletteRender()
 	
 	if (m_activeTool[TOOL_COLOR])
 	{
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_IsMouseInside())
 		{
 			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
 			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
@@ -479,14 +526,18 @@ void Level::_tileColorPaletteRender()
 	ImGui::End();
 }
 
-bool Level::isClickInside() const
+bool Level::_IsClickInside() const
 {
-	ImVec2 p = ImGui::GetCursorScreenPos();
+	return ImGui::IsMouseClicked(0) && _IsMouseInside();
+}
+
+bool Level::_IsMouseInside() const
+{
+	ImVec2 k = ImGui::GetWindowPos();
 	ImVec2 l = ImGui::GetMousePos();
 	ImVec2 s = ImGui::GetWindowSize();
-	l = ImVec2(l.x - p.x, l.y - p.y);
 
-	return l.x > 0 && l.y > 0 && l.x <= s.x && l.y <= s.y&& ImGui::IsMouseClicked(0);
+	return l.x > k.x && l.y > k.y && l.x < k.x + s.x && l.y < k.y + s.y;
 }
 
 std::vector<std::string> Level::filesInDir(std::string path)
@@ -532,7 +583,7 @@ std::string Level::getTexturePath(std::string luafile) const
 	std::string spritePath = "";
 	if (i != -1)
 	{
-		for (int j = i +11; j < i + 20 && shaderText[j] != '"'; j++)
+		for (int j = i +11; shaderText[j] != '"'; j++)
 			spritePath += shaderText[j];
 	}
 	return spritePath;
@@ -545,6 +596,9 @@ void Level::_cleanup()
 	m_grid = nullptr;
 	if (m_camera) delete m_camera;
 	m_camera = nullptr;
+	m_entityPositions.clear();
+	m_entityShapes.clear();
+	m_entityTextures.clear();
 }
 
 void Level::_copy(const Level & other)

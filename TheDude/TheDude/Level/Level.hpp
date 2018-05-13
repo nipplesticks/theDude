@@ -1,5 +1,4 @@
 #pragma once
-#pragma once 
 #include "Grid.hpp" 
 #include <string> 
 
@@ -23,6 +22,10 @@ private:
 #define TOOL_ENTITY 1
 #define TOOL_TYPE 2
 #define TOOL_COLOR 3
+		// Only for displaying entities in the editor not during runtime
+		std::vector<sf::Texture> m_entityTextures;
+		std::vector<sf::Vector2f> m_entityPositions;
+		std::vector<sf::RectangleShape> m_entityShapes;
 	// }
 
 public:
@@ -49,7 +52,8 @@ private:
 		void _entityPaletteRender();
 		void _tileTypePaletteRender();
 		void _tileColorPaletteRender();
-		bool isClickInside() const;
+		bool _IsClickInside() const;
+		bool _IsMouseInside() const;
 		std::vector<std::string> filesInDir(std::string path);
 		void _changeCurrentTool(int index, std::string tool, bool NormalMode);
 		

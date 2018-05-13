@@ -64,6 +64,7 @@ int main()
 		}
 	}
 	ImGui::SFML::Shutdown();
+	window.close();
 	return 0;
 }
 
