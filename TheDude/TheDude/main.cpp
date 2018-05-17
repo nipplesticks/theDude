@@ -1,5 +1,6 @@
 #include <chrono>
-#include "Game.hpp"
+#include "States/Game.hpp"
+#include "States/MainMenu.hpp"
 #include "GameTime.hpp"
 #include "RenderQueue.hpp"
 
@@ -12,15 +13,17 @@ void CheckPollEvents(sf::RenderWindow * wnd);
 int main()
 {
 	CHECK_MEMORY_LEAKS;
-
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
-	
+	std::stack<State*> states;
+	State::InitState(&window, &states);
+
 	GameTime gameTime;
-	Game game;
-	game.Init(&window);
-	std::cout << &game << std::endl;
+	
+	states.push(new MainMenu());
+
+	
 	gameTime.Init();
-	while (window.isOpen())
+	while (!states.empty())
 	{
 		window.clear();
 		Render::g_renderQueue.clear();
@@ -29,12 +32,14 @@ int main()
 
 		while (gameTime.AllowedToUpdate())
 		{
-			game.update();
+			if (!states.empty())
+				states.top()->Update();
 		}
 
 		CheckPollEvents(&window);
 
-		game.draw();
+		if (!states.empty())
+			states.top()->Draw();
 
 		if (gameTime.HasTimePassed(1000.0f))
 		{
