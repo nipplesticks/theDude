@@ -1,131 +1,75 @@
 #include "Entity.hpp"
-
-Entity::Entity(sf::Vector2f position, sf::Color color, sf::Vector2f speed)
-{
-	m_self.setPosition(position);
-	m_self.setFillColor(color);
-	setSpeed(speed);
-	m_position = position;
-}
-
-Entity::Entity(float x, float y, sf::Color color, float speedX, float speedY)
-{
-	m_self.setPosition(sf::Vector2f(x, y));
-	m_self.setFillColor(color);
-	setSpeed(sf::Vector2f(speedX, speedY));
-	m_position = sf::Vector2f(x, y);
-}
-
-Entity::Entity(float x, float y, sf::Color color, float speed)
-{
-	m_self.setPosition(sf::Vector2f(x, y));
-	m_self.setFillColor(color);
-	setSpeed(sf::Vector2f(speed, speed));
-	m_position = sf::Vector2f(x, y);
-}
+#include "../RenderQueue.hpp"
 
 Entity::Entity()
 {
-	m_self.setPosition(sf::Vector2f(0, 0));
-	m_self.setFillColor(sf::Color::Blue);
-	m_self.setSize(sf::Vector2f(100, 100));
+	m_shape.setPosition(0.0f, 0.0f);
+	m_shape.setFillColor(sf::Color(255, 255, 255));
+	m_shape.setSize(sf::Vector2f(100.0, 100.0));
+	m_position.x = 0.0f;
+	m_position.y = 0.0f;
 }
 
-Entity::~Entity()
+void Entity::setColor(int r, int g, int b, int a)
 {
+	m_shape.setFillColor(sf::Color(r, g, b, a));
 }
 
-//void Entity::update(float dt)
-//{
-//	m_self.move(m_speed.x, m_speed.y);
-//	m_position = m_position + m_speed;
-//}
-
-sf::Vector2f Entity::getPosition() const
+void Entity::setViewPos(sf::Vector2f viewPos)
 {
-	return m_self.getPosition();
-}
-
-sf::Vector2f Entity::getSpeed() const
-{
-	return m_speed;
-}
-
-sf::RectangleShape& Entity::getSelf()
-{
-	return m_self;
-}
-
-sf::Color Entity::getColor() const
-{
-	return m_color;
-}
-
-bool Entity::getIsActive() const
-{
-	return m_isActive;
+	m_shape.setPosition(viewPos);
 }
 
 void Entity::setPosition(float x, float y)
 {
-	m_self.setPosition(sf::Vector2f(x, y));
-	m_position = sf::Vector2f(x, y);
+	m_position.x = x;
+	m_position.y = y;
 }
 
-void Entity::setPosition(sf::Vector2f newPosXY)
+void Entity::Move(float x, float y)
 {
-	m_self.setPosition(newPosXY);
-	m_position = sf::Vector2f(newPosXY);
+	m_position.x += x;
+	m_position.y += y;
 }
 
-void Entity::setSpeed(float x, float y)
+void Entity::setSize(float x, float y)
 {
-	m_speed.x = x;
-	m_speed.y = y;
+	m_shape.setSize(sf::Vector2f(x, y));
 }
 
-void Entity::setSpeed(sf::Vector2f newSpeedXY)
+void Entity::setOrigin(float x, float y)
 {
-	m_speed = sf::Vector2f(newSpeedXY);
+	m_shape.setOrigin(x, y);
 }
 
-void Entity::setSpeed(float newSpeed)
+void Entity::setSprite(const std::string & sprite)
 {
-	m_speed = sf::Vector2f(newSpeed, newSpeed);
+	m_texture.loadFromFile(sprite);
+	m_shape.setTexture(&m_texture);
+	
 }
 
-void Entity::setIsActive(bool isActive)
+const sf::Vector2f Entity::getPosition() const
 {
-	m_isActive = isActive;
+	return m_position;
 }
 
-void Entity::setColor(sf::Color color)
+const sf::Vector2f Entity::getSize() const
 {
-	m_color = color;
-	m_self.setFillColor(m_color);
+	return m_shape.getSize();
 }
 
-void Entity::move(float x, float y)
+const sf::Color Entity::getColor() const
 {
-	m_self.move(sf::Vector2f(x, y));
+	return m_shape.getFillColor();
 }
 
-void Entity::move(sf::Vector2f moveXY)
+const sf::RectangleShape & Entity::getShape() const
 {
-	m_self.move(moveXY);
+	return m_shape;
 }
 
-bool Entity::checkIntersection() const
+void Entity::Draw()
 {
-	return false;
-}
-
-void Entity::draw(sf::RenderTarget & target, sf::RenderStates states) const
-{
-	target.draw(m_self);
-}
-
-void Entity::draw()
-{
-	Render::renderQueue.push_back(&m_self);
+	Render::g_renderQueue.push_back(this);
 }

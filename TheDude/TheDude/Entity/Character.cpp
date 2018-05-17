@@ -1,114 +1,552 @@
 #include "Character.hpp"
 
-Character::Character(sf::Vector2f position, sf::Color color, sf::Vector2f speed, float attackStart, float defenceStart) : Entity(position, color, speed)
-{
-	m_health = 100.0f; 
-	m_attacking = false; 
-	m_attackStat = attackStart; 
-	m_defenceStat = defenceStart; 
-}
-
-Character::Character(float x, float y, sf::Color color, float speedX, float speedY, float attackStart, float defenceStart) : Entity(x,y,color,speedX,speedY)
-{
-	m_health = 100.0f; 
-	m_attacking = false; 
-	m_attackStat = attackStart;
-	m_defenceStat = defenceStart;
-}
-
-Character::Character(float x, float y, sf::Color color, float speed, float attackStart, float defenceStart) : Entity(x, y, color, speed)
-{
-	m_health = 100.0f; 
-	m_attacking = false; 
-	m_attackStat = attackStart;
-	m_defenceStat = defenceStart;
-}
+std::string Character::metaTable = "Character";
+sf::Vector2f Character::playerPos = sf::Vector2f(0.0f, 0.0f);
 
 Character::Character() : Entity()
 {
-
+	m_health = 100;
+	m_attack = 10;
+	m_defence = 10;
+	m_script = nullptr;
 }
 
 Character::~Character()
 {
+	if (m_script)
+		delete m_script;
 }
 
-bool Character::isAlive() const
+void Character::AddScript(const std::string & path)
 {
-	return m_health > 0;
+	if (m_script)
+		delete m_script;
+	m_script = new OurLua(path);
+	_initLua();
 }
 
-float Character::getHealth() const
+bool Character::isDead() const
 {
-	return m_health; 
+	return m_health <= 0;
 }
 
-bool Character::getAttacking() const
+void Character::setHealth(int health)
 {
-	return m_attacking; 
+	m_health = health;
 }
 
-float Character::getAttackStat() const
+void Character::setAttack(int attack)
 {
-	return m_attackStat; 
+	m_attack = attack;
 }
 
-float Character::getDefenceStat() const
+void Character::setDefence(int defence)
 {
-	return m_defenceStat; 
+	m_defence = defence;
 }
 
-void Character::setHealth(float newHealth)
+void Character::AlterHealth(int health)
 {
-	m_health = newHealth; 
+	m_health += health;
 }
 
-void Character::setAttacking(bool isAttacking)
+int Character::getHealth() const
 {
-	m_attacking = isAttacking; 
+	return m_health;
 }
 
-void Character::setAttackStat(float attackStat)
+int Character::getAttack() const
 {
-	m_attackStat = attackStat; 
+	return m_health;
 }
 
-void Character::setDefenceStat(float defenceStat)
+int Character::getDefence() const
 {
-	m_defenceStat = defenceStat; 
+	return m_health;
 }
 
-void Character::increaseAttack(float increaseStat)
+void Character::Update()
 {
-	m_attackStat += increaseStat; 
+	if (m_script)
+		m_script->Update();
 }
 
-void Character::increaseDefence(float increaseStat)
+void Character::_initLua()
 {
-	m_defenceStat += increaseStat; 
+	m_script->PushClassFunction(this, Character::s_setColor, "setColor");
+	m_script->PushClassFunction(this, Character::s_setPosition, "setPosition");
+	m_script->PushClassFunction(this, Character::s_Move, "Move");
+	m_script->PushClassFunction(this, Character::s_setSize, "setSize");
+	m_script->PushClassFunction(this, Character::s_setOrigin, "setOrigin");
+	m_script->PushClassFunction(this, Character::s_getPosition, "getPosition");
+	m_script->PushClassFunction(this, Character::s_getSize, "getSize");
+	m_script->PushClassFunction(this, Character::s_getColor, "getColor");
+	//m_script->PushClassFunction(this, Character::s_Draw, "Draw");
+	//m_script->PushClassFunction(this, Character::s_AddScript, "AddScript");
+	m_script->PushClassFunction(this, Character::s_isDead, "isDead");
+	m_script->PushClassFunction(this, Character::s_setHealth, "setHealth");
+	m_script->PushClassFunction(this, Character::s_setAttack, "setAttack");
+	m_script->PushClassFunction(this, Character::s_setDefence, "setDefence");
+	m_script->PushClassFunction(this, Character::s_AlterHealth, "AlterHealth");
+	m_script->PushClassFunction(this, Character::s_getHealth, "getHealth");
+	m_script->PushClassFunction(this, Character::s_getAttack, "getAttack");
+	m_script->PushClassFunction(this, Character::s_getDefence, "getDefence");
+	m_script->PushClassFunction(this, Character::s_SetSprite, "setSprite");
+	m_script->PushClassFunction(this, Character::s_getDistanceToPlayer, "getDistanceToPlayer");
+	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
+	m_script->InitLua();
+	//m_script->PushClassFunction(this, Character::s_Update, "Update");
 }
 
-void Character::decreaseAttack(float decreaseStat)
+int Character::s_setColor(lua_State * l)
 {
-	m_attackStat -= decreaseStat; 
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	
+	if (c)
+	{
+		std::vector<int> color = OurLua::getIntegers(l, 3);
+		c->setColor(color[2], color[1], color[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<int> color = OurLua::getIntegers(l, 3);
+			c->setColor(color[2], color[1], color[0]);
+		}
+	}
+
+	return 0;
+}
+int Character::s_setPosition(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	
+	if (c)
+	{
+		std::vector<int> position = OurLua::getIntegers(l, 2);
+		c->setPosition(position[1], position[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<int> position = OurLua::getIntegers(l, 2);
+			c->setPosition(position[1], position[0]);
+		}
+	}
+
+	return 0;
+}
+int Character::s_Move(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<float> position = OurLua::getFloats(l, 2);
+		c->Move(position[1], position[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<float> position = OurLua::getFloats(l, 2);
+			c->Move(position[1], position[0]);
+		}
+	}
+
+
+	return 0;
+}
+int Character::s_setSize(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<float> size = OurLua::getFloats(l, 2);
+		c->setSize(size[1], size[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<float> size = OurLua::getFloats(l, 2);
+			c->setSize(size[1], size[0]);
+		}
+	}
+	return 0;
+}
+int Character::s_setOrigin(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<float> origin = OurLua::getFloats(l, 2);
+		c->setOrigin(origin[1], origin[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<float> origin = OurLua::getFloats(l, 2);
+			c->setOrigin(origin[1], origin[0]);
+		}
+	}
+	return 0;
+}
+int Character::s_getPosition(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<float> position;
+	if (c)
+	{
+		sf::Vector2f pos = c->getPosition();
+		position.push_back(pos.x);
+		position.push_back(pos.y);
+		OurLua::setFloats(l, position);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			sf::Vector2f pos = c->getPosition();
+			position.push_back(pos.x);
+			position.push_back(pos.y);
+			OurLua::setFloats(l, position);
+		}
+	}
+	return static_cast<int>(position.size());
+}
+int Character::s_getSize(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<float> size;
+	if (c)
+	{
+		sf::Vector2f temp = c->getSize();
+		size.push_back(temp.x);
+		size.push_back(temp.y);
+		OurLua::setFloats(l, size);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			sf::Vector2f temp = c->getSize();
+			size.push_back(temp.x);
+			size.push_back(temp.y);
+			OurLua::setFloats(l, size);
+		}
+	}
+	return static_cast<int>(size.size());
+}
+int Character::s_getColor(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<int> color;
+	if (c)
+	{
+		sf::Color temp = c->getColor();
+		color.push_back(temp.r);
+		color.push_back(temp.g);
+		color.push_back(temp.b);
+		OurLua::setIntegers(l, color);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			sf::Color temp = c->getColor();
+			color.push_back(temp.r);
+			color.push_back(temp.g);
+			color.push_back(temp.b);
+			OurLua::setIntegers(l, color);
+		}
+	}
+	return static_cast<int>(color.size());
+}
+int Character::s_Draw(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	if (c)
+	{
+		c->Draw();
+	}
+
+	return 0;
+}
+int Character::s_AddScript(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<std::string> path = OurLua::getStrings(l, 1);
+		c->AddScript(path[0]);
+	}
+
+	return 0;
+}
+int Character::s_isDead(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<bool> dead;
+	if (c)
+	{
+		dead.push_back(c->isDead());
+
+		OurLua::setBooleans(l, dead);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			dead.push_back(c->isDead());
+
+			OurLua::setBooleans(l, dead);
+		}
+	}
+	return static_cast<int>(dead.size());
+}
+int Character::s_setHealth(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<int> health = OurLua::getIntegers(l, 1);
+		c->setHealth(health[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<int> health = OurLua::getIntegers(l, 1);
+			c->setHealth(health[0]);
+		}
+	}
+	return 0;
+}
+int Character::s_setAttack(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<int> attack = OurLua::getIntegers(l, 1);
+		c->setAttack(attack[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<int> attack = OurLua::getIntegers(l, 1);
+			c->setAttack(attack[0]);
+		}
+	}
+	return 0;
+}
+int Character::s_setDefence(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<int> defence = OurLua::getIntegers(l, 1);
+		c->setDefence(defence[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<int> defence = OurLua::getIntegers(l, 1);
+			c->setDefence(defence[0]);
+		}
+	}
+	return 0;
+}
+int Character::s_AlterHealth(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<int> hp = OurLua::getIntegers(l, 1);
+		c->AlterHealth(hp[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<int> hp = OurLua::getIntegers(l, 1);
+			c->AlterHealth(hp[0]);
+		}
+	}
+	return 0;
+}
+int Character::s_getHealth(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<int> hp;
+	if (c)
+	{
+		hp.push_back(c->getHealth());
+
+		OurLua::setIntegers(l, hp);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			hp.push_back(c->getHealth());
+
+			OurLua::setIntegers(l, hp);
+		}
+	}
+	return static_cast<int>(hp.size());
+}
+int Character::s_getAttack(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<int> a;
+	if (c)
+	{
+		a.push_back(c->getAttack());
+
+		OurLua::setIntegers(l, a);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			a.push_back(c->getAttack());
+
+			OurLua::setIntegers(l, a);
+		}
+	}
+	return static_cast<int>(a.size());
+}
+int Character::s_getDefence(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<int> d;
+	if (c)
+	{
+		d.push_back(c->getDefence());
+
+		OurLua::setIntegers(l, d);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			d.push_back(c->getDefence());
+			OurLua::setIntegers(l, d);
+		}
+	}
+	return static_cast<int>(d.size());
+}
+int Character::s_Update(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	if (c)
+	{
+		c->Update();
+	}
+
+	return 0;
+}
+int Character::s_Create(lua_State * l)
+{
+	Character ** c = OurLua::createInstanceOf<Character>(l, metaTable);
+	*c = new Character;
+	return 1;
+}
+int Character::s_Destroy(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	if (c)
+	{
+		delete c;
+	}
+
+	return 0;
 }
 
-void Character::decreaseDefence(float decreaseStat)
+int Character::s_SetSprite(lua_State * l)
 {
-	m_defenceStat -= decreaseStat; 
+
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<std::string> path = OurLua::getStrings(l, 1);
+		c->setSprite(path[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<std::string> path = OurLua::getStrings(l, 1);
+			c->setSprite(path[0]);
+		}
+	}
+
+	return 0;
 }
 
-void Character::decreaseHP(float damage)
+int Character::s_getDistanceToPlayer(lua_State * l)
 {
-	m_health -= damage; 
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	float dist = 9999999.0f;
+	if (c)
+	{
+		sf::Vector2f ePos = c->getPosition();
+		sf::Vector2f toPlayer = ePos - Character::playerPos;
+		dist = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			sf::Vector2f ePos = c->getPosition();
+			sf::Vector2f toPlayer = ePos - Character::playerPos;
+			dist = sqrt(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y);
+		}
+	}
+	std::vector<float> d;
+	d.push_back(dist);
+	OurLua::setFloats(l, d);
+	return 1;
 }
 
-void Character::attack()
+int Character::s_getPlayerPos(lua_State * l)
 {
-	m_attacking = true; 
+	std::vector<float> position;
+	position.push_back(Character::playerPos.x);
+	position.push_back(Character::playerPos.y);
+	OurLua::setFloats(l, position);
+	return 2;
 }
 
-void Character::update(float dt)
-{
-	//Entity::update(dt); 
-}

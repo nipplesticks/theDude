@@ -1,4 +1,4 @@
-#include "OurLua.h"
+#include "OurLua.hpp"
 #include <iostream>
 #include <Windows.h>
 OurLua::OurLua(const std::string & script)
@@ -18,6 +18,11 @@ OurLua::OurLua(const std::string & script)
 		std::cout << m_fileName << " Opened\n";
 	}
 	
+}
+
+OurLua::~OurLua()
+{
+	lua_close(m_ls);
 }
 
 void OurLua::PushFunction(int(*function)(lua_State* L), const std::string & name)
@@ -65,7 +70,8 @@ std::vector<std::string> OurLua::getStrings(lua_State * L, int n)
 	std::vector<std::string> r;
 	for (int i = 0; i < n; i++)
 	{
-		r.push_back(lua_tostring(L, -(i + 1)));
+		std::string currentString = std::string(lua_tostring(L, -(i + 1)));
+		r.push_back(currentString);
 	}
 
 	return r;
@@ -132,7 +138,6 @@ void OurLua::Update()
 	int error = lua_pcall(m_ls, 0, 0, 0);
 	if (error)
 		_handleError();
-	
 }
 
 void OurLua::Draw()
