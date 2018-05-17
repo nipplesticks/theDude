@@ -8,8 +8,9 @@ Button::Button(int x, int y, int sizeX, int sizeY)
 {
 	m_buttonShape.setPosition(static_cast<float>(x), static_cast<float>(y));
 	m_buttonShape.setSize(sf::Vector2f(static_cast<float>(sizeX), static_cast<float>(sizeY)));
-	m_buttonShape.setFillColor(sf::Color::Yellow);
-	
+	m_buttonShape.setFillColor(sf::Color::Cyan);
+	m_buttonShape.setOutlineThickness(5.0f);
+	m_buttonShape.setOutlineColor(sf::Color::Black);
 	bool lol;
 	if (!s_fontLoaded)
 	{
@@ -32,17 +33,15 @@ void Button::Update(sf::Vector2i mousePos)
 
 	if (mousePos.x > points[0].x && mousePos.x < points[1].x && mousePos.y > points[0].y && mousePos.y < points[3].y)
 	{
-		m_buttonShape.setOutlineThickness(5.0f);
-		m_buttonShape.setOutlineColor(sf::Color::Black);
+		m_buttonShape.setOutlineColor(sf::Color::Blue);
 		m_buttonText.setFillColor(sf::Color::Blue);
-
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			m_func();
 	}
 	else
 	{
-		m_buttonShape.setOutlineThickness(0.0f);
 		m_buttonText.setFillColor(sf::Color::Black);
+		m_buttonShape.setOutlineColor(sf::Color::Black);
 	}
 }
 
