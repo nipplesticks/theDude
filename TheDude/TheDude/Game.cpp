@@ -58,6 +58,7 @@ void Game::_init()
 void Game::_initEntityHandler()
 {
 	m_entityHandler = new OurLua("Scripts/EntityHandler.Lua");
+	m_entityHandler->PushClassFunction(this, Game::s_test, "testMe");
 	_pushFunctions();
 	m_entityHandler->InitLua();
 }
@@ -165,5 +166,12 @@ int Game::s_setPlayerPos(lua_State * l)
 	Character::playerPos.x = position[1];
 	Character::playerPos.y = position[0];
 
+	return 0;
+}
+
+int Game::s_test(lua_State * l)
+{
+	auto lol = OurLua::getClassPointer<Game>(l);
+	std::cout << (lol) << std::endl;
 	return 0;
 }

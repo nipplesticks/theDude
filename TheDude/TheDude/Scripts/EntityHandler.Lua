@@ -6,6 +6,7 @@ local function _initPlayer()
 	theDude:setColor(0, 255 ,0)
 	theDude:setSprite("zelda.png")
 	playerSpeed = 2.5
+	testMe()
 end
 
 local function _initEnemies()

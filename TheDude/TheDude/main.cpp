@@ -18,7 +18,7 @@ int main()
 	GameTime gameTime;
 	Game game;
 	game.Init(&window);
-
+	std::cout << &game << std::endl;
 	gameTime.Init();
 	while (window.isOpen())
 	{

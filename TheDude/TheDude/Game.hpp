@@ -15,8 +15,8 @@ private:
 	sf::RenderWindow * p_wnd;
 	OurLua * m_entityHandler;
 	static bool s_isGameRunning;
-
 public:
+	int value = 1;
 	Game();
 	~Game();
 
@@ -36,4 +36,5 @@ public:
 	LUA_FUNC s_CheckCollision(lua_State * l);
 	LUA_FUNC s_ExitGame(lua_State * l);
 	LUA_FUNC s_setPlayerPos(lua_State * l);
+	LUA_FUNC s_test(lua_State* l);
 };
