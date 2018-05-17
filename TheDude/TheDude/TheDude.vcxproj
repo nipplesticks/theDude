@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
+    <ClInclude Include="Hack.hpp" />
     <ClInclude Include="States\Editor.hpp" />
     <ClInclude Include="States\Game.hpp" />
     <ClInclude Include="GameTime.hpp" />

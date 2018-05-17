@@ -3,7 +3,6 @@
 #include <sstream> 
 #include <iostream> 
 #include <filesystem>
-#include <algorithm>
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include <array>

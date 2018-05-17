@@ -2,6 +2,7 @@
 #include "Game.hpp"
 #include "Editor.hpp"
 
+
 MainMenu::MainMenu()
 {
 	_init();
@@ -73,10 +74,11 @@ void MainMenu::_init()
 	m_Editor->setFunctionPointer(std::bind(&MainMenu::_pushEditor, this));
 	m_Exit->setFunctionPointer(std::bind(&MainMenu::Pop, this));
 }
-
+#include "../Hack.hpp"
 void MainMenu::_pushGame()
 {
-	State::Push(new Game);
+	Hack::g = new Game;
+	State::Push(Hack::g);
 }
 
 void MainMenu::_pushEditor()

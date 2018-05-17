@@ -31,7 +31,7 @@ local function _collisionHandling()
 		isCollision = CheckCollision(theDude, Enemies[i])
 
 		if isCollision then
-			theDude:AlterHealth(-1)
+			--theDude:AlterHealth(-1)
 
 		end
 	end

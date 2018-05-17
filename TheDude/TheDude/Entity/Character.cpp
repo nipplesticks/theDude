@@ -123,7 +123,7 @@ void Character::DrawOther(sf::RenderWindow * wnd)
 	wnd->draw(m_HPBar);
 }
 
-#include "../States/Game.hpp"
+#include "../Hack.hpp"
 void Character::_initLua()
 {
 	m_script->PushClassFunction(this, Character::s_setColor, "setColor");
@@ -150,6 +150,7 @@ void Character::_initLua()
 	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
 	
 	m_script->PushFunction(Game::s_isKeyPressed, "isKeyPressed");
+	m_script->PushClassFunction(this, Game::s_mapCol, "isColMap");
 
 	m_script->InitLua();
 	//m_script->PushClassFunction(this, Character::s_Update, "Update");

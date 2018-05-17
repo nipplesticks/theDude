@@ -1,7 +1,10 @@
 #include "State.hpp"
+#include "../Hack.hpp"
 
 std::stack<State*>* State::s_states = nullptr;
 sf::RenderWindow* State::s_window = nullptr;
+Game * Hack::g = nullptr;
+
 
 State::State()
 {
