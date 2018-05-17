@@ -12,7 +12,13 @@
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui-SFML.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameTime.cpp" />
+    <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="OurLua\OurLua.cpp" />
     <ClCompile Include="States\Game.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
@@ -42,6 +48,8 @@
     <ClInclude Include="OurLua\OurLua.hpp" />
     <ClInclude Include="States\Game.hpp" />
     <ClInclude Include="States\MainMenu.hpp" />
+    <ClInclude Include="Interface\Button.hpp" />
+    <ClInclude Include="Interface\HeadsUpDisplay.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />

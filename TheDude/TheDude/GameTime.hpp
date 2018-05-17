@@ -1,15 +1,15 @@
 #pragma once
 #include <chrono>
 #include <string>
-#define Clock std::chrono::time_point<std::chrono::steady_clock>
+#define cClock std::chrono::time_point<std::chrono::steady_clock>
 
 
 class GameTime
 {
 private:
 	float m_refreshRate;
-	Clock m_time;
-	Clock m_timer;
+	cClock m_time;
+	cClock m_timer;
 	int m_updates;
 	int m_fpsCounter;
 	float m_frequency;

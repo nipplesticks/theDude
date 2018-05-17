@@ -2,8 +2,10 @@
 #include <iostream>
 
 Grid::Grid(int width, int height, float sizeOfTile, int type)
+	: m_spriteSheet(nullptr)
 {
 	_init(width, height, sizeOfTile, type);
+	m_cullTiles = false;
 }
 
 Grid::Grid(const Grid & other)
@@ -12,19 +14,46 @@ Grid::Grid(const Grid & other)
 	_copy(other);
 }
 
+Grid::~Grid()
+{
+	_cleanup();
+}
+
 void Grid::setTypeOfTile(int x, int y, int type)
 {
 	m_tiles[x][y].setType(type);
 }
 
-void Grid::setColorOfTile(int x, int y, int r, int g, int b)
+void Grid::setColorOfTile(int x, int y, int r, int g, int b, bool perm)
 {
-	m_tiles[x][y].setColor(r, g, b);
+	m_tiles[x][y].setColor(r, g, b, perm);
 }
 
-void Grid::setColorOfTile(int x, int y, const sf::Vector3i& color)
+void Grid::setColorOfTile(int x, int y, const sf::Vector3i& color, bool perm)
 {
-	this->setColorOfTile(x, y, color.x, color.y, color.z);
+	this->setColorOfTile(x, y, color.x, color.y, color.z, perm);
+}
+
+void Grid::setTextureOfTile(int x, int y, const sf::IntRect& rect)
+{
+	if (nullptr == m_spriteSheet)
+	{
+		std::cout << __LINE__ << ": Spritesheet not loaded!";
+		return;
+	}
+
+	if (rect.left == -1)
+	{
+		m_tiles[x][y].RemoveTexture();
+		
+	}
+	else
+		m_tiles[x][y].setTexture(*m_spriteSheet, rect);
+}
+
+void Grid::removeTextureOfTile(int x, int y)
+{
+	m_tiles[x][y].RemoveTexture();
 }
 
 int Grid::getWidth() const
@@ -54,15 +83,24 @@ std::string Grid::toFile() const
 	map += "grid " + std::to_string(m_tiles.size()) + " " + std::to_string(m_tiles[0].size()) + " " +
 		std::to_string(size) + " " + std::to_string(0) + '\n';
 
+	map += "sheet " + m_spritesheetPath + "\n";
+
 	for (size_t i = 0; i < m_tiles.size(); i++)
 	{
 		for (size_t k = 0; k < m_tiles[i].size(); k++)
 		{
-			map += "t " + std::to_string(m_tiles[i][k].getPosition().x / size) + " " + std::to_string(m_tiles[i][k].getPosition().y / size) + " " + 
+			map += "t " + std::to_string(i) + " " + std::to_string(k) + " " + 
 				std::to_string(m_tiles[i][k].getType()) + " ";
 
 			sf::Color c = m_tiles[i][k].getColor();
-			map += std::to_string(c.r) + " " + std::to_string(c.g) + " " + std::to_string(c.b) + '\n';
+			map += std::to_string(c.r) + " " + std::to_string(c.g) + " " + std::to_string(c.b) + " ";
+			if (m_tiles[i][k].hasTexture())
+			{
+				sf::IntRect ir = m_tiles[i][k].getTextureRect();
+				map += std::to_string(ir.left) + " " + std::to_string(ir.top) + "\n";
+			}
+			else
+				map += "-1 -1\n";
 		}
 	}
 
@@ -71,38 +109,47 @@ std::string Grid::toFile() const
 
 void Grid::update(Camera* cam)
 {
-	m_renderableTiles.clear();
-	m_renderableTiles.reserve(m_tiles.size()*m_tiles.size());
-	int scale = static_cast<int>(m_tiles[0][0].getSize().x);
-	int startX = static_cast<int>(-cam->getPosition().x / scale);
-	int startY = static_cast<int>(-cam->getPosition().y / scale);
-	int endX = startX + ( (cam->getWindowWidth()) / scale);
-	int endY = startY + ( (cam->getWindowHeight()) / scale);
-//	std::cout << startX << "," << endX << std::endl;
-	//std::cout << startY << "," << endY << std::endl;
-	
-	for (int i = startX; i < endX; i++)
+	// Culling
+	static sf::Vector2f oldPos = cam->getPosition();
+	sf::Vector2f currentCamPos = cam->getPosition();
+
+	do
 	{
-		if (i < 0 || i >= m_tiles.size()) continue;
+		m_renderableTiles.clear();
 
-		for (int j = startY; j < endY; j++)
+		int scale = static_cast<int>(m_tiles[0][0].getSize().x);
+		int startX = static_cast<int>(-cam->getPosition().x) >> 5;
+
+		int startY = static_cast<int>(-cam->getPosition().y) >> 5;
+		int endX = startX + ((cam->getWindowWidth()) >> 5);
+		int endY = startY + ((cam->getWindowHeight()) >> 5);
+
+		for (int i = startX; i < endX; i++)
 		{
-			if (j < 0 || j >= m_tiles[i].size()) continue;
-			
-			m_renderableTiles.push_back(&m_tiles[i][j]);
-			m_tiles[i][j].setShapePosition(sf::Vector2f(m_tiles[i][j].getPosition()) + cam->getPosition());
-
+			if (!(i < 0 || i >= m_tiles.size()))
+			{
+				for (int j = startY; j < endY; j++)
+				{
+					if (!(j < 0 || j >= m_tiles[i].size()))
+					{
+						m_tiles[i][j].setShapePosition(sf::Vector2f(m_tiles[i][j].getPosition()) + cam->getPosition());
+						m_renderableTiles.push_back(&m_tiles[i][j]);
+					}
+				}
+			}
 		}
-	}
+		oldPos = currentCamPos;
+	} while (oldPos != currentCamPos);
+
+	
 }
 
 void Grid::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-	//std::cout << m_renderableTiles.size() << std::endl;
-	for (auto& tiles : m_renderableTiles)
-		target.draw(*tiles, states);
-	
+	for (auto& t : m_renderableTiles)
+		target.draw(*t);
 }
+
 
 Grid & Grid::operator=(const Grid & other)
 {
@@ -114,6 +161,48 @@ Grid & Grid::operator=(const Grid & other)
 
 	return *this;
 }
+
+void Grid::LoadSpriteSheet(const std::string & path)
+{
+	m_spritesheetPath = path;
+	if (!m_spriteSheet)
+	{
+		m_spriteSheet = new sf::Texture();
+	}
+	m_spriteSheet->loadFromFile(m_spritesheetPath);
+	m_displaySprite.setTexture(*m_spriteSheet);
+
+}
+
+const sf::Sprite & Grid::getDisplaySprite() const
+{
+	return m_displaySprite;
+}
+
+bool Grid::isSpritesheetLoaded() const
+{
+	return m_spriteSheet != nullptr;
+}
+
+sf::Vector2u Grid::getSheetImageSize() const
+{
+	return m_spriteSheet->getSize();
+}
+
+void Grid::MarkMode()
+{
+	for (auto& t : m_tiles)
+		for (auto &t2 : t)
+			t2.ApplyTypeColor();
+}
+
+void Grid::NormalMode()
+{
+	for (auto& t : m_tiles)
+		for (auto &t2 : t)
+			t2.RemoveColors();
+}
+
 
 void Grid::_init(int width, int height, float sizeOfTile, int type)
 {
@@ -149,4 +238,5 @@ void Grid::_cleanup()
 		v.clear();
 	}
 	m_tiles.clear();
+	delete m_spriteSheet;
 }

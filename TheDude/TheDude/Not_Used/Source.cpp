@@ -3,6 +3,9 @@
 #else
 #pragma comment(lib, "Lualib.lib")
 #endif
+#include "imgui.h"
+#include "imgui-SFML.h"
+#include <SFML/System/Clock.hpp>
 
 #include <lua.hpp>
 #include <SFML\Graphics.hpp>
@@ -19,6 +22,7 @@
 #include <fstream>
 #include "Interface\Button.hpp"
 
+
 const float REFRESH_RATE = 60.0f;
 const std::string gameTitle = "theDude!";
 
@@ -33,18 +37,17 @@ void ConsoleThread(lua_State* L) {
 			std::cout << lua_tostring(L, -1) << '\n';
 	}
 }
-void yes()
-{
-	std::cout << "JAG TRYCKTES" << std::endl;
-}
+
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	/*lua_State* L = luaL_newstate();
-	luaL_openlibs(L);
-	std::thread conThread(ConsoleThread, L);*/
-	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
+	//lua_State* L = luaL_newstate();
+	//luaL_openlibs(L);
+	
 
+
+	sf::RenderWindow window(sf::VideoMode(1280,720), gameTitle);
+	ImGui::SFML::Init(window);
 
 	std::stack<State*> stateStack;
 	State::initStatics(&stateStack, &window);
@@ -58,45 +61,51 @@ int main()
 	int fpsCounter = 0;
 	float freq = 1000000000.0f / REFRESH_RATE;
 	float unprocessed = 0;
-	Button lol(200, 200, 100 * (16.0f / 9.0f), 100 );
-	lol.setFunctionPointer(yes);
-	
+	sf::RectangleShape shape;
+	shape.setPosition(0, 0);
+	shape.setFillColor(sf::Color::Yellow);
+	shape.setSize(sf::Vector2f(10, 10));
+	sf::Clock deltaClock;
 
 	while (window.isOpen())
 	{
 		sf::Vector2i mp = sf::Mouse::getPosition(window);
-		lol.update(mp);
 		auto currentTime = steady_clock::now();
 		auto dt = duration_cast<nanoseconds>(currentTime - time).count();
 		time = currentTime;
-
+	
 		unprocessed += dt / freq;
+		
+		
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			ImGui::SFML::ProcessEvent(event);
 
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+		ImGui::SFML::Update(window, deltaClock.restart());
+		
 		while (unprocessed > 1)
 		{
 			updates++;
 			unprocessed -= 1;
-			
-			if (!stateStack.empty())
-				stateStack.top()->Update();
-			else
-				window.close();
 		}
 
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-		}
-
+		if (!stateStack.empty())
+			stateStack.top()->Update();
+		else
+			window.close();
 
 		window.clear();
 		fpsCounter++;
 		
 		if (!stateStack.empty())
 			stateStack.top()->Draw();
-		window.draw(lol);
+
+		ImGui::SFML::Render(window);
+
 		window.display();
 
 		if (duration_cast<milliseconds>(steady_clock::now() - timer).count() > 1000)
@@ -113,7 +122,7 @@ int main()
 			timer += milliseconds(1000);
 		}
 	}
-
+	ImGui::SFML::Shutdown();
 	//conThread.join();
 	return 0;
 }

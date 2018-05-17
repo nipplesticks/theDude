@@ -4,6 +4,7 @@ Tile::Tile(float sizeX, float sizeY, int type)
 {
 	this->setSize(sizeX, sizeY);
 	this->setType(type);
+	m_tempColor = sf::Color::White;
 }
 
 Tile::Tile(const Tile & other)
@@ -49,16 +50,26 @@ void Tile::setSize(const sf::Vector2f & size)
 void Tile::setType(int type)
 {
 	m_type = type;
+	ApplyTypeColor();
 }
 
-void Tile::setColor(int r, int g, int b)
+void Tile::setColor(int r, int g, int b, bool permCol)
 {
-	m_tileShape.setFillColor(sf::Color(static_cast<sf::Uint8>(r), static_cast<sf::Uint8>(g), static_cast<sf::Uint8>(b)));
+	setColor(sf::Color(static_cast<sf::Uint8>(r), static_cast<sf::Uint8>(g), static_cast<sf::Uint8>(b)), permCol);
 }
 
-void Tile::setColor(const sf::Color & color)
+void Tile::setColor(const sf::Color & color, bool perm)
 {
+	if (perm)
+		m_tempColor = color;
 	m_tileShape.setFillColor(color);
+}
+
+void Tile::setTexture(const sf::Texture & texture, const sf::IntRect& rect)
+{
+	m_tileShape.setTexture(&texture);
+	m_tileShape.setTextureRect(rect);
+	m_tileShape.setFillColor(sf::Color::White);
 }
 
 const sf::Color & Tile::getColor() const
@@ -86,6 +97,43 @@ const sf::Vector2f & Tile::getShapePosition() const
 	return m_tileShape.getPosition();
 }
 
+const sf::IntRect & Tile::getTextureRect() const
+{
+	return m_tileShape.getTextureRect();
+}
+
+void Tile::ApplyTypeColor()
+{
+	switch (m_type)
+	{
+	case Solid:
+		m_tileShape.setFillColor(sf::Color::Blue);
+		return;
+	case None:
+		m_tileShape.setFillColor(sf::Color::White);
+		return;
+	case Dangerous:
+		m_tileShape.setFillColor(sf::Color::Red);
+		return;
+	}
+}
+
+void Tile::RemoveColors()
+{
+	m_tileShape.setFillColor(m_tempColor);
+}
+
+void Tile::RemoveTexture()
+{
+	m_tempColor = m_tileShape.getFillColor();
+	m_tileShape.setTexture(NULL);
+}
+
+bool Tile::hasTexture() const
+{
+	return m_tileShape.getTexture() != nullptr;
+}
+
 void Tile::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	target.draw(m_tileShape, states);
@@ -109,6 +157,7 @@ void Tile::_copy(const Tile & other)
 	m_type = other.m_type;
 	m_tileShape = other.m_tileShape;
 	m_pos = other.m_pos;
+	m_tempColor = other.m_tempColor;
 }
 
 void Tile::_cleanup()
