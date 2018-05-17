@@ -33,6 +33,9 @@ Level::~Level()
 void Level::LoadLevel(const std::string & target)
 {
 	_cleanup();
+
+	m_camera = new Camera(static_cast<float>(0), static_cast<float>(0), m_pWindow->getSize().x, m_pWindow->getSize().y);
+
 	std::ifstream map;
 	map.open(target);
 	if (map)
@@ -108,18 +111,6 @@ void Level::LoadLevel(const std::string & target)
 					m_grid = nullptr;
 					m_grid = new Grid(w, h, static_cast<float>(s), t);
 				}
-				else if (type == "cam")
-				{
-					int x, y;
-					sscanf_s(currentLine.c_str(), "%*s %i %i", &x, &y);
-
-					sf::Vector2u wSize = m_pWindow->getSize();
-
-					m_camera = new Camera(static_cast<float>(x), static_cast<float>(y), wSize.x, wSize.y);
-				}
-				
-
-
 			}
 		}
 
@@ -227,22 +218,27 @@ bool Level::SaveLevel(const std::string & target)
 	return true;
 }
 
+const std::vector<std::vector<Tile>>* Level::getMap() const
+{
+	return m_grid->getTiles();
+}
+
 void Level::Update()
 {
 	m_camera->update();
 	m_grid->update(m_camera);
-
-	for (int  i = 0; i < m_entitesForLua.size(); i++)
-	{
-		m_entitesForLua[i].shape.setPosition(m_entitesForLua[i].pos + m_camera->getPosition());
-	}
-	
 }
 
 void Level::EditorRender()
 {	
+	for (int i = 0; i < m_entitesForLua.size(); i++)
+	{
+		m_entitesForLua[i].shape.setPosition(m_entitesForLua[i].pos + m_camera->getPosition());
+		
+		m_pWindow->draw(m_entitesForLua[i].shape);
+	}
+
 	_toolbarRender();
-	
 	if(m_spritePaletteOpen)
 		_spritePaletteRender();
 	if(m_entityPaletteOpen)
@@ -273,10 +269,7 @@ Level & Level::operator=(const Level & other)
 
 void Level::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-	
 	target.draw(*m_grid, states);
-	for (auto& e : m_entitesForLua)
-		target.draw(e.shape,states);
 }
 
 void Level::_toolbarRender()
@@ -497,7 +490,8 @@ void Level::_entityPaletteRender()
 					m_entityInstanceTextures.push_back(TextureWPath());
 					m_entityInstanceTextures.back().texture.loadFromFile(yes);
 					m_entityInstanceTextures.back().path = yes;
-					(*i).erase((*i).begin());
+					if ((*i)[0] == '\\')
+						(*i).erase((*i).begin());
 					std::string luaPath = "Scripts/" + *i;
 					m_entityInstanceTextures.back().luafile = luaPath;
 					EntityTexGroup etg;

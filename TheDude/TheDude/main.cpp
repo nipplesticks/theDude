@@ -21,7 +21,7 @@ void CheckPollEvents(sf::RenderWindow * wnd);
 int main()
 {
 	CHECK_MEMORY_LEAKS;
-	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
+	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle, sf::Style::Titlebar);
 	std::stack<State*> states;
 	State::InitState(&window, &states);
 
@@ -78,6 +78,8 @@ void CheckPollEvents(sf::RenderWindow * wnd)
 	{
 		ImGui::SFML::ProcessEvent(event);
 		if (event.type == sf::Event::Closed)
+		{
 			wnd->close();
+		}
 	}
 }

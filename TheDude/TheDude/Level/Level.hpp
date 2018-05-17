@@ -60,6 +60,8 @@ public:
 	void LoadLevel(const std::string& target);
 	bool SaveLevel(const std::string& target);
 
+	const std::vector<std::vector<Tile>>* getMap() const;
+
 	void Update();
 	// EDITOR {
 		void EditorRender();

@@ -56,6 +56,11 @@ void Grid::removeTextureOfTile(int x, int y)
 	m_tiles[x][y].RemoveTexture();
 }
 
+const std::vector<std::vector<Tile>>* Grid::getTiles() const
+{
+	return &m_tiles;
+}
+
 int Grid::getWidth() const
 {
 	return static_cast<int>(m_tiles[0].size());

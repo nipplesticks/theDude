@@ -2,6 +2,7 @@
 #include "../OurLua/OurLua.hpp"
 #include "State.hpp"
 #include "../Entity/Character.hpp"
+#include "../Level/Level.hpp"
 #include <Windows.h>
 
 #include <iostream>
@@ -14,15 +15,12 @@ class Game : public State
 private:
 	OurLua * m_entityHandler;
 	static bool s_isGameRunning;
-	bool** m_collisionArr;
-	sf::IntRect rectArr[5];
+	Level m_level; 
 public:
 	Game();
 	~Game();
 	void Update() override;
 	void Draw() override;
-	bool** getCollisionArr();
-
 
 private:
 // Help Functions

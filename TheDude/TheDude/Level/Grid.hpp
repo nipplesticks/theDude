@@ -25,7 +25,7 @@ public:
 	void setColorOfTile(int x, int y, const sf::Vector3i& color, bool perm = false);
 	void setTextureOfTile(int x, int y, const sf::IntRect& rect);
 	void removeTextureOfTile(int x, int y);
-
+	const std::vector<std::vector<Tile>>* getTiles() const;
 	void update(Camera* cam);
 
 	int getWidth() const;
