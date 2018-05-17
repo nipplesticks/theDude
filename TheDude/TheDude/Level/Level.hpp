@@ -9,6 +9,7 @@ private:
 	Camera* m_camera;
 	sf::RenderWindow* m_pWindow;
 
+
 	// EDITOR {
 		bool m_closeFlag;
 		bool m_spritePaletteOpen;
@@ -18,14 +19,29 @@ private:
 
 		std::string m_currentTool;
 		bool		m_activeTool[4];
+
 #define TOOL_SPRITE 0
 #define TOOL_ENTITY 1
 #define TOOL_TYPE 2
 #define TOOL_COLOR 3
+
+		struct EntityTexGroup
+		{
+			std::string texturePath;
+			std::vector<sf::Vector2f> m_entityPositions;
+		};
+		std::vector<EntityTexGroup> m_entityTexGroups;
+
+		struct TextureWPath
+		{
+			sf::Texture texture;
+			std::string path;
+		};
+		std::vector<TextureWPath> m_entityInstanceTextures;
+
 		// Only for displaying entities in the editor not during runtime
-		std::vector<sf::Texture> m_entityTextures;
-		std::vector<sf::Vector2f> m_entityPositions;
-		std::vector<sf::RectangleShape> m_entityShapes;
+		std::vector<sf::Vector2f> m_entityInstancePositions;
+		std::vector<sf::RectangleShape> m_entityInstanceShapes;
 	// }
 
 public:

@@ -3,6 +3,7 @@
 #include <sstream> 
 #include <iostream> 
 #include <filesystem>
+#include <algorithm>
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include <array>
@@ -44,9 +45,57 @@ void Level::LoadLevel(const std::string & target)
 			{
 				std::string type = "";
 				std::stringstream stream(currentLine);
-
 				stream >> type;
-				if (type == "sheet")
+				if (type == "sp")
+				{
+					std::string spritePath;
+					stream >> spritePath;
+					m_entityInstanceTextures.push_back(TextureWPath());
+					m_entityInstanceTextures.back().path = spritePath;
+					m_entityInstanceTextures.back().texture.loadFromFile(spritePath);
+
+				}
+				else if (type == "p")
+				{
+					m_entityInstanceShapes.push_back(sf::RectangleShape());
+					m_entityInstanceShapes.back().setTexture(&m_entityInstanceTextures.back().texture);
+					m_entityInstanceShapes.back().setFillColor(sf::Color::Red);
+					int xCoord, yCoord;
+					stream >> xCoord >> yCoord;
+					sf::Vector2f pos(xCoord, yCoord);
+					m_entityInstancePositions.push_back(pos);
+					m_entityInstanceShapes.back().setPosition(pos);
+					if (m_entityTexGroups.size())
+					{
+						bool notFound = true;
+						for (int ti = 0; ti < m_entityTexGroups.size() && notFound; ti++)
+						{
+							if (m_entityTexGroups[ti].texturePath == m_entityInstanceTextures.back().path)
+							{
+								notFound = false;
+								m_entityTexGroups[ti].m_entityPositions.push_back(pos);
+								break;
+							}
+
+						}
+						if (!notFound)
+						{
+							EntityTexGroup etg;
+							etg.texturePath = m_entityInstanceTextures.back().path;
+							etg.m_entityPositions.push_back(pos);
+							m_entityTexGroups.push_back(etg);
+						}
+					}
+					else
+					{
+						EntityTexGroup etg;
+						etg.texturePath = m_entityInstanceTextures.back().path;
+						etg.m_entityPositions.push_back(pos);
+						m_entityTexGroups.push_back(etg);
+					}
+				
+				}
+				else if (type == "sheet")
 				{
 					std::string path;
 					stream >> path;
@@ -129,6 +178,7 @@ void Level::LoadLevel(const std::string & target)
 	{
 		std::cout << "Could not open " << target << " please dont suck\n";
 	}
+	int i = 0;
 }
 
 bool Level::SaveLevel(const std::string & target)
@@ -138,6 +188,12 @@ bool Level::SaveLevel(const std::string & target)
 	if (map)
 	{
 		map << "cam 100 0\n";
+		for (auto& etg : m_entityTexGroups)
+		{
+			map << "sp "<< etg.texturePath << "\n";
+			for (auto& pos : etg.m_entityPositions)
+				map << "p " << pos.x << " " << pos.y << "\n";
+		}
 		map << m_grid->toFile();
 		return true;
 	}
@@ -149,9 +205,9 @@ void Level::Update()
 	m_camera->update();
 	m_grid->update(m_camera);
 
-	for (int  i = 0; i < m_entityShapes.size(); i++)
+	for (int  i = 0; i < m_entityInstanceShapes.size(); i++)
 	{
-		m_entityShapes[i].setPosition(m_entityPositions[i] + m_camera->getPosition());
+		m_entityInstanceShapes[i].setPosition(m_entityInstancePositions[i] + m_camera->getPosition());
 	}
 	
 }
@@ -192,7 +248,7 @@ void Level::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	
 	target.draw(*m_grid, states);
-	for (auto& e : m_entityShapes)
+	for (auto& e : m_entityInstanceShapes)
 		target.draw(e,states);
 }
 
@@ -381,18 +437,59 @@ void Level::_entityPaletteRender()
 	{
 		sampleTexture.loadFromFile("sample.png");
 		displayTexure.setTexture(sampleTexture);
-		for (auto& s : strs)
+		auto i = std::begin(strs);
+		while (i != std::end(strs))
 		{
 			std::string currentPath;
 
-			currentPath += path + s.c_str();
+			currentPath += path + (*i).c_str();
 			std::string yes = getTexturePath(currentPath);
-			m_entityTextures.push_back(sf::Texture());
-			if (yes != "")
-				m_entityTextures.back().loadFromFile(yes);
+			
+			if (yes == "")
+			{
+				i = strs.erase(i);
+			}
 			else
-				m_entityTextures.back() = sampleTexture;
+			{
+				int nrOfLoadedTextures = m_entityTexGroups.size();
+				if (nrOfLoadedTextures)
+				{
+					bool exists = false;
+					for (int k = 0; k < nrOfLoadedTextures; k++)
+					{
+						if (m_entityTexGroups[k].texturePath == yes)
+						{
+							exists = true;
+						}
+					}
+					if (!exists)
+					{
+						m_entityInstanceTextures.push_back(TextureWPath());
+						m_entityInstanceTextures.back().texture.loadFromFile(yes);
+						m_entityInstanceTextures.back().path = yes;
+						EntityTexGroup etg;
+						etg.texturePath = yes;
+						m_entityTexGroups.push_back(etg);
+					}
+					
+				}
+				else
+				{
+					m_entityInstanceTextures.push_back(TextureWPath());
+					m_entityInstanceTextures.back().texture.loadFromFile(yes);
+					m_entityInstanceTextures.back().path = yes;
+					EntityTexGroup etg;
+					etg.texturePath = yes;
+					m_entityTexGroups.push_back(etg);
+				}
+
+				
+				
+				i++;
+			}
+
 		}
+		
 		loadedSprites = true;
 
 	}
@@ -407,7 +504,7 @@ void Level::_entityPaletteRender()
 		{
 			_resetArray(selectable, i);
 			currentTextureIndex = i;
-			displayTexure.setTexture(m_entityTextures[i]);
+			displayTexure.setTexture(m_entityInstanceTextures[i].texture);
 		}
 
 	}
@@ -423,7 +520,8 @@ void Level::_entityPaletteRender()
 			{
 				sf::Vector2f position = sf::Vector2f(index.x << 5, index.y << 5);
 				bool existing = false;
-				for(auto& currentPos : m_entityPositions )
+
+				for(auto& currentPos : m_entityInstancePositions )
 					if (currentPos == position)
 					{
 						existing = true;
@@ -432,10 +530,18 @@ void Level::_entityPaletteRender()
 				if (!existing)
 				{
 					
-					m_entityShapes.push_back(sf::RectangleShape(sf::Vector2f(32, 32)));
-					m_entityShapes.back().setTexture(&m_entityTextures[currentTextureIndex]);
-					m_entityShapes.back().setPosition(position + m_camera->getPosition());
-					m_entityPositions.push_back(position);
+					m_entityInstanceShapes.push_back(sf::RectangleShape(sf::Vector2f(32, 32)));
+					m_entityInstanceShapes.back().setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+					m_entityInstanceShapes.back().setPosition(position + m_camera->getPosition());
+					
+					m_entityInstancePositions.push_back(position);
+					for (auto& etg : m_entityTexGroups)
+					{
+						if (etg.texturePath == m_entityInstanceTextures[currentTextureIndex].path)
+						{
+							etg.m_entityPositions.push_back(position);
+						}
+					}
 				}
 				
 
@@ -591,14 +697,16 @@ std::string Level::getTexturePath(std::string luafile) const
 
 void Level::_cleanup()
 {
-	if (m_grid)
-		delete m_grid;
+
+	delete m_grid;
 	m_grid = nullptr;
-	if (m_camera) delete m_camera;
+	delete m_camera;
 	m_camera = nullptr;
-	m_entityPositions.clear();
-	m_entityShapes.clear();
-	m_entityTextures.clear();
+
+	m_entityTexGroups.clear();
+	m_entityInstancePositions.clear();
+	m_entityInstanceShapes.clear();
+	m_entityInstanceTextures.clear();
 }
 
 void Level::_copy(const Level & other)

@@ -3,7 +3,7 @@ require("Scripts.EntityHandler")
 function init()
 	setColor(255, 0, 255)
 	setPosition(50, 50)
-	setSprite("jew.jpg")
+	setSprite("goomba.png")
 	s1x = -1
 	s1y = -1
 

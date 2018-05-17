@@ -27,7 +27,7 @@ int main()
 	GameTime gameTime;
 	Game game;
 	Level level(&window);
-	level.LoadLevel("Resourses/Levels/lol.txt");
+	level.LoadLevel("Resourses/Levels/test34");
 
 	game.Init(&window);
 
