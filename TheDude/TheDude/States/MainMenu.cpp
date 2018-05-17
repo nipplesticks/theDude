@@ -115,7 +115,7 @@ void MainMenu::_moveBackground()
 
 	if (canUpdate == 0)
 	{
-		if (abs(counter) >= 255)
+		if (abs(counter) >= 356)
 			add = !add;
 		if (add)
 			counter++;
