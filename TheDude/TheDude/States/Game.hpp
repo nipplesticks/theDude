@@ -1,9 +1,9 @@
 #pragma once
-#include "OurLua/OurLua.hpp"
+#include "../OurLua/OurLua.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
-#include "Entity\Character.hpp"
+#include "../Entity/Character.hpp"
 #include <Windows.h>
 #include <SFML\Graphics.hpp>
 

@@ -1,5 +1,5 @@
 #include "Game.hpp"
-#include "RenderQueue.hpp"
+#include "../RenderQueue.hpp"
 
 std::vector<Entity*> Render::g_renderQueue;
 bool Game::s_isGameRunning = true;

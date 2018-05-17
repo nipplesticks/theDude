@@ -147,7 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="States\Game.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
@@ -165,7 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
-    <ClInclude Include="Game.hpp" />
+    <ClInclude Include="States\Game.hpp" />
     <ClInclude Include="GameTime.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Level\Grid.hpp" />

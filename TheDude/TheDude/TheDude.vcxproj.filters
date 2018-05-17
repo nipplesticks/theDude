@@ -14,9 +14,9 @@
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
-    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="OurLua\OurLua.cpp" />
+    <ClCompile Include="States\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -40,10 +40,10 @@
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
-    <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameTime.hpp" />
     <ClInclude Include="RenderQueue.hpp" />
     <ClInclude Include="OurLua\OurLua.hpp" />
+    <ClInclude Include="States\Game.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
