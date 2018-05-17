@@ -40,6 +40,10 @@ void Game::Draw()
 		sf::Vector2f worldPos = entity->getPosition();
 		entity->setViewPos(worldPos - camPos);
 		s_window->draw(entity->getShape());
+
+		Character * p = dynamic_cast<Character*>(entity);
+		if (p) p->DrawOther(s_window);
+
 	}
 
 }

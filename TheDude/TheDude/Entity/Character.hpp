@@ -8,13 +8,22 @@ public:
 	static sf::Vector2f playerPos;
 private:
 	int m_health; 
+	int m_maxHealth;
 	int m_attack; 
 	int m_defence; 
 	OurLua * m_script;
+	
+	sf::RectangleShape	m_HPBar;
+	sf::RectangleShape	m_HPBack;
+	sf::Vector2f		m_HPOffset;
+	sf::Vector2f		m_HPScl;
 
 public:
 	Character();
 	~Character(); 
+
+	// Put size to -1 if you want to stretch to spr size
+	void setHPBarSize(int x = 50, int y = 100, int sx = 100, int sy = 10);
 
 	void AddScript(const std::string &path);
 
@@ -30,7 +39,8 @@ public:
 	int getDefence() const; 
 
 	void Update() override;
-
+	void setViewPos(sf::Vector2f viewPos) override;
+	void DrawOther(sf::RenderWindow * wnd);
 private:
 	// Helpt Funcitons
 	void _initLua();
@@ -61,7 +71,7 @@ public:
 	LUA_FUNC s_Create(lua_State * l);
 	LUA_FUNC s_Destroy(lua_State * l);
 	LUA_FUNC s_SetSprite(lua_State* l);
+	LUA_FUNC s_SetHPBar(lua_State* l);
 	LUA_FUNC s_getDistanceToPlayer(lua_State * l);
-
 	LUA_FUNC s_getPlayerPos(lua_State * l);
 };

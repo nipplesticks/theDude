@@ -6,15 +6,38 @@ sf::Vector2f Character::playerPos = sf::Vector2f(0.0f, 0.0f);
 Character::Character() : Entity()
 {
 	m_health = 100;
+	m_maxHealth = 100;
 	m_attack = 10;
 	m_defence = 10;
 	m_script = nullptr;
+	m_HPBar.setFillColor(sf::Color::Green);
+	m_HPBack.setFillColor(sf::Color::Red);
+	setHPBarSize(50, -2, 50, 10);
 }
 
 Character::~Character()
 {
 	if (m_script)
 		delete m_script;
+}
+
+void Character::setHPBarSize(int x, int y, int sx, int sy)
+{
+	m_HPOffset.x = x;
+	m_HPOffset.y = y;
+	m_HPScl.x = sx;
+	m_HPScl.y = sy;
+	
+	sf::Vector2f rP = getShape().getPosition();
+	sf::Vector2f rS = getShape().getSize();
+
+	m_HPBar.setPosition(rP.x + rS.x * m_HPOffset.x * 0.01f, rP.y + rS.y * m_HPOffset.y * 0.01f);
+	m_HPBar.setSize(sf::Vector2f(rS.x * m_HPScl.x * 0.01f, rS.y * m_HPScl.y * 0.01f));
+	m_HPBar.setOrigin(m_HPBar.getSize() * 0.5f);
+
+	m_HPBack.setPosition(m_HPBar.getPosition());
+	m_HPBack.setSize(m_HPBar.getSize());
+	m_HPBack.setOrigin(m_HPBar.getOrigin());
 }
 
 void Character::AddScript(const std::string & path)
@@ -33,6 +56,9 @@ bool Character::isDead() const
 void Character::setHealth(int health)
 {
 	m_health = health;
+	m_maxHealth = health;
+	sf::Vector2f rS = getShape().getSize();
+	m_HPBar.setSize(sf::Vector2f(rS.x * m_HPScl.x * 0.01f, rS.y * m_HPScl.y * 0.01f));
 }
 
 void Character::setAttack(int attack)
@@ -48,6 +74,11 @@ void Character::setDefence(int defence)
 void Character::AlterHealth(int health)
 {
 	m_health += health;
+	if (m_health < 0) m_health = 0;
+	else if (m_health > m_maxHealth) m_health = m_maxHealth;
+	float i = static_cast<float>(m_health) / m_maxHealth;
+	sf::Vector2f rS = getShape().getSize();
+	m_HPBar.setSize(sf::Vector2f(rS.x * m_HPScl.x * 0.01f * i, rS.y * m_HPScl.y * 0.01f));
 }
 
 int Character::getHealth() const
@@ -71,6 +102,22 @@ void Character::Update()
 		m_script->Update();
 }
 
+void Character::setViewPos(sf::Vector2f viewPos)
+{
+	Entity::setViewPos(viewPos);
+	sf::Vector2f rP = getShape().getPosition();
+	sf::Vector2f rS = getShape().getSize();
+	m_HPBar.setPosition(rP.x + rS.x * m_HPOffset.x * 0.01f, rP.y + rS.y * m_HPOffset.y * 0.01f);
+	m_HPBack.setPosition(m_HPBar.getPosition());
+}
+
+void Character::DrawOther(sf::RenderWindow * wnd)
+{
+	wnd->draw(m_HPBack);
+	wnd->draw(m_HPBar);
+}
+
+#include "../States/Game.hpp"
 void Character::_initLua()
 {
 	m_script->PushClassFunction(this, Character::s_setColor, "setColor");
@@ -93,7 +140,11 @@ void Character::_initLua()
 	m_script->PushClassFunction(this, Character::s_getDefence, "getDefence");
 	m_script->PushClassFunction(this, Character::s_SetSprite, "setSprite");
 	m_script->PushClassFunction(this, Character::s_getDistanceToPlayer, "getDistanceToPlayer");
+	m_script->PushClassFunction(this, Character::s_SetHPBar, "setHPBar");
 	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
+	
+	m_script->PushFunction(Game::s_isKeyPressed, "isKeyPressed");
+
 	m_script->InitLua();
 	//m_script->PushClassFunction(this, Character::s_Update, "Update");
 }
@@ -509,6 +560,28 @@ int Character::s_SetSprite(lua_State * l)
 		{
 			std::vector<std::string> path = OurLua::getStrings(l, 1);
 			c->setSprite(path[0]);
+		}
+	}
+
+	return 0;
+}
+
+int Character::s_SetHPBar(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<int> values = OurLua::getIntegers(l, 4);
+		c->setHPBarSize(values[3], values[2], values[1], values[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<int> values = OurLua::getIntegers(l, 4);
+			c->setHPBarSize(values[3], values[2], values[1], values[0]);
 		}
 	}
 
