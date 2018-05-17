@@ -8,12 +8,6 @@ State::State()
 
 }
 
-void State::initStatics(std::stack<State*>* stack, sf::RenderWindow* window)
-{
-	s_states = stack;
-	s_window = window;
-}
-
 void State::Pop()
 {
 	if (!s_states->empty())
@@ -24,4 +18,10 @@ void State::Pop()
 void State::Push(State * state)
 {
 	s_states->push(state);
+}
+
+void State::InitState(sf::RenderWindow* window, std::stack<State*>* states)
+{
+	s_states = states;
+	s_window = window;
 }
