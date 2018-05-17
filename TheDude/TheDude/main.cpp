@@ -25,15 +25,8 @@ int main()
 	std::stack<State*> states;
 	State::InitState(&window, &states);
 
-	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 	ImGui::SFML::Init(window);
 
-	GameTime gameTime;
-	Game game;
-	Level level(&window);
-	level.LoadLevel("Resourses/Levels/test34");
-
-	game.Init(&window);
 	GameTime gameTime;
 	
 	states.push(new MainMenu());
@@ -42,7 +35,6 @@ int main()
 	gameTime.Init();
 	sf::Clock clock;
 							// V THIS IS FOR THE MENU LATER
-	while (window.isOpen() && level.isClose())
 	while (!states.empty())
 	{
 		window.clear();
@@ -57,19 +49,14 @@ int main()
 		{
 			if (!states.empty())
 				states.top()->Update();
-			//game.update();
-			level.Update();
-		}
-		level.EditorRender();
-		window.draw(level);
-		ImGui::SFML::Render(window);
-		window.display();
-	//	game.draw();
 
-		CheckPollEvents(&window);
+		}
+
 
 		if (!states.empty())
 			states.top()->Draw();
+		ImGui::SFML::Render(window);
+		window.display();
 
 		if (gameTime.HasTimePassed(1000.0f))
 		{

@@ -1,5 +1,6 @@
 #include "MainMenu.hpp"
 #include "Game.hpp"
+#include "Editor.hpp"
 
 MainMenu::MainMenu()
 {
@@ -31,7 +32,7 @@ void MainMenu::Draw()
 	m_Game->draw(*s_window, sf::RenderStates::Default);
 	m_Editor->draw(*s_window, sf::RenderStates::Default);
 	m_Exit->draw(*s_window, sf::RenderStates::Default);
-	s_window->display();
+
 }
 
 void MainMenu::_init()
@@ -80,8 +81,7 @@ void MainMenu::_pushGame()
 
 void MainMenu::_pushEditor()
 {
-	//State::Push(new Editor);
-	printf("yet to be implemented");
+	State::Push(new Editor);
 }
 
 void MainMenu::_moveBackground()

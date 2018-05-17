@@ -41,7 +41,7 @@ void Game::Draw()
 		entity->setViewPos(worldPos - camPos);
 		s_window->draw(entity->getShape());
 	}
-	s_window->display();
+
 }
 
 void Game::_init()

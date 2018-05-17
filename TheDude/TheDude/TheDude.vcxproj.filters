@@ -16,12 +16,12 @@
     <ClCompile Include="imgui_draw.cpp" />
     <ClCompile Include="imgui-SFML.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
-    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="OurLua\OurLua.cpp" />
     <ClCompile Include="States\Game.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
+    <ClCompile Include="States\Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -50,6 +50,7 @@
     <ClInclude Include="States\MainMenu.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Interface\HeadsUpDisplay.h" />
+    <ClInclude Include="States\Editor.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
