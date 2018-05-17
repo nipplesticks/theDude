@@ -34,14 +34,27 @@ local tempSpeed = Speed
 
 	if isKeyPressed("UP") then
 		Move(0,-tempSpeed)
+		if isColMap() then
+		Move(0,tempSpeed)
+		end
 	elseif isKeyPressed("DOWN") then
 		Move(0,tempSpeed)
+		if isColMap() then
+		Move(0,-tempSpeed)
+		end
 	end
 
 	if isKeyPressed("RIGHT") then
 		Move(tempSpeed,0)
+		if isColMap() then
+		Move(-tempSpeed,0)
+		end
 	elseif isKeyPressed("LEFT") then
 		Move(-tempSpeed,0)
+		if isColMap() then
+		Move(tempSpeed,0)
+		end
+
 	end
 end
 

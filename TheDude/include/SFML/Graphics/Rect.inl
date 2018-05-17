@@ -24,6 +24,8 @@
 
 
 ////////////////////////////////////////////////////////////
+#include <algorithm>
+
 template <typename T>
 Rect<T>::Rect() :
 left  (0),

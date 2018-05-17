@@ -1,8 +1,8 @@
 #pragma once
-#include <Windows.h>
 #include "../OurLua/OurLua.hpp"
 #include "State.hpp"
 #include "../Entity/Character.hpp"
+#include <Windows.h>
 
 #include <iostream>
 #include <vector>
@@ -14,11 +14,15 @@ class Game : public State
 private:
 	OurLua * m_entityHandler;
 	static bool s_isGameRunning;
+	bool** m_collisionArr;
+	sf::IntRect rectArr[5];
 public:
 	Game();
 	~Game();
 	void Update() override;
 	void Draw() override;
+	bool** getCollisionArr();
+
 
 private:
 // Help Functions
@@ -34,7 +38,3 @@ public:
 	LUA_FUNC s_setPlayerPos(lua_State * l);
 	LUA_FUNC s_mapCol(lua_State* l);
 };
-	sf::IntRect rectArr[5];
-
-	bool** getCollisionArr(); 
-	bool** m_collisionArr;
