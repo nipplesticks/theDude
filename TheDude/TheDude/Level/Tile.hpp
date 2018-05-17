@@ -6,9 +6,9 @@ class Tile : public sf::Drawable
 public:
 	enum Type
 	{
-		Water,
-		Ground,
-		Wall
+		None,
+		Dangerous,
+		Solid
 	};
 
 private:
@@ -16,6 +16,7 @@ private:
 	sf::Vector2i		m_pos;
 	sf::Vector2f		m_scale;
 	int					m_type;
+	sf::Color		m_tempColor;
 
 public:
 	Tile(float sizeX = 16, float sizeY = 16, int type = 0);
@@ -30,14 +31,21 @@ public:
 	void setSize(float x, float y);
 	void setSize(const sf::Vector2f &size);
 	void setType(int type);
-	void setColor(int r, int g, int b);
-	void setColor(const sf::Color &color);
+	void setColor(int r, int g, int b, bool permCol);
+	void setColor(const sf::Color &color, bool permanant = false);
+	void setTexture(const sf::Texture & texture, const sf::IntRect& rect);
 	const sf::Color& getColor() const;
 
 	int getType() const;
 	const sf::Vector2f& getSize() const;
 	const sf::Vector2i& getPosition() const;
 	const sf::Vector2f& getShapePosition() const;
+	const sf::IntRect& getTextureRect() const;
+
+	void ApplyTypeColor();
+	void RemoveColors();
+	void RemoveTexture();
+	bool hasTexture() const;
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

@@ -37,7 +37,7 @@ void GameTime::setRefreshRate(float refreshRate)
 
 void GameTime::UpdateGameTime()
 {
-	Clock currentTime = steady_clock::now();
+	cClock currentTime = steady_clock::now();
 	long long dt = CastNano(currentTime - m_time).count();
 	m_time = currentTime;
 	m_unprocessed += dt / m_frequency;

@@ -4,7 +4,7 @@ function init()
 	setHPBar(50,110,50,10)
 	setHealth(100)
 	setColor(255, 0, 255)
-	setSprite("jew.jpg")
+	setSprite("goomba.png")
 	s1x = -1
 	s1y = -1
 

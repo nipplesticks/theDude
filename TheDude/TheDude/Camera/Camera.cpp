@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 #include <SFML\Window\Keyboard.hpp>
+#include <SFML\Window\Mouse.hpp>
 #include <iostream>
 Camera::Camera(float startX, float startY, int winWidth, int winHeight)
 {
@@ -14,8 +15,18 @@ Camera::Camera(float startX, float startY, int winWidth, int winHeight)
 void Camera::update()
 {
 	m_deltaPos = sf::Vector2f(0, 0);
+	sf::Vector2i currentPos = sf::Mouse::getPosition();
+	static sf::Vector2i lastPos = sf::Vector2i(0, 0);
+	sf::Vector2i deltaPos = lastPos - currentPos;
+	lastPos = currentPos;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+	{
+		m_deltaPos.x = -deltaPos.x * m_speed;
+		m_deltaPos.y = -deltaPos.y * m_speed;
+	}
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 	{
 		m_deltaPos.y -= -1 * m_speed;
 	}
@@ -31,7 +42,7 @@ void Camera::update()
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 	{
 		m_deltaPos.x -= 1 * m_speed;
-	}
+	}*/
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
 	{

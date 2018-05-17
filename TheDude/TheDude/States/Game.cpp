@@ -45,7 +45,7 @@ void Game::Draw()
 		if (p) p->DrawOther(s_window);
 
 	}
-	s_window->display();
+
 }
 
 void Game::_init()

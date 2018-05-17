@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -147,8 +147,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="States\Editor.cpp" />
     <ClCompile Include="States\Game.cpp" />
     <ClCompile Include="GameTime.cpp" />
+    <ClCompile Include="imgui-SFML.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
     <ClCompile Include="Level\Grid.cpp" />
     <ClCompile Include="Level\Level.cpp" />
@@ -164,9 +169,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
+    <ClInclude Include="States\Editor.hpp" />
     <ClInclude Include="States\Game.hpp" />
     <ClInclude Include="GameTime.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
+    <ClInclude Include="Interface\HeadsUpDisplay.h" />
     <ClInclude Include="Level\Grid.hpp" />
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="Level\Tile.hpp" />
