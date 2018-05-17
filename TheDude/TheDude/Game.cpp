@@ -266,34 +266,6 @@ int Game::s_mapCol(lua_State * l)
 				if (lol.intersects(collidePoints[6]) || lol.intersects(collidePoints[7])) 
 					collided = true;
 			}
-			//Right Up
-			  if (map[eTileX + 1][eTileY - 1] == true)
-			{
-				sf::IntRect lol = { int((*e[i])->getPosition().x + 32) ,int((*e[i])->getPosition().y) - 32,32,32 };
-				if (lol.intersects(sf::IntRect((*e[i])->getShape().getGlobalBounds())))
-					collided = true;
-			}
-			//Left Up
-			  if (map[eTileX - 1][eTileY - 1] == true)
-			{
-				sf::IntRect lol = { int((*e[i])->getPosition().x - 32) ,int((*e[i])->getPosition().y - 32),32,32 };
-				if (lol.intersects(sf::IntRect((*e[i])->getShape().getGlobalBounds())))
-					collided = true;
-			}
-			//Right Down
-			  if (map[eTileX + 1][eTileY + 1] == true)
-			{
-				sf::IntRect lol = { int((*e[i])->getPosition().x + 32) ,int((*e[i])->getPosition().y + 32),32,32 };
-				if (lol.intersects(sf::IntRect((*e[i])->getShape().getGlobalBounds())))
-					collided = true;
-			}
-			//Left Down
-			  	if (map[eTileX - 1][eTileY + 1] == true)
-			{
-				sf::IntRect lol = { int((*e[i])->getPosition().x - 32) ,int((*e[i])->getPosition().y + 32),32,32 };
-				if (lol.intersects(sf::IntRect((*e[i])->getShape().getGlobalBounds())))
-					collided = true;
-			}
 		}
 	}
 		
