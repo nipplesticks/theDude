@@ -8,11 +8,40 @@ Game::Game()
 {
 	m_entityHandler = nullptr;
 	p_wnd = nullptr;
+	m_collisionArr = new bool*[100];
+	for (int i = 0; i < 100; i++)
+	{
+		m_collisionArr[i] = new bool[100]; 
+		for (int k = 0; k < 100; k++)
+		{
+			m_collisionArr[i][k] = false;
+		}
+	}
+	m_collisionArr[0][0] = true;
+	rectArr[0] = { 0,0,32,32 }; 
+	m_collisionArr[10][10] = true;
+	rectArr[1] = { 10,10,32,32 };
+	m_collisionArr[20][20] = true;
+	rectArr[2] = { 20,20,32,32 };
+	m_collisionArr[30][30] = true;
+	rectArr[3] = { 30,30,32,32 };
+	m_collisionArr[40][40] = true;
+	rectArr[4] = { 40,40,32,32 };
 }
 
 Game::~Game()
 {
 	delete m_entityHandler;
+	for (int i = 0; i < 100; i++)
+	{
+		delete[] m_collisionArr[i]; 
+	}
+	delete[] m_collisionArr; 
+}
+
+bool ** Game::getCollisionArr()
+{
+	return m_collisionArr;
 }
 
 void Game::Init(sf::RenderWindow * wnd)
@@ -25,7 +54,7 @@ void Game::update()
 {
 	if (s_isGameRunning)
 	{
-		m_entityHandler->Update();
+		m_entityHandler->Update(); 
 	}
 	else
 	{
@@ -58,7 +87,7 @@ void Game::_init()
 void Game::_initEntityHandler()
 {
 	m_entityHandler = new OurLua("Scripts/EntityHandler.Lua");
-	m_entityHandler->PushClassFunction(this, Game::s_test, "testMe");
+	m_entityHandler->PushClassFunction(this, Game::s_mapCol, "testMe");
 	_pushFunctions();
 	m_entityHandler->InitLua();
 }
@@ -169,9 +198,108 @@ int Game::s_setPlayerPos(lua_State * l)
 	return 0;
 }
 
-int Game::s_test(lua_State * l)
+int Game::s_mapCol(lua_State * l)
 {
-	auto lol = OurLua::getClassPointer<Game>(l);
-	std::cout << (lol) << std::endl;
-	return 0;
+	auto gamePtr = OurLua::getClassPointer<Game>(l);
+	std::vector<Entity**> e = OurLua::getInstancePointer<Entity>(l,1);
+	bool** map = gamePtr->getCollisionArr(); 
+	bool collided = false;
+	sf::IntRect collidePoints[8]; 
+
+	for (int i = 0; i < e.size() && !collided; i++)
+	{
+		int eTileX = (*e[i])->getPosition().x / 32; 
+		int eTileY = (*e[i])->getPosition().y / 32; 
+
+		sf::Vector2i generalSize = sf::Vector2i((*e[i])->getShape().getSize()); 
+		//Set collidePoints 
+		
+		//LeftUp
+		collidePoints[0] = sf::IntRect{ int((*e[i])->getPosition().x) + 2, int((*e[i])->getPosition().y) + 2,3,3};
+		//LeftDown
+		collidePoints[1] = sf::IntRect{ int((*e[i])->getPosition().x) + 2, int((*e[i])->getPosition().y) + (generalSize.y - 4),3,3 };
+		//UpLeft
+		collidePoints[2] = sf::IntRect{ int((*e[i])->getPosition().x) + 4, int((*e[i])->getPosition().y) + 1,3,3 };
+		//UpRight 
+		collidePoints[3] = sf::IntRect{ int((*e[i])->getPosition().x) + (generalSize.x - 4), int((*e[i])->getPosition().y) + 1,3,3 };
+		//RightUp
+		collidePoints[4] = sf::IntRect{ int((*e[i])->getPosition().x) + (generalSize.x - 2), int((*e[i])->getPosition().y) + 2,3,3 };
+		//RightDown
+		collidePoints[5] = sf::IntRect{ int((*e[i])->getPosition().x) + (generalSize.x - 2), int((*e[i])->getPosition().y) + (generalSize.y - 4),3,3 };
+		//DownLeft
+		collidePoints[6] = sf::IntRect{ int((*e[i])->getPosition().x) + 4, int((*e[i])->getPosition().y) + (generalSize.y - 2),3,3 };
+		//DownRight
+		collidePoints[7] = sf::IntRect{ int((*e[i])->getPosition().x) +	(generalSize.x - 4), int((*e[i])->getPosition().y) + (generalSize.y - 2),3,3 };
+
+		std::cout<< "\rT(" << eTileX << "," << eTileY << ")" << " P(" << (*e[i])->getPosition().x << ", " << (*e[i])->getPosition().y << ")" <<std::flush;
+		
+		if (eTileX > 0 && eTileY > 0 &&
+			eTileX < 38 && eTileY < 40)
+		{
+			//Right
+			if (map[eTileX + 1][eTileY] == true)
+			{
+				sf::IntRect lol = { int((*e[i])->getPosition().x + 32) ,int((*e[i])->getPosition().y),32,32 };
+				if (lol.intersects(collidePoints[4]) ||lol.intersects(collidePoints[5]))
+				{ 
+					collided = true; 
+				}
+			}
+			//Left
+			  if (map[eTileX - 1][eTileY] == true)
+			{
+				sf::IntRect lol = { int((*e[i])->getPosition().x - generalSize.x) ,int((*e[i])->getPosition().y),generalSize.x,generalSize.y };
+				if (lol.intersects(collidePoints[0]) || lol.intersects(collidePoints[1]))
+					collided = true; 
+			}
+			//Up
+			  if (map[eTileX][eTileY - 1] == true)
+			{
+				sf::IntRect lol = { int((*e[i])->getPosition().x) , int((*e[i])->getPosition().y) - generalSize.y,generalSize.x,generalSize.y };
+				if (lol.intersects(collidePoints[2]) || lol.intersects(collidePoints[3]))
+					collided = true;
+			}
+			//Down
+			  if (map[eTileX][eTileY + 1] == true)
+			{
+				sf::IntRect lol = {int((*e[i])->getPosition().x),int((*e[i])->getPosition().y) + generalSize.y ,generalSize.x,generalSize.y};
+				if (lol.intersects(collidePoints[6]) || lol.intersects(collidePoints[7])) 
+					collided = true;
+			}
+			//Right Up
+			  if (map[eTileX + 1][eTileY - 1] == true)
+			{
+				sf::IntRect lol = { int((*e[i])->getPosition().x + 32) ,int((*e[i])->getPosition().y) - 32,32,32 };
+				if (lol.intersects(sf::IntRect((*e[i])->getShape().getGlobalBounds())))
+					collided = true;
+			}
+			//Left Up
+			  if (map[eTileX - 1][eTileY - 1] == true)
+			{
+				sf::IntRect lol = { int((*e[i])->getPosition().x - 32) ,int((*e[i])->getPosition().y - 32),32,32 };
+				if (lol.intersects(sf::IntRect((*e[i])->getShape().getGlobalBounds())))
+					collided = true;
+			}
+			//Right Down
+			  if (map[eTileX + 1][eTileY + 1] == true)
+			{
+				sf::IntRect lol = { int((*e[i])->getPosition().x + 32) ,int((*e[i])->getPosition().y + 32),32,32 };
+				if (lol.intersects(sf::IntRect((*e[i])->getShape().getGlobalBounds())))
+					collided = true;
+			}
+			//Left Down
+			  	if (map[eTileX - 1][eTileY + 1] == true)
+			{
+				sf::IntRect lol = { int((*e[i])->getPosition().x - 32) ,int((*e[i])->getPosition().y + 32),32,32 };
+				if (lol.intersects(sf::IntRect((*e[i])->getShape().getGlobalBounds())))
+					collided = true;
+			}
+		}
+	}
+		
+	std::vector<bool> colVec;
+	colVec.push_back(collided);
+	OurLua::setBooleans(l, colVec);
+
+	return 1;
 }

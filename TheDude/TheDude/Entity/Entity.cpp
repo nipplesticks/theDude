@@ -5,7 +5,7 @@ Entity::Entity()
 {
 	m_shape.setPosition(0.0f, 0.0f);
 	m_shape.setFillColor(sf::Color(255, 255, 255));
-	m_shape.setSize(sf::Vector2f(100.0, 100.0));
+	m_shape.setSize(sf::Vector2f(32.0, 32.0));
 	m_position.x = 0.0f;
 	m_position.y = 0.0f;
 }

@@ -6,7 +6,6 @@ local function _initPlayer()
 	theDude:setColor(0, 255 ,0)
 	theDude:setSprite("zelda.png")
 	playerSpeed = 2.5
-	testMe()
 end
 
 local function _initEnemies()
@@ -27,15 +26,34 @@ local function _updatePlayer()
 
 	if isKeyPressed("UP") then
 		theDude:Move(0,-tempSpeed)
+		if(testMe(theDude))
+		then
+			theDude:Move(0,tempSpeed)
+			print("Up")
+		end
 	elseif isKeyPressed("DOWN") then
 		theDude:Move(0,tempSpeed)
+		if(testMe(theDude))
+		then
+			theDude:Move(0,-tempSpeed)
+		end
 	end
 
 	if isKeyPressed("RIGHT") then
 		theDude:Move(tempSpeed,0)
+		if(testMe(theDude))
+		then
+			theDude:Move(-tempSpeed,0)
+		end
 	elseif isKeyPressed("LEFT") then
 		theDude:Move(-tempSpeed,0)
+		if(testMe(theDude))
+		then
+			theDude:Move(tempSpeed,0)
+		end
 	end
+	
+	
 	setPlayerPosition(theDude:getPosition())
 end
 
