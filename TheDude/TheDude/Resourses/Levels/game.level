@@ -1,9 +1,8 @@
 cam 100 0
 sp goomba.png
-p 160 160
-p 0 64
+p 128 128
 sp zelda.png
-p 96 96
+p 0 0
 grid 10 10 32 0
 sheet Resourses/SpriteSheet/spritesheet3.png
 t 0 0 0 255 255 255 0 0

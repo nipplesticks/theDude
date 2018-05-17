@@ -27,6 +27,8 @@ public:
 
 	void AddScript(const std::string &path);
 
+	void setSize(float x, float y);
+
 	bool isDead() const;
 	void setHealth(int health); 
 	void setAttack(int attack); 

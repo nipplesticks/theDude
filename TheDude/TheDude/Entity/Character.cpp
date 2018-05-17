@@ -48,6 +48,12 @@ void Character::AddScript(const std::string & path)
 	_initLua();
 }
 
+void Character::setSize(float x, float y)
+{
+	Entity::setSize(x, y);
+	setHPBarSize(m_HPOffset.x, m_HPOffset.y, m_HPScl.x, m_HPScl.y);
+}
+
 bool Character::isDead() const
 {
 	return m_health <= 0;

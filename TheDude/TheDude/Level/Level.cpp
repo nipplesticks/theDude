@@ -161,58 +161,66 @@ bool Level::SaveLevel(const std::string & target)
 	
 	if(map)
 	{
+		map << "--Auto generated code based on map\n";
+		map << "\n";
 		map << "local Entities = {}\n";
 		map << "local ENTITYS_AMOUNT = " << m_entitesForLua.size() << "\n";
+		map << "\n";
 		map << "local function _initEntities()\n";
 		for (auto entity : m_entitesForLua)
 		{
-			map << "local Entity_Scripted = Character.Create()\n";
-			map << "Entity_Scripted:AddScript(\"" << entity.luafile << "\")\n";
-			map << "Entity_Scripted:setPosition(" << entity.pos.x << ","<< entity.pos.y << ")\n";
-			map << "Entity_Scripted:setSize(" << entity.shape.getSize().x << "," << entity.shape.getSize().y << ")\n";
-			map << "table.insert(Entities, Entity_Scripted)\n";
+			map << "\tlocal Entity_Scripted = Character.Create()\n";
+			map << "\tEntity_Scripted:AddScript(\"" << entity.luafile << "\")\n";
+			map << "\tEntity_Scripted:setPosition(" << entity.pos.x << ","<< entity.pos.y << ")\n";
+			map << "\tEntity_Scripted:setSize(" << entity.shape.getSize().x << "," << entity.shape.getSize().y << ")\n";
+			map << "\ttable.insert(Entities, Entity_Scripted)\n";
 		}
 		map << "end\n";
+		map << "\n";
 
 		map << "local function _updateEntities()\n";
-			map << "setPlayerPosition(Entities[1]:getPosition())\n";
-			map << "for i = 1, #Entities, 1 do\n";
-				map << "Entities[i]:Update()\n";
-			map << "end\n";
+			map << "\tsetPlayerPosition(Entities[1]:getPosition())\n";
+			map << "\tfor i = 1, #Entities, 1 do\n";
+				map << "\t\tEntities[i]:Update()\n";
+			map << "\tend\n";
 		map << "end\n";
+		map << "\n";
 
 		map << "local function _drawEntities()\n";
-			map << "for i = 1, #Entities, 1 do\n";
-				map << "Entities[i]:Draw()\n";
-			map << "end\n";
+			map << "\tfor i = 1, #Entities, 1 do\n";
+				map << "\t\tEntities[i]:Draw()\n";
+			map << "\tend\n";
 		map << "end\n";
-
+		map << "\n";
 		
 		map << "local function _collisionHandling()\n";
-			map << "for i = 2, #Entities, 1 do\n";
-				map << "isCollision = CheckCollision(Entities[1], Entities[i])";
-				map << "if isCollision then\n";
-				map << "Entities[1]:AlterHealth(Entities[i]:getAttack() * -1)\n";
-				map << "end\n";
-			map << "end\n";
+			map << "\tfor i = 2, #Entities, 1 do\n";
+				map << "\t\tisCollision = CheckCollision(Entities[1], Entities[i])";
+				map << "\t\tif isCollision then\n";
+				map << "\t\t\tEntities[1]:AlterHealth(Entities[i]:getAttack() * -1)\n";
+				map << "\t\tend\n";
+			map << "\tend\n";
 		map << "end\n";
+		map << "\n";
 
 		map << "function init()\n";
-			map << "_initEntities()\n";
+			map << "\t_initEntities()\n";
 		map << "end\n";
+		map << "\n";
 
 		map << "function update()\n";
-		map << "if isKeyPressed(\"ESC\") then\n";
-		map << "ExitGame()\n";
-		map << "elseif Entities[1]:isDead() == false then\n";
-		map << "Entities[1]:Update()\n";
-		map << "_updateEntities()\n";
-		map << "_collisionHandling()\n";
+		map << "\tif isKeyPressed(\"ESC\") then\n";
+		map << "\t\tExitGame()\n";
+		map << "\telseif Entities[1]:isDead() == false then\n";
+		map << "\t\tEntities[1]:Update()\n";
+		map << "\t\t_updateEntities()\n";
+		map << "\t\t_collisionHandling()\n";
+		map << "\tend\n";
 		map << "end\n";
-		map << "end\n";
+		map << "\n";
 
 		map << "function draw()\n";
-		map << "_drawEntities()\n";
+		map << "\t_drawEntities()\n";
 		map << "end\n";
 	}
 	map.close();
