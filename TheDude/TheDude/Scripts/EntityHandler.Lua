@@ -1,12 +1,7 @@
 local Enemies = {}
 local ENEMY_AMOUNT = 5
-local function _initPlayer()
-	theDude = Character.Create()
-	theDude:AddScript("Scripts/PlayerModule.Lua")
-	testMe()
-end
 
-local function _initEnemies()
+local function _initEntities()
 	--Should be put inside table
 	for i = 1, ENEMY_AMOUNT, 1 do 
 		local Enemy_Scripted = Character.Create()
@@ -14,6 +9,8 @@ local function _initEnemies()
 		Enemy_Scripted:setPosition(i * 100, i * 100)
 		table.insert(Enemies, Enemy_Scripted)
 	end
+	theDude = Character.Create()
+	theDude:AddScript("Scripts/PlayerModule.Lua")
 end
 
 local function _updateEnemies()
@@ -42,8 +39,7 @@ end
 
 -- Functions to be called by Engine
 function init()
-	_initPlayer()
-	_initEnemies()
+	_initEntities()
 end
 
 

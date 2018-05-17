@@ -5,6 +5,7 @@ function init()
 	setHealth(100)
 	setColor(255, 0, 255)
 	setSprite("goomba.png")
+	setAttack(1);
 	s1x = -1
 	s1y = -1
 

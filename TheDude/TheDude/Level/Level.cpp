@@ -62,16 +62,17 @@ void Level::LoadLevel(const std::string & target)
 				}
 				else if (type == "p")
 				{
-					m_entityInstanceShapes.push_back(sf::RectangleShape(sf::Vector2f(32,32)));
-					m_entityInstanceShapes.back().setTexture(&m_entityInstanceTextures.back().texture);
+					m_entitesForLua.push_back(EntityShape());
+					m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
+					m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures.back().texture);
 
 					int xCoord, yCoord;
 					stream >> xCoord >> yCoord;
 
 					sf::Vector2f pos(xCoord, yCoord);
 
-					m_entityInstancePositions.push_back(pos);
-					m_entityInstanceShapes.back().setPosition(pos);
+					m_entitesForLua.back().pos = pos;
+					m_entitesForLua.back().shape.setPosition(pos);
 					
 					m_entityTexGroups.back().m_entityPositions.push_back(pos);
 					
@@ -135,7 +136,13 @@ void Level::LoadLevel(const std::string & target)
 bool Level::SaveLevel(const std::string & target)
 {
 	std::ofstream map;
-	map.open(target);
+
+	std::string path = "Resourses/Levels/";
+	std::string path2 = "Scripts/";
+	std::string levelName = path+ target + ".level";
+	std::string luaName = path2 + target + ".lua";
+	// Levelfile
+	map.open(levelName);
 	if (map)
 	{
 		map << "cam 100 0\n";
@@ -146,9 +153,71 @@ bool Level::SaveLevel(const std::string & target)
 				map << "p " << pos.x << " " << pos.y << "\n";
 		}
 		map << m_grid->toFile();
-		return true;
 	}
-	return false;
+
+	map.close();
+
+	map.open(luaName);
+	
+	if(map)
+	{
+		map << "local Entities = {}\n";
+		map << "local ENTITYS_AMOUNT = " << m_entitesForLua.size() << "\n";
+		map << "local function _initEntities()\n";
+		for (auto entity : m_entitesForLua)
+		{
+			map << "local Entity_Scripted = Character.Create()\n";
+			map << "Entity_Scripted:AddScript(\"" << entity.luafile << "\")\n";
+			map << "Entity_Scripted:setPosition(" << entity.pos.x << ","<< entity.pos.y << ")\n";
+			map << "Entity_Scripted:setSize(" << entity.shape.getSize().x << "," << entity.shape.getSize().y << ")\n";
+			map << "table.insert(Entities, Entity_Scripted)\n";
+		}
+		map << "end\n";
+
+		map << "local function _updateEntities()\n";
+			map << "setPlayerPosition(Entities[1]:getPosition())\n";
+			map << "for i = 1, #Entities, 1 do\n";
+				map << "Entities[i]:Update()\n";
+			map << "end\n";
+		map << "end\n";
+
+		map << "local function _drawEntities()\n";
+			map << "for i = 1, #Entities, 1 do\n";
+				map << "Entities[i]:Draw()\n";
+			map << "end\n";
+		map << "end\n";
+
+		
+		map << "local function _collisionHandling()\n";
+			map << "for i = 2, #Entities, 1 do\n";
+				map << "isCollision = CheckCollision(Entities[1], Entities[i])";
+				map << "if isCollision then\n";
+				map << "Entities[1]:AlterHealth(Entities[i]:getAttack() * -1)\n";
+				map << "end\n";
+			map << "end\n";
+		map << "end\n";
+
+		map << "function init()\n";
+			map << "_initEntities()\n";
+		map << "end\n";
+
+		map << "function update()\n";
+		map << "if isKeyPressed(\"ESC\") then\n";
+		map << "ExitGame()\n";
+		map << "elseif Entities[1]:isDead() == false then\n";
+		map << "Entities[1]:Update()\n";
+		map << "_updateEntities()\n";
+		map << "_collisionHandling()\n";
+		map << "end\n";
+		map << "end\n";
+
+		map << "function draw()\n";
+		map << "_drawEntities()\n";
+		map << "end\n";
+	}
+	map.close();
+	// Lua file
+	return true;
 }
 
 void Level::Update()
@@ -156,9 +225,9 @@ void Level::Update()
 	m_camera->update();
 	m_grid->update(m_camera);
 
-	for (int  i = 0; i < m_entityInstanceShapes.size(); i++)
+	for (int  i = 0; i < m_entitesForLua.size(); i++)
 	{
-		m_entityInstanceShapes[i].setPosition(m_entityInstancePositions[i] + m_camera->getPosition());
+		m_entitesForLua[i].shape.setPosition(m_entitesForLua[i].pos + m_camera->getPosition());
 	}
 	
 }
@@ -199,8 +268,8 @@ void Level::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	
 	target.draw(*m_grid, states);
-	for (auto& e : m_entityInstanceShapes)
-		target.draw(e,states);
+	for (auto& e : m_entitesForLua)
+		target.draw(e.shape,states);
 }
 
 void Level::_toolbarRender()
@@ -221,8 +290,7 @@ void Level::_toolbarRender()
 				delete m_grid;
 				m_grid = new Grid(dim[0], dim[1]);
 				m_entityTexGroups.clear();
-				m_entityInstancePositions.clear();
-				m_entityInstanceShapes.clear();
+				m_entitesForLua.clear();
 				m_entityInstanceTextures.clear();
 				m_loadedSprites = false;
 				
@@ -255,8 +323,8 @@ void Level::_toolbarRender()
 			ImGui::InputText("File path", name, 20);
 			if (ImGui::Button("Save"))
 			{
-				std::string path = "Resourses/Levels/";
-				saved = SaveLevel(path + std::string(name));
+				
+				saved = SaveLevel(std::string(name));
 
 
 			}
@@ -422,6 +490,9 @@ void Level::_entityPaletteRender()
 					m_entityInstanceTextures.push_back(TextureWPath());
 					m_entityInstanceTextures.back().texture.loadFromFile(yes);
 					m_entityInstanceTextures.back().path = yes;
+					(*i).erase((*i).begin());
+					std::string luaPath = "Scripts/" + *i;
+					m_entityInstanceTextures.back().luafile = luaPath;
 					EntityTexGroup etg;
 					etg.texturePath = yes;
 					m_entityTexGroups.push_back(etg);
@@ -463,8 +534,8 @@ void Level::_entityPaletteRender()
 				sf::Vector2f position = sf::Vector2f(index.x << 5, index.y << 5);
 				bool existing = false;
 
-				for(auto& currentPos : m_entityInstancePositions )
-					if (currentPos == position)
+				for(auto& currentPos : m_entitesForLua)
+					if (currentPos.pos == position)
 					{
 						existing = true;
 						break;
@@ -472,11 +543,13 @@ void Level::_entityPaletteRender()
 				if (!existing)
 				{
 					
-					m_entityInstanceShapes.push_back(sf::RectangleShape(sf::Vector2f(32, 32)));
-					m_entityInstanceShapes.back().setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
-					m_entityInstanceShapes.back().setPosition(position + m_camera->getPosition());
+					m_entitesForLua.push_back(EntityShape());
+					m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
+					m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+					m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
+					m_entitesForLua.back().luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
 					
-					m_entityInstancePositions.push_back(position);
+					m_entitesForLua.back().pos = position;
 					for (auto& etg : m_entityTexGroups)
 					{
 						if (etg.texturePath == m_entityInstanceTextures[currentTextureIndex].path)
@@ -646,8 +719,7 @@ void Level::_cleanup()
 	m_camera = nullptr;
 
 	m_entityTexGroups.clear();
-	m_entityInstancePositions.clear();
-	m_entityInstanceShapes.clear();
+	m_entitesForLua.clear();
 	m_entityInstanceTextures.clear();
 }
 

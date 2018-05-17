@@ -38,12 +38,18 @@ private:
 		{
 			sf::Texture texture;
 			std::string path;
+			std::string luafile;
 		};
 		std::vector<TextureWPath> m_entityInstanceTextures;
 
 		// Only for displaying entities in the editor not during runtime
-		std::vector<sf::Vector2f> m_entityInstancePositions;
-		std::vector<sf::RectangleShape> m_entityInstanceShapes;
+		struct EntityShape
+		{
+			sf::Vector2f pos;
+			sf::RectangleShape shape;
+			std::string luafile;
+		};
+		std::vector<EntityShape> m_entitesForLua;
 	// }
 
 public:

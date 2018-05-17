@@ -55,7 +55,7 @@ void Game::_init()
 
 void Game::_initEntityHandler()
 {
-	m_entityHandler = new OurLua("Scripts/EntityHandler.Lua");
+	m_entityHandler = new OurLua("Scripts/game.Lua");
 	m_entityHandler->PushClassFunction(this, Game::s_test, "testMe");
 	_pushFunctions();
 	m_entityHandler->InitLua();
