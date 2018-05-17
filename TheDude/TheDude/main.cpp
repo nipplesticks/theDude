@@ -1,5 +1,6 @@
 #include <chrono>
-#include "Game.hpp"
+#include "States/Game.hpp"
+#include "States/MainMenu.hpp"
 #include "GameTime.hpp"
 #include "RenderQueue.hpp"
 #include "Level\Level.hpp"
@@ -20,6 +21,9 @@ void CheckPollEvents(sf::RenderWindow * wnd);
 int main()
 {
 	CHECK_MEMORY_LEAKS;
+	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
+	std::stack<State*> states;
+	State::InitState(&window, &states);
 
 	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle);
 	ImGui::SFML::Init(window);
@@ -30,11 +34,16 @@ int main()
 	level.LoadLevel("Resourses/Levels/test34");
 
 	game.Init(&window);
+	GameTime gameTime;
+	
+	states.push(new MainMenu());
 
+	
 	gameTime.Init();
 	sf::Clock clock;
 							// V THIS IS FOR THE MENU LATER
 	while (window.isOpen() && level.isClose())
+	while (!states.empty())
 	{
 		window.clear();
 
@@ -46,6 +55,8 @@ int main()
 
 		while (gameTime.AllowedToUpdate())
 		{
+			if (!states.empty())
+				states.top()->Update();
 			//game.update();
 			level.Update();
 		}
@@ -54,6 +65,11 @@ int main()
 		ImGui::SFML::Render(window);
 		window.display();
 	//	game.draw();
+
+		CheckPollEvents(&window);
+
+		if (!states.empty())
+			states.top()->Draw();
 
 		if (gameTime.HasTimePassed(1000.0f))
 		{

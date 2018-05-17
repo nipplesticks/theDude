@@ -1,28 +1,25 @@
 #pragma once
-#include "OurLua/OurLua.hpp"
+#include <Windows.h>
+#include "../OurLua/OurLua.hpp"
+#include "State.hpp"
+#include "../Entity/Character.hpp"
+
 #include <iostream>
 #include <vector>
 #include <string>
-#include "Entity\Character.hpp"
-#include <Windows.h>
-#include <SFML\Graphics.hpp>
 
 
-
-class Game
+class Game : public State
 {
 private:
-	sf::RenderWindow * p_wnd;
 	OurLua * m_entityHandler;
 	static bool s_isGameRunning;
-
 public:
 	Game();
 	~Game();
 
-	void Init(sf::RenderWindow * wnd);
-	void update();
-	void draw();
+	void Update() override;
+	void Draw() override;
 
 private:
 // Help Functions
@@ -36,4 +33,5 @@ public:
 	LUA_FUNC s_CheckCollision(lua_State * l);
 	LUA_FUNC s_ExitGame(lua_State * l);
 	LUA_FUNC s_setPlayerPos(lua_State * l);
+	LUA_FUNC s_test(lua_State* l);
 };

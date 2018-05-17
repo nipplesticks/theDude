@@ -5,9 +5,7 @@
     <ClCompile Include="Level\Grid.cpp" />
     <ClCompile Include="Level\Level.cpp" />
     <ClCompile Include="States\State.cpp" />
-    <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="Interface\Button.cpp" />
-    <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Entity\Character.cpp" />
@@ -22,6 +20,8 @@
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="OurLua\OurLua.cpp" />
+    <ClCompile Include="States\Game.cpp" />
+    <ClCompile Include="States\MainMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -37,18 +37,17 @@
     </ClInclude>
     <ClInclude Include="Level\Level.hpp" />
     <ClInclude Include="States\State.hpp" />
-    <ClInclude Include="States\GameState.hpp" />
-    <ClInclude Include="States\MainMenu.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Camera\Camera.hpp" />
     <ClInclude Include="Entity\Character.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
-    <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameTime.hpp" />
     <ClInclude Include="RenderQueue.hpp" />
     <ClInclude Include="OurLua\OurLua.hpp" />
+    <ClInclude Include="States\Game.hpp" />
+    <ClInclude Include="States\MainMenu.hpp" />
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Interface\HeadsUpDisplay.h" />
   </ItemGroup>

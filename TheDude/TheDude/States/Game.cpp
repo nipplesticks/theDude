@@ -1,13 +1,13 @@
 #include "Game.hpp"
-#include "RenderQueue.hpp"
+#include "../RenderQueue.hpp"
 
 std::vector<Entity*> Render::g_renderQueue;
 bool Game::s_isGameRunning = true;
 
 Game::Game()
 {
-	m_entityHandler = nullptr;
-	p_wnd = nullptr;
+	s_isGameRunning = true;
+	_init();
 }
 
 Game::~Game()
@@ -15,13 +15,7 @@ Game::~Game()
 	delete m_entityHandler;
 }
 
-void Game::Init(sf::RenderWindow * wnd)
-{
-	p_wnd = wnd;
-	_init();
-}
-
-void Game::update()
+void Game::Update()
 {
 	if (s_isGameRunning)
 	{
@@ -29,11 +23,11 @@ void Game::update()
 	}
 	else
 	{
-		p_wnd->close();
+		State::Pop();
 	}
 }
 
-void Game::draw()
+void Game::Draw()
 {
 	m_entityHandler->Draw();
 
@@ -45,9 +39,9 @@ void Game::draw()
 	{
 		sf::Vector2f worldPos = entity->getPosition();
 		entity->setViewPos(worldPos - camPos);
-		p_wnd->draw(entity->getShape());
+		s_window->draw(entity->getShape());
 	}
-	p_wnd->display();
+	s_window->display();
 }
 
 void Game::_init()
@@ -58,6 +52,7 @@ void Game::_init()
 void Game::_initEntityHandler()
 {
 	m_entityHandler = new OurLua("Scripts/EntityHandler.Lua");
+	m_entityHandler->PushClassFunction(this, Game::s_test, "testMe");
 	_pushFunctions();
 	m_entityHandler->InitLua();
 }
@@ -165,5 +160,12 @@ int Game::s_setPlayerPos(lua_State * l)
 	Character::playerPos.x = position[1];
 	Character::playerPos.y = position[0];
 
+	return 0;
+}
+
+int Game::s_test(lua_State * l)
+{
+	auto lol = OurLua::getClassPointer<Game>(l);
+	std::cout << (lol) << std::endl;
 	return 0;
 }
