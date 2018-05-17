@@ -11,6 +11,7 @@
 Level::Level(sf::RenderWindow* renderWindow)
 {
 	m_pWindow = renderWindow;
+	m_loadedSprites = false;
 	m_grid = nullptr;
 	m_camera = nullptr;
 	m_closeFlag = false;
@@ -50,49 +51,30 @@ void Level::LoadLevel(const std::string & target)
 				{
 					std::string spritePath;
 					stream >> spritePath;
+
 					m_entityInstanceTextures.push_back(TextureWPath());
 					m_entityInstanceTextures.back().path = spritePath;
 					m_entityInstanceTextures.back().texture.loadFromFile(spritePath);
 
+					m_entityTexGroups.push_back(EntityTexGroup());
+					m_entityTexGroups.back().texturePath = spritePath;
+
 				}
 				else if (type == "p")
 				{
-					m_entityInstanceShapes.push_back(sf::RectangleShape());
+					m_entityInstanceShapes.push_back(sf::RectangleShape(sf::Vector2f(32,32)));
 					m_entityInstanceShapes.back().setTexture(&m_entityInstanceTextures.back().texture);
-					m_entityInstanceShapes.back().setFillColor(sf::Color::Red);
+
 					int xCoord, yCoord;
 					stream >> xCoord >> yCoord;
+
 					sf::Vector2f pos(xCoord, yCoord);
+
 					m_entityInstancePositions.push_back(pos);
 					m_entityInstanceShapes.back().setPosition(pos);
-					if (m_entityTexGroups.size())
-					{
-						bool notFound = true;
-						for (int ti = 0; ti < m_entityTexGroups.size() && notFound; ti++)
-						{
-							if (m_entityTexGroups[ti].texturePath == m_entityInstanceTextures.back().path)
-							{
-								notFound = false;
-								m_entityTexGroups[ti].m_entityPositions.push_back(pos);
-								break;
-							}
-
-						}
-						if (!notFound)
-						{
-							EntityTexGroup etg;
-							etg.texturePath = m_entityInstanceTextures.back().path;
-							etg.m_entityPositions.push_back(pos);
-							m_entityTexGroups.push_back(etg);
-						}
-					}
-					else
-					{
-						EntityTexGroup etg;
-						etg.texturePath = m_entityInstanceTextures.back().path;
-						etg.m_entityPositions.push_back(pos);
-						m_entityTexGroups.push_back(etg);
-					}
+					
+					m_entityTexGroups.back().m_entityPositions.push_back(pos);
+					
 				
 				}
 				else if (type == "sheet")
@@ -114,38 +96,7 @@ void Level::LoadLevel(const std::string & target)
 					m_grid->setTextureOfTile(x, y, sf::IntRect(itx, ity, 32, 32));
 
 					
-				}
-				else if (type == "e")
-				{
-					// posX, posY, sizeX, sizeY, type
-					int x, y, sx, sy, t, r, g, b;
-					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &t, &r, &g, &b);
-
-					/*
-						Create Enemy
-					*/
-
-				}
-				else if (type == "i")
-				{
-					// posX, posY, sizeX, sizeY, type
-					int x, y, sx, sy, t, r, g, b;
-					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &t, &r, &g, &b);
-
-					/*
-						Create item
-					*/
-				}
-				else if (type == "theDude")
-				{
-					// posX, posY, sizeX, sizeY
-					int x, y, sx, sy, r, g, b;
-					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d", &x, &y, &sx, &sy, &r, &g, &b);
-
-					/*
-						Create theDude
-					*/
-				}
+				}		
 				else if (type == "grid")
 				{
 					int w, h, s, t;
@@ -269,6 +220,12 @@ void Level::_toolbarRender()
 			{
 				delete m_grid;
 				m_grid = new Grid(dim[0], dim[1]);
+				m_entityTexGroups.clear();
+				m_entityInstancePositions.clear();
+				m_entityInstanceShapes.clear();
+				m_entityInstanceTextures.clear();
+				m_loadedSprites = false;
+				
 			}
 
 
@@ -429,11 +386,11 @@ void Level::_entityPaletteRender()
 
 	static std::string path = "Scripts/";
 	static std::vector<std::string> strs = filesInDir(path);
-	static bool loadedSprites = false;
+	
 	static int currentTextureIndex = -1;
 	static sf::Sprite displayTexure;
 	static sf::Texture sampleTexture;
-	if (!loadedSprites)
+	if (!m_loadedSprites)
 	{
 		sampleTexture.loadFromFile("sample.png");
 		displayTexure.setTexture(sampleTexture);
@@ -451,29 +408,16 @@ void Level::_entityPaletteRender()
 			}
 			else
 			{
-				int nrOfLoadedTextures = m_entityTexGroups.size();
-				if (nrOfLoadedTextures)
+				
+				bool exists = false;
+				for (int k = 0; k < m_entityTexGroups.size(); k++)
 				{
-					bool exists = false;
-					for (int k = 0; k < nrOfLoadedTextures; k++)
+					if (m_entityTexGroups[k].texturePath == yes)
 					{
-						if (m_entityTexGroups[k].texturePath == yes)
-						{
-							exists = true;
-						}
+						exists = true;
 					}
-					if (!exists)
-					{
-						m_entityInstanceTextures.push_back(TextureWPath());
-						m_entityInstanceTextures.back().texture.loadFromFile(yes);
-						m_entityInstanceTextures.back().path = yes;
-						EntityTexGroup etg;
-						etg.texturePath = yes;
-						m_entityTexGroups.push_back(etg);
-					}
-					
 				}
-				else
+				if (!exists)
 				{
 					m_entityInstanceTextures.push_back(TextureWPath());
 					m_entityInstanceTextures.back().texture.loadFromFile(yes);
@@ -482,15 +426,13 @@ void Level::_entityPaletteRender()
 					etg.texturePath = yes;
 					m_entityTexGroups.push_back(etg);
 				}
-
-				
 				
 				i++;
 			}
 
 		}
 		
-		loadedSprites = true;
+		m_loadedSprites = true;
 
 	}
 	

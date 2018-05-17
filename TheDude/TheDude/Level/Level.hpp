@@ -20,6 +20,8 @@ private:
 		std::string m_currentTool;
 		bool		m_activeTool[4];
 
+		bool		m_loadedSprites;
+
 #define TOOL_SPRITE 0
 #define TOOL_ENTITY 1
 #define TOOL_TYPE 2
