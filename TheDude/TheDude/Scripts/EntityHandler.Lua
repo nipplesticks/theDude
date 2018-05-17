@@ -17,7 +17,7 @@ local function _initEnemies()
 end
 
 local function _updateEnemies()
-setPlayerPosition(theDude:getPosition())
+	setPlayerPosition(theDude:getPosition())
 	for i = 1, #Enemies, 1 do
 		Enemies[i]:Update()
 	end
@@ -34,7 +34,8 @@ local function _collisionHandling()
 		isCollision = CheckCollision(theDude, Enemies[i])
 
 		if isCollision then
-			--print("Enemy#" .. i .. " hit player")
+			theDude:AlterHealth(-1)
+
 		end
 	end
 end
@@ -49,7 +50,7 @@ end
 function update()
 	if isKeyPressed("ESC") then
 		ExitGame()
-	else
+	elseif theDude:isDead() == false then
 		theDude:Update()
 		_updateEnemies()
 		_collisionHandling()
