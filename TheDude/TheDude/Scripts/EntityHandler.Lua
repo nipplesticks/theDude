@@ -3,7 +3,6 @@ local ENEMY_AMOUNT = 5
 local function _initPlayer()
 	theDude = Character.Create()
 	theDude:AddScript("Scripts/PlayerModule.Lua")
-	testMe()
 end
 
 local function _initEnemies()

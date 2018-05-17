@@ -1,5 +1,5 @@
 #include <chrono>
-#include "States/Game.hpp"
+#include "States\Game.hpp"
 #include "States/MainMenu.hpp"
 #include "GameTime.hpp"
 #include "RenderQueue.hpp"

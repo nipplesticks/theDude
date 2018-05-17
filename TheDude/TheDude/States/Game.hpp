@@ -17,7 +17,6 @@ private:
 public:
 	Game();
 	~Game();
-
 	void Update() override;
 	void Draw() override;
 
@@ -33,5 +32,9 @@ public:
 	LUA_FUNC s_CheckCollision(lua_State * l);
 	LUA_FUNC s_ExitGame(lua_State * l);
 	LUA_FUNC s_setPlayerPos(lua_State * l);
-	LUA_FUNC s_test(lua_State* l);
+	LUA_FUNC s_mapCol(lua_State* l);
 };
+	sf::IntRect rectArr[5];
+
+	bool** getCollisionArr(); 
+	bool** m_collisionArr;
