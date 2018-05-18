@@ -1,40 +1,63 @@
 #include "Projectile.hpp"
 
-Projectile::Projectile(sf::Vector2f position, sf::Color color, sf::Vector2f speed) : Entity()
+Projectile::Projectile(float x, float y, float dx, float dy)
 {
-	m_hasHit = false; 
-}
+	m_script = nullptr;
+	Entity::setPosition(x, y);
 
-Projectile::Projectile(float x, float y, sf::Color color, float speedX, float speedY) : Entity()
-{
-	m_hasHit = false; 
-}
+	//TEMP
+	Entity::setSize(2, 2);
+	Entity::setColor(255, 0, 0);
+	//END
 
-Projectile::Projectile(float x, float y, sf::Color color, float speed) : Entity()
-{
-	m_hasHit = false; 
-}
-
-Projectile::Projectile()
-{
-
+	m_dir.x = dx;
+	m_dir.y = dy;
+	m_damage = 0;
 }
 
 Projectile::~Projectile()
 {
+	delete m_script;
 }
 
-bool Projectile::getHasHit() const
+void Projectile::setScript(const std::string & script)
 {
-	return m_hasHit;
+	if (m_script)
+		delete m_script;
+	m_script = new OurLua(script);
+	_initLua();
 }
 
-void Projectile::setHasHit(bool hasHit)
+bool Projectile::canTravel() const
 {
-	m_hasHit = hasHit; 
+	
+	return false;
+}
+
+void Projectile::setDamage(int dmg)
+{
+	m_damage = dmg;
+}
+
+int Projectile::getDamage() const
+{
+	return m_damage;
 }
 
 void Projectile::Update()
 {
-	//Entity::update(dt); 
+	m_script->Update();
+}
+
+void Projectile::Draw()
+{
+	Entity::Draw();
+}
+
+void Projectile::_initLua()
+{
+	// Push Class Functions
+
+
+	m_script->InitLua();
 }
