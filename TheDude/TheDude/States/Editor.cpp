@@ -20,6 +20,7 @@ void Editor::Update()
 
 void Editor::Draw()
 {
+	
 	s_window->draw(level);
 	level.EditorRender();
 

@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Entity\Weapon.cpp" />
     <ClCompile Include="States\Editor.cpp" />
     <ClCompile Include="States\Game.cpp" />
     <ClCompile Include="GameTime.cpp" />
@@ -170,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.hpp" />
+    <ClInclude Include="Entity\Weapon.hpp" />
     <ClInclude Include="Hack.hpp" />
     <ClInclude Include="States\Editor.hpp" />
     <ClInclude Include="States\Game.hpp" />

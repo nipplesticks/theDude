@@ -22,6 +22,7 @@
     <ClCompile Include="States\Game.cpp" />
     <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="States\Editor.cpp" />
+    <ClCompile Include="Entity\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">
@@ -52,6 +53,7 @@
     <ClInclude Include="Interface\HeadsUpDisplay.h" />
     <ClInclude Include="States\Editor.hpp" />
     <ClInclude Include="Hack.hpp" />
+    <ClInclude Include="Entity\Weapon.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />

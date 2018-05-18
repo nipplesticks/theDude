@@ -1,20 +1,29 @@
 #pragma once
 #include "Entity.hpp"
+#include "../OurLua/OurLua.hpp"
 class Projectile : public Entity
 {
-private:
-	bool m_hasHit; 
 public:
-	Projectile(sf::Vector2f position, sf::Color color, sf::Vector2f speed); 
-	Projectile(float x, float y, sf::Color color, float speedX, float speedY); 
-	Projectile(float x, float y, sf::Color color, float speed); 
-	Projectile(); 
+	static std::string metaTable;
 
+private:
+	OurLua * m_script;
+	sf::Vector2f m_dir;
+	int m_damage;
+
+public:
+	Projectile(float x, float y, float dx, float dy);
 	~Projectile();
+	void setScript(const std::string& script);
+	
+	bool canTravel() const;
+	
+	void setDamage(int dmg);
+	int getDamage() const;
 
-	bool getHasHit() const; 
+	void Update();
+	void Draw();
+private:
+	void _initLua();
 
-	void setHasHit(bool hasHit); 
-
-	void Update() override; 
 }; 

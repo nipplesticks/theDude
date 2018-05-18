@@ -3,6 +3,7 @@
 #include "State.hpp"
 #include "../Entity/Character.hpp"
 #include "../Level/Level.hpp"
+#include "../Entity/Weapon.hpp"
 #include <Windows.h>
 
 #include <iostream>

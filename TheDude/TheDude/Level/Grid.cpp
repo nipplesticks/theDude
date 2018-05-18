@@ -135,10 +135,10 @@ void Grid::update(Camera* cam)
 
 		int scale = static_cast<int>(m_tiles[0][0].getSize().x);
 		int startX = static_cast<int>(-cam->getPosition().x) >> 5;
-
 		int startY = static_cast<int>(-cam->getPosition().y) >> 5;
-		int endX = startX + ((cam->getWindowWidth()) >> 5);
-		int endY = startY + ((cam->getWindowHeight()) >> 5);
+
+		int endX = (startX + ((cam->getWindowWidth()) >> 5) + 1 );
+		int endY = (startY + ((cam->getWindowHeight()) >> 5) + 2);
 
 		for (int i = startX; i < endX; i++)
 		{

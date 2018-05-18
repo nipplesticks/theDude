@@ -36,6 +36,8 @@ public:
 	static std::vector<std::string> getStrings(lua_State * L, int n);
 	static std::vector<bool> getBoolean(lua_State * L, int n);
 	static std::vector<float> getFloats(lua_State * L, int n);
+	template <typename T>
+	static std::vector<T*> getPtr(lua_State * L, int n);
 
 	static void setIntegers(lua_State * L, const std::vector<int> & ints);
 	static void setStrings(lua_State * L, const std::vector<std::string> &strings);
@@ -62,6 +64,17 @@ private:
 	void _handleError();
 
 };
+template<typename T>
+inline std::vector<T*> OurLua::getPtr(lua_State * L, int n)
+{
+	std::vector<T*> r;
+	for (int i = 0; i < n; i++)
+	{
+		r.push_back((T*)(lua_topointer(L, -(i + 1))));
+	}
+
+	return r;
+}
 template<typename T>
 inline T* OurLua::getClassPointer(lua_State * l)
 {
