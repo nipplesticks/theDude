@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.hpp"
+#include "Weapon.hpp"
 #include "../OurLua/OurLua.hpp"
 class Character : public Entity
 {
@@ -17,9 +18,9 @@ private:
 	sf::RectangleShape	m_HPBack;
 	sf::Vector2f		m_HPOffset;
 	sf::Vector2f		m_HPScl;
-
 	sf::Vector2f		m_moveReq;
 
+	std::vector<Weapon* > m_weapons;
 
 public:
 	Character();
@@ -41,7 +42,7 @@ public:
 
 	//This will reset the moveRequest
 	sf::Vector2f getMoveRequest();
-
+	void AddWeapon(Weapon * w);
 
 	void AlterHealth(int health); 
 
@@ -87,4 +88,5 @@ public:
 	LUA_FUNC s_getPlayerPos(lua_State * l);
 	LUA_FUNC s_MoveRequest(lua_State * l);
 	LUA_FUNC s_getMoveRequest(lua_State * l);
+	LUA_FUNC s_ApplyWeapon(lua_State * l);
 };

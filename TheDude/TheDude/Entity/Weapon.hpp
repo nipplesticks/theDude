@@ -6,17 +6,19 @@
 class Weapon
 {
 public:
-	static std::vector<Projectile*>* s_bulletContainer;
-
+	static std::string metaTable;
 private:
+	std::vector<Projectile*> bulletContainer;
 	std::string	m_scriptPath;
-	int			m_damage;
-	int			m_speed;
-	int			m_range;
-
 public:
-	Weapon(int dmg = 1, int speed = 2, int range = -1);
+	Weapon(const std::string & script);
 	~Weapon();
-	void setLogic(const std::string & path);
 	void Shoot(float x, float y, float dx, float dy);
+	void Update();
+	void Draw(sf::RenderWindow * wnd);
+
+	LUA_FUNC s_Create(lua_State* l);
+	LUA_FUNC s_Destroy(lua_State* l);
+
+	LUA_FUNC s_Shoot(lua_State* l);
 };

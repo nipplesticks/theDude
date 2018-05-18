@@ -92,6 +92,11 @@ sf::Vector2f Character::getMoveRequest()
 	return mr;
 }
 
+void Character::AddWeapon(Weapon * w)
+{
+	m_weapons.push_back(w);
+}
+
 void Character::AlterHealth(int health)
 {
 	m_health += health;
@@ -136,11 +141,24 @@ void Character::DrawOther(sf::RenderWindow * wnd)
 {
 	wnd->draw(m_HPBack);
 	wnd->draw(m_HPBar);
+	for (auto & t : m_weapons)
+		t->Draw(wnd);
 }
 
 #include "../Hack.hpp"
 void Character::_initLua()
 {
+	luaL_Reg weaponFuncs[]
+	{
+	{ "Create"				,Weapon::s_Create	},
+	{ "Shoot"				,Weapon::s_Shoot	},
+	{ "__gc"				,Weapon::s_Destroy	},
+	{ NULL					,NULL }
+	};
+	m_script->PushClassFunctions(Weapon::metaTable, weaponFuncs, "Weapon");
+
+
+
 	m_script->PushClassFunction(this, Character::s_setColor, "setColor");
 	m_script->PushClassFunction(this, Character::s_setPosition, "setPosition");
 	m_script->PushClassFunction(this, Character::s_Move, "Move");
@@ -161,6 +179,7 @@ void Character::_initLua()
 	m_script->PushClassFunction(this, Character::s_getDistanceToPlayer, "getDistanceToPlayer");
 	m_script->PushClassFunction(this, Character::s_SetHPBar, "setHPBar");
 	m_script->PushClassFunction(this, Character::s_MoveRequest, "MoveRequest");
+	m_script->PushClassFunction(this, Character::s_ApplyWeapon, "ApplyWeapon");
 
 	
 	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
@@ -698,3 +717,25 @@ int Character::s_getMoveRequest(lua_State * l)
 	return 2;
 }
 
+int Character::s_ApplyWeapon(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		Weapon * w = (*OurLua::getInstancePointer<Weapon>(l, 1)[0]);
+		c->AddWeapon(w);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			Weapon * w = (*OurLua::getInstancePointer<Weapon>(l, 1)[0]);
+			c->AddWeapon(w);
+		}
+	}
+
+
+	return 0;
+}

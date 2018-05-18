@@ -1,28 +1,75 @@
 #include "Weapon.hpp"
 
-std::vector<Projectile*>* Weapon::s_bulletContainer = new std::vector<Projectile*>;
+std::string Weapon::metaTable = "Weapon";
 
-Weapon::Weapon(int dmg, int speed, int range)
+Weapon::Weapon(const std::string & script)
 {
-	m_scriptPath = "";
-	m_damage = dmg;
-	m_speed = speed;
-	m_range = range;
+	m_scriptPath = script;
 }
 
 Weapon::~Weapon()
 {
-
-}
-
-void Weapon::setLogic(const std::string & path)
-{
-	m_scriptPath = path;
+	for (auto & b : bulletContainer)
+		delete b;
+	
 }
 
 void Weapon::Shoot(float x, float y, float dx, float dy)
 {
 	Projectile* p = new Projectile(x, y, dx, dy);
 	p->setScript(m_scriptPath);
-	s_bulletContainer->push_back(p);
+	bulletContainer.push_back(p);
+}
+
+void Weapon::Update()
+{
+	for (auto & b : bulletContainer)
+		b->Update();
+}
+
+void Weapon::Draw(sf::RenderWindow * wnd)
+{
+	for (auto & lol : bulletContainer)
+		lol->Draw();
+}
+
+int Weapon::s_Create(lua_State * l)
+{
+	Weapon ** w = OurLua::createInstanceOf<Weapon>(l, metaTable);
+	std::string path = OurLua::getStrings(l, 1)[0];
+	*w = new Weapon(path);
+	return 1;
+}
+
+int Weapon::s_Destroy(lua_State * l)
+{
+	Weapon* c = OurLua::getInstanceOf<Weapon>(l, 1, metaTable);
+	if (c)
+	{
+		delete c;
+	}
+
+	return 0;
+}
+
+int Weapon::s_Shoot(lua_State * l)
+{
+	Weapon* w = OurLua::getInstanceOf<Weapon>(l, 1, metaTable);
+
+	if (w)
+	{
+		std::vector<float> s = OurLua::getFloats(l, 4);
+		w->Shoot(s[3], s[2], s[1], s[0]);
+	}
+	else
+	{
+		w = OurLua::getClassPointer<Weapon>(l);
+		if (w)
+		{
+			std::vector<float> s = OurLua::getFloats(l, 4);
+			w->Shoot(s[3], s[2], s[1], s[0]);
+		}
+	}
+
+	return 0;
 }

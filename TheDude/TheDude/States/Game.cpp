@@ -13,7 +13,6 @@ Game::Game() : m_level(s_window)
 Game::~Game()
 {
 	delete m_entityHandler;
-	delete Weapon::s_bulletContainer;
 }
 
 
