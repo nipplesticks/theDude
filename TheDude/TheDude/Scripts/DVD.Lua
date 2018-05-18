@@ -35,7 +35,7 @@ function update()
 		local length = math.sqrt(direction.x * direction.x + direction.y * direction.y)
 		direction.x = (direction.x / length) * Speed
 		direction.y = (direction.y / length) * Speed
-		Move(direction.x, direction.y)
+		MoveRequest(direction.x, direction.y)
 	else
 		Aggro = 1
 		x1, y1 = getPosition()
@@ -49,11 +49,6 @@ function update()
 		elseif (y1 < 0) then
 		s1y = s1y * (-1)
 		end
-		Move(s1x, s1y)
+		MoveRequest(s1x, s1y)
 	end
-end
-
-draw = 0
-function draw()
-
 end

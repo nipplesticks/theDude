@@ -17,47 +17,25 @@ if wasPressed == false then
 		AlterHealth(5)
 		wasPressed = true
 	end
-
-
 elseif wasPressed == true then
-	if isKeyPressed("K") == false and isKeyPressed("L") == false and isKeyPressed("J") == false then
+	if isKeyPressed("K") == false and isKeyPressed("L") == false then
 		wasPressed = false;
 	end
 end
-
-
-
 local tempSpeed = Speed
 	if isKeyPressed("LSHIFT") then
-		tempSpeed = tempSpeed * 3.0
+		tempSpeed = tempSpeed * 2.0
 	end
 
 	if isKeyPressed("UP") then
-		Move(0,-tempSpeed)
-		if isColMap() then
-		Move(0,tempSpeed)
-		end
+		MoveRequest(0,-tempSpeed)
 	elseif isKeyPressed("DOWN") then
-		Move(0,tempSpeed)
-		if isColMap() then
-		Move(0,-tempSpeed)
-		end
+		MoveRequest(0,tempSpeed)
 	end
 
 	if isKeyPressed("RIGHT") then
-		Move(tempSpeed,0)
-		if isColMap() then
-		Move(-tempSpeed,0)
-		end
+		MoveRequest(tempSpeed,0)
 	elseif isKeyPressed("LEFT") then
-		Move(-tempSpeed,0)
-		if isColMap() then
-		Move(tempSpeed,0)
-		end
-
+		MoveRequest(-tempSpeed,0)
 	end
-end
-
-function draw()
-
 end

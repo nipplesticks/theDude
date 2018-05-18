@@ -18,6 +18,9 @@ private:
 	sf::Vector2f		m_HPOffset;
 	sf::Vector2f		m_HPScl;
 
+	sf::Vector2f		m_moveReq;
+
+
 public:
 	Character();
 	~Character(); 
@@ -34,6 +37,12 @@ public:
 	void setAttack(int attack); 
 	void setDefence(int defence); 
 	
+	void MoveRequest(float x, float y);
+
+	//This will reset the moveRequest
+	sf::Vector2f getMoveRequest();
+
+
 	void AlterHealth(int health); 
 
 	int getHealth() const; 
@@ -76,4 +85,6 @@ public:
 	LUA_FUNC s_SetHPBar(lua_State* l);
 	LUA_FUNC s_getDistanceToPlayer(lua_State * l);
 	LUA_FUNC s_getPlayerPos(lua_State * l);
+	LUA_FUNC s_MoveRequest(lua_State * l);
+	LUA_FUNC s_getMoveRequest(lua_State * l);
 };

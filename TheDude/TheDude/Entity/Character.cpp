@@ -76,6 +76,21 @@ void Character::setDefence(int defence)
 {
 	m_defence = defence;
 }
+#include <iostream>
+void Character::MoveRequest(float x, float y)
+{
+	m_moveReq.x += x;
+	m_moveReq.y += y;
+}
+
+sf::Vector2f Character::getMoveRequest()
+{
+	sf::Vector2f mr = m_moveReq;
+	m_moveReq.x = 0.0f;
+	m_moveReq.y = 0.0f;
+
+	return mr;
+}
 
 void Character::AlterHealth(int health)
 {
@@ -134,8 +149,6 @@ void Character::_initLua()
 	m_script->PushClassFunction(this, Character::s_getPosition, "getPosition");
 	m_script->PushClassFunction(this, Character::s_getSize, "getSize");
 	m_script->PushClassFunction(this, Character::s_getColor, "getColor");
-	//m_script->PushClassFunction(this, Character::s_Draw, "Draw");
-	//m_script->PushClassFunction(this, Character::s_AddScript, "AddScript");
 	m_script->PushClassFunction(this, Character::s_isDead, "isDead");
 	m_script->PushClassFunction(this, Character::s_setHealth, "setHealth");
 	m_script->PushClassFunction(this, Character::s_setAttack, "setAttack");
@@ -147,12 +160,19 @@ void Character::_initLua()
 	m_script->PushClassFunction(this, Character::s_SetSprite, "setSprite");
 	m_script->PushClassFunction(this, Character::s_getDistanceToPlayer, "getDistanceToPlayer");
 	m_script->PushClassFunction(this, Character::s_SetHPBar, "setHPBar");
-	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
+	m_script->PushClassFunction(this, Character::s_MoveRequest, "MoveRequest");
+
 	
+	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
 	m_script->PushFunction(Game::s_isKeyPressed, "isKeyPressed");
 	m_script->PushClassFunction(this, Game::s_mapCol, "isColMap");
-
+	
 	m_script->InitLua();
+
+
+
+	//m_script->PushClassFunction(this, Character::s_Draw, "Draw");
+	//m_script->PushClassFunction(this, Character::s_AddScript, "AddScript");
 	//m_script->PushClassFunction(this, Character::s_Update, "Update");
 }
 
@@ -627,6 +647,54 @@ int Character::s_getPlayerPos(lua_State * l)
 	position.push_back(Character::playerPos.x);
 	position.push_back(Character::playerPos.y);
 	OurLua::setFloats(l, position);
+	return 2;
+}
+
+int Character::s_MoveRequest(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<float> mr = OurLua::getFloats(l, 2);
+		c->MoveRequest(mr[1], mr[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			std::vector<float> mr = OurLua::getFloats(l, 2);
+			c->MoveRequest(mr[1], mr[0]);
+		}
+	}
+
+	return 0;
+}
+
+int Character::s_getMoveRequest(lua_State * l)
+{
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<float> mr;
+	if (c)
+	{
+		sf::Vector2f m = c->getMoveRequest();
+		mr.push_back(m.x);
+		mr.push_back(m.y);
+		OurLua::setFloats(l, mr);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			sf::Vector2f m = c->getMoveRequest();
+			mr.push_back(m.x);
+			mr.push_back(m.y);
+			OurLua::setFloats(l, mr);
+		}
+	}
+	return static_cast<int>(mr.size());
 	return 2;
 }
 

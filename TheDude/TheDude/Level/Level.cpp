@@ -185,6 +185,12 @@ bool Level::SaveLevel(const std::string & target)
 			map << "\tsetPlayerPosition(Entities[1]:getPosition())\n";
 			map << "\tfor i = 1, #Entities, 1 do\n";
 				map << "\t\tEntities[i]:Update()\n";
+				map << "\t\tmx, my = Entities[i]:getMoveRequest()\n";
+				map << "\t\tif mx ~= 0.0 or my ~= 0.0 then\n";
+				map << "\t\t\t--If !col(mx, my) then\n";
+				map << "\t\t\t\tEntities[i]:Move(mx, my)\n";
+				map << "\t\t\t--End\n";
+				map << "\t\tEnd\n";
 			map << "\tend\n";
 		map << "end\n";
 		map << "\n";
@@ -215,7 +221,6 @@ bool Level::SaveLevel(const std::string & target)
 		map << "\tif isKeyPressed(\"ESC\") then\n";
 		map << "\t\tExitGame()\n";
 		map << "\telseif Entities[1]:isDead() == false then\n";
-		map << "\t\tEntities[1]:Update()\n";
 		map << "\t\t_updateEntities()\n";
 		map << "\t\t_collisionHandling()\n";
 		map << "\tend\n";
