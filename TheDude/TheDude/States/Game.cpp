@@ -58,7 +58,7 @@ void Game::_init()
 
 void Game::_initEntityHandler()
 {
-	m_entityHandler = new OurLua("Scripts/game.Lua");
+	m_entityHandler = new OurLua("Scripts/game.lua");
 	_pushFunctions();
 	m_entityHandler->InitLua();
 }
@@ -69,6 +69,7 @@ void Game::_pushFunctions()
 	m_entityHandler->PushFunction(s_isKeyPressed, "isKeyPressed");
 	m_entityHandler->PushFunction(s_ExitGame, "ExitGame");
 	m_entityHandler->PushFunction(s_setPlayerPos, "setPlayerPosition");
+	m_entityHandler->PushFunction(s_mapCol, "canMove");
 
 	luaL_Reg characterFunctions[]
 	{
@@ -172,79 +173,156 @@ int Game::s_setPlayerPos(lua_State * l)
 #include "../Hack.hpp"
 int Game::s_mapCol(lua_State * l)
 {
-	//auto gamePtr = OurLua::getClassPointer<Game>(l);
-	
-	//std::vector<Entity**> e = OurLua::getInstancePointer<Entity>(l,1);
-	auto e = OurLua::getClassPointer<Entity>(l);
-	auto map = Hack::g->m_level.getMap();
-	bool collided = false;
-	sf::IntRect collidePoints[8]; 
-	int tSize = (*map)[0][0].getSize().x;
-	int eTileX = e->getPosition().x / tSize; 
-	int eTileY = e->getPosition().y / tSize; 
+	auto d = OurLua::getFloats(l, 2);
+	Entity * e = (*OurLua::getInstancePointer<Entity>(l, 1)[0]);
+	sf::Vector2f dir(d[1], d[0]);
 
-	sf::Vector2i generalSize = sf::Vector2i(e->getShape().getSize()); 
+	auto map = Hack::g->m_level.getMap();
+	bool mx = true;
+	bool my = true;
+	sf::FloatRect collidePoints[4]; 
+	int tSize = (*map)[0][0].getSize().x;
+	sf::Vector2f generalSize = sf::Vector2f(e->getShape().getSize());
+
+	int eTileX = e->getPosition().x / tSize;
+	int eTileY = e->getPosition().y / tSize;
+ 
+	float lol1, lol2, lol3, lol4;
+	lol1 = (e->getPosition().x + dir.x) / tSize;
+	lol2 = (e->getPosition().y + dir.y) / tSize;
+	lol3 = (e->getPosition().x + dir.x + e->getSize().x) / tSize;
+	lol4 = (e->getPosition().y + dir.y + e->getSize().y) / tSize;
+
 	//Set collidePoints 
 	
-	int pointSize = 3; 
+	float realPosX = e->getPosition().x;
+	float realPosY = e->getPosition().y;
 
-	//LeftUp
-	collidePoints[0] = sf::IntRect{ int(e->getPosition().x) + 2, int(e->getPosition().y) + 2,pointSize,pointSize };
-	//LeftDown
-	collidePoints[1] = sf::IntRect{ int(e->getPosition().x) + 2, int(e->getPosition().y) + (generalSize.y - 4),pointSize,pointSize };
-	//UpLeft
-	collidePoints[2] = sf::IntRect{ int(e->getPosition().x) + 4, int(e->getPosition().y) + 1,pointSize,pointSize };
-	//UpRight 
-	collidePoints[3] = sf::IntRect{ int(e->getPosition().x) + (generalSize.x - 4), int(e->getPosition().y) + 1,pointSize,pointSize };
-	//RightUp
-	collidePoints[4] = sf::IntRect{ int(e->getPosition().x) + (generalSize.x - 2), int(e->getPosition().y) + 2,pointSize,pointSize };
-	//RightDown
-	collidePoints[5] = sf::IntRect{ int(e->getPosition().x) + (generalSize.x - 2), int(e->getPosition().y) + (generalSize.y - 4),pointSize,pointSize };
+	int pointSize = 1; 
+
+	if (lol1 > 0.0 && lol1 < map->size() &&
+		lol3 > 0.0 && lol3 < map->size() &&
+		lol2 > 0.0 && lol2 < map->at(0).size() &&
+		lol4 > 0.0 && lol4 < map->at(0).size())
+	{
+		sf::Vector2f x1;
+		sf::Vector2f x2;
+		sf::Vector2f y1;
+		sf::Vector2f y2;
+
+		if (dir.x < 0)
+		{
+			x1.x = realPosX + dir.x;
+			x1.y = realPosY - dir.x + 0.5f;
+
+			x2.x = realPosX + dir.x;
+			x2.y = realPosY + generalSize.y + dir.x - 0.5f;
+		}
+		else
+		{
+			x1.x = realPosX + dir.x + generalSize.x;
+			x1.y = realPosY + dir.x + 0.5f;
+
+			x2.x = realPosX + dir.x + generalSize.x;
+			x2.y = realPosY + generalSize.y - dir.x - 0.5f;
+		}
+
+		if (dir.y < 0)
+		{
+			y1.x = realPosX - dir.y + 0.5f;
+			y1.y = realPosY + dir.y;
+
+			y2.x = realPosX + generalSize.x + dir.y - 0.5f;
+			y2.y = realPosY + dir.y;
+		}
+		else
+		{
+			y1.x = realPosX + dir.y + 0.5f;
+			y1.y = realPosY + generalSize.y + dir.y;
+
+			y2.x = realPosX + generalSize.x - dir.y - 0.5f;
+			y2.y = realPosY + generalSize.y + dir.y;
+		}
+
+
+		if ((*map)[x1.x / tSize][x1.y / tSize].getType() == Tile::Solid ||
+			(*map)[x2.x / tSize][x2.y / tSize].getType() == Tile::Solid)
+		{
+			mx = false;
+		}
+
+		if (dir.y)
+		{
+			if ((*map)[y1.x / tSize][y1.y / tSize].getType() == Tile::Solid ||
+				(*map)[y2.x / tSize][y2.y / tSize].getType() == Tile::Solid)
+			{
+				my = false;
+			}
+		}
+	}
+
+	std::vector<bool> colVec;
+	colVec.push_back(mx);
+	colVec.push_back(my);
+	OurLua::setBooleans(l, colVec);
+	
+	return 2;
+
+	//RightUp			   
+	/*collidePoints[4] = sf::FloatRect{ (realPosX) + (generalSize.x - 3), (realPosY) + 4,(float)pointSize,(float)pointSize};
+	//RightDown			
+	collidePoints[5] = sf::FloatRect{ (realPosX) + (generalSize.x - 3), (realPosY) + (generalSize.y - 4),(float)pointSize,(float)pointSize};
 	//DownLeft
-	collidePoints[6] = sf::IntRect{ int(e->getPosition().x) + 4, int(e->getPosition().y) + (generalSize.y - 2),pointSize,pointSize };
-	//DownRight
-	collidePoints[7] = sf::IntRect{ int(e->getPosition().x) +	(generalSize.x - 4), int(e->getPosition().y) + (generalSize.y - 2),pointSize,pointSize };
+	collidePoints[6] = sf::FloatRect{ (realPosX) + 4, (realPosY) + (generalSize.y - 3),(float)pointSize,(float)pointSize};
+	//DownRight		
+	collidePoints[7] = sf::FloatRect{ (realPosX) + (generalSize.x - 4), (realPosY) + (generalSize.y - 3),(float)pointSize, (float)pointSize};
 
-	std::cout<< "\rT(" << eTileX << "," << eTileY << ")" << " P(" << e->getPosition().x << ", " << e->getPosition().y << ")" <<std::flush;
+
+	//Makes sure the points collision check is calculated from the middle of every point
+	sf::Vector2f PointPosLeftUp = sf::Vector2f{collidePoints[0].left, collidePoints[0].top};
+	sf::Vector2f PointPosLeftDown = sf::Vector2f{ collidePoints[1].left, collidePoints[1].top};
+	sf::Vector2f PointPosUpLeft = sf::Vector2f{ collidePoints[2].left + ((float)pointSize / 2), collidePoints[2].top};
+	sf::Vector2f PointPosUpRight = sf::Vector2f{ collidePoints[3].left + ((float)pointSize / 2), collidePoints[3].top};
+	sf::Vector2f PointPosRightUp = sf::Vector2f{ collidePoints[4].left + (float)pointSize, collidePoints[4].top};
+	sf::Vector2f PointPosRightDown = sf::Vector2f{ collidePoints[5].left + (float)pointSize, collidePoints[5].top};
+	sf::Vector2f PointPosDownLeft = sf::Vector2f{ collidePoints[6].left + ((float)pointSize / 2), collidePoints[6].top + (float)pointSize };
+	sf::Vector2f PointPosDownRight = sf::Vector2f{ collidePoints[7].left + ((float)pointSize / 2), collidePoints[7].top + (float)pointSize};
+
+	std::cout<< "\rT(" << eTileX << "," << eTileY << ")" << " P(" << realPosX << ", " << realPosY << ")" <<std::flush;
 
 	if (eTileX > 0 && eTileY > 0 &&
 		eTileX < map->size() - 1&& eTileY < map[0].size() - 1)
 	{
-		//Right
-		if ((*map)[eTileX + 1][eTileY].getType() == Tile::Solid)
-		{
-			sf::IntRect lol = { int(e->getPosition().x + generalSize.x) ,int(e->getPosition().y),generalSize.x,generalSize.y };
-			if (lol.intersects(collidePoints[4]) ||lol.intersects(collidePoints[5]))
-			{ 
-				collided = true; 
-			}
-		}
 		//Left
-			if ((*map)[eTileX - 1][eTileY].getType() == Tile::Solid)
+		if ((*map)[(int)(PointPosLeftUp.x + 0.5f) / tSize][(int)(PointPosLeftUp.y + 0.5f) / tSize].getType() == Tile::Solid ||
+			(*map)[(int)(PointPosLeftDown.x + 0.5f) / tSize][(int)(PointPosLeftDown.y + 0.5f) / tSize].getType() == Tile::Solid)
 		{
-			sf::IntRect lol = { int(e->getPosition().x - generalSize.x) ,int(e->getPosition().y),generalSize.x,generalSize.y };
-			if (lol.intersects(collidePoints[0]) || lol.intersects(collidePoints[1]))
-				collided = true; 
+			mx = false; 
+		}
+		//Right
+		if ((*map)[PointPosRightUp.x / tSize][PointPosRightUp.y / tSize].getType() == Tile::Solid ||
+			(*map)[PointPosRightDown.x / tSize][PointPosRightDown.y / tSize].getType() == Tile::Solid)
+		{
+			mx = false; 
 		}
 		//Up
-			if ((*map)[eTileX][eTileY - 1].getType() == Tile::Solid)
+			if ((*map)[PointPosUpLeft.x / tSize][PointPosUpLeft.y / tSize].getType() == Tile::Solid ||
+				(*map)[PointPosUpRight.x / tSize][PointPosUpRight.y / tSize].getType() == Tile::Solid)
 		{
-			sf::IntRect lol = { int(e->getPosition().x) , int(e->getPosition().y) - generalSize.y,generalSize.x,generalSize.y };
-			if (lol.intersects(collidePoints[2]) || lol.intersects(collidePoints[3]))
-				collided = true;
+				my = false;
 		}
 		//Down
-			if ((*map)[eTileX][eTileY + 1].getType() == Tile::Solid)
+			if ((*map)[PointPosDownLeft.x / tSize][PointPosDownLeft.y / tSize].getType() == Tile::Solid ||
+				(*map)[PointPosDownRight.x / tSize][PointPosDownRight.y / tSize].getType() == Tile::Solid)
 		{
-			sf::IntRect lol = {int(e->getPosition().x),int(e->getPosition().y) + generalSize.y ,generalSize.x,generalSize.y};
-			if (lol.intersects(collidePoints[6]) || lol.intersects(collidePoints[7])) 
-				collided = true;
+				my = false;
 		}
 	}
-		
+	
 	std::vector<bool> colVec;
-	colVec.push_back(collided);
+	colVec.push_back(mx);
+	colVec.push_back(my); 
 	OurLua::setBooleans(l, colVec);
-
-	return 1;
+	return 2;
+	*/
 }
