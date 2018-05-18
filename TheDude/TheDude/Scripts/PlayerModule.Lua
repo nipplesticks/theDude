@@ -33,15 +33,15 @@ local tempSpeed = Speed
 	end
 
 	if isKeyPressed("UP") then
-		Move(0,-tempSpeed)
+		MoveRequest(0,-tempSpeed)
 	elseif isKeyPressed("DOWN") then
-		Move(0,tempSpeed)
+		MoveRequest(0,tempSpeed)
 	end
 
 	if isKeyPressed("RIGHT") then
-		Move(tempSpeed,0)
+		MoveRequest(tempSpeed,0)
 	elseif isKeyPressed("LEFT") then
-		Move(-tempSpeed,0)
+		MoveRequest(-tempSpeed,0)
 	end
 end
 

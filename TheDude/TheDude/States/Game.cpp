@@ -92,6 +92,8 @@ void Game::_pushFunctions()
 		{ "Update"				,Character::s_Update				},
 		{ "setSprite"			,Character::s_SetSprite				},
 		{ "getDistanceToPlayer"	,Character::s_getDistanceToPlayer	},
+		{ "MoveRequest"			,Character::s_MoveRequest			},
+		{ "getMoveRequest"		,Character::s_getMoveRequest		},
 		{ "__gc"				,Character::s_Destroy				},
 		{ NULL					,NULL								}
 	};
