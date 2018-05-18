@@ -52,7 +52,7 @@ public:
 
 	void Update() override;
 	void setViewPos(sf::Vector2f viewPos) override;
-	void DrawOther(sf::RenderWindow * wnd);
+	void DrawOther(sf::RenderWindow * wnd, sf::Vector2f camPos);
 private:
 	// Helpt Funcitons
 	void _initLua();

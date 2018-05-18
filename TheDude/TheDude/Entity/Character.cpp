@@ -126,6 +126,8 @@ void Character::Update()
 {
 	if (m_script)
 		m_script->Update();
+	for (auto &w : m_weapons)
+		w->Update();
 }
 
 void Character::setViewPos(sf::Vector2f viewPos)
@@ -137,12 +139,12 @@ void Character::setViewPos(sf::Vector2f viewPos)
 	m_HPBack.setPosition(m_HPBar.getPosition());
 }
 
-void Character::DrawOther(sf::RenderWindow * wnd)
+void Character::DrawOther(sf::RenderWindow * wnd, sf::Vector2f camPos)
 {
 	wnd->draw(m_HPBack);
 	wnd->draw(m_HPBar);
 	for (auto & t : m_weapons)
-		t->Draw(wnd);
+		t->Draw(wnd, camPos);
 }
 
 #include "../Hack.hpp"

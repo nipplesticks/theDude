@@ -11,7 +11,6 @@ Weapon::~Weapon()
 {
 	for (auto & b : bulletContainer)
 		delete b;
-	
 }
 
 void Weapon::Shoot(float x, float y, float dx, float dy)
@@ -27,16 +26,19 @@ void Weapon::Update()
 		b->Update();
 }
 
-void Weapon::Draw(sf::RenderWindow * wnd)
+void Weapon::Draw(sf::RenderWindow * wnd, sf::Vector2f camPos)
 {
 	for (auto & lol : bulletContainer)
-		lol->Draw();
+	{
+		lol->setViewPos(lol->getPosition() - camPos);
+		wnd->draw(lol->getShape());
+	}
 }
 
 int Weapon::s_Create(lua_State * l)
 {
-	Weapon ** w = OurLua::createInstanceOf<Weapon>(l, metaTable);
 	std::string path = OurLua::getStrings(l, 1)[0];
+	Weapon ** w = OurLua::createInstanceOf<Weapon>(l, metaTable);
 	*w = new Weapon(path);
 	return 1;
 }

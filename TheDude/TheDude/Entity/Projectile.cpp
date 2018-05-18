@@ -1,5 +1,6 @@
 #include "Projectile.hpp"
 
+std::string Projectile::metaTable = "Projectile";
 Projectile::Projectile(float x, float y, float dx, float dy)
 {
 	m_script = nullptr;
@@ -57,7 +58,28 @@ void Projectile::Draw()
 void Projectile::_initLua()
 {
 	// Push Class Functions
-
+	m_script->PushClassFunction(this, Projectile::s_Move, "Move");
 
 	m_script->InitLua();
+}
+
+int Projectile::s_Move(lua_State * l)
+{
+	Projectile* c = OurLua::getInstanceOf<Projectile>(l, 1, metaTable);
+
+	if (c)
+	{
+		std::vector<float> position = OurLua::getFloats(l, 2);
+		c->Move(position[1], position[0]);
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Projectile>(l);
+		if (c)
+		{
+			std::vector<float> position = OurLua::getFloats(l, 2);
+			c->Move(position[1], position[0]);
+		}
+	}
+	return 0;
 }

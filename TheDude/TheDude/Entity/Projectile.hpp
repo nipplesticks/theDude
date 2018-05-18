@@ -26,4 +26,8 @@ public:
 private:
 	void _initLua();
 
+public:
+	LUA_FUNC s_Move(lua_State * l);
+
+
 }; 

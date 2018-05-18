@@ -22,7 +22,7 @@ void Game::Update()
 	if (s_isGameRunning)
 	{
 		m_entityHandler->Update();
-		m_level.Update(); 
+		m_level.Update();
 	}
 	else
 	{
@@ -45,10 +45,10 @@ void Game::Draw()
 	for (auto & entity : Render::g_renderQueue)
 	{
 		sf::Vector2f worldPos = entity->getPosition();
-		s_window->draw(entity->getShape());
 		entity->setViewPos(worldPos - camPos);
+		s_window->draw(entity->getShape());
 		Character * p = dynamic_cast<Character*>(entity);
-		if (p) p->DrawOther(s_window);
+		if (p) p->DrawOther(s_window, camPos);
 	}
 }
 

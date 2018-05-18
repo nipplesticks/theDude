@@ -21,7 +21,7 @@ void CheckPollEvents(sf::RenderWindow * wnd);
 int main()
 {
 	CHECK_MEMORY_LEAKS;
-	sf::RenderWindow window(sf::VideoMode(1920, 1080), gameTitle, sf::Style::Fullscreen);
+	sf::RenderWindow window(sf::VideoMode(1280, 720), gameTitle, sf::Style::Titlebar);
 	std::stack<State*> states;
 	State::InitState(&window, &states);
 
@@ -30,7 +30,6 @@ int main()
 	GameTime gameTime;
 	
 	states.push(new MainMenu());
-
 	
 	gameTime.Init();
 	sf::Clock clock;

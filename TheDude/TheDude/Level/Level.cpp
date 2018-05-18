@@ -253,8 +253,8 @@ const std::vector<std::vector<Tile>>* Level::getMap() const
 
 void Level::Update()
 {
-	m_camera->update();
 	m_grid->update(m_camera);
+	m_camera->update();
 }
 
 void Level::EditorRender()

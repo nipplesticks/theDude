@@ -6,7 +6,7 @@ function init()
 	setSprite("zelda.png")
 	wasPressed = false
 
-	pistol = Weapon:Create("");
+	pistol = Weapon:Create("Scripts/penis.lua");
 	ApplyWeapon(pistol)
 end
 
@@ -14,7 +14,8 @@ function update()
 
 if wasPressed == false then
 	if isKeyPressed("K") then
-		pistol:Shoot(getPosition(), 0, 0);
+		pc, ps = getPosition();
+		pistol:Shoot(pc, ps, 0, 0);
 		wasPressed = true
 	elseif isKeyPressed("L") then
 		AlterHealth(5)
