@@ -16,7 +16,6 @@ Level::Level(sf::RenderWindow* renderWindow)
 	m_closeFlag = false;
 	m_spritePaletteOpen = true;
 	m_entityPaletteOpen = true;
-	
 }
 
 Level::Level(const Level & other)
@@ -33,7 +32,7 @@ Level::~Level()
 void Level::LoadLevel(const std::string & target)
 {
 	_cleanup();
-
+	m_loadedSprites = false;
 	m_camera = new Camera(static_cast<float>(0), static_cast<float>(0), m_pWindow->getSize().x, m_pWindow->getSize().y);
 
 	std::ifstream map;
@@ -71,21 +70,25 @@ void Level::LoadLevel(const std::string & target)
 					stream >> xCoord >> yCoord;
 
 					sf::Vector2f pos(xCoord, yCoord);
-					m_entityTexGroups.back().m_entitesForLua.push_back(EntityShape());
-					m_entityTexGroups.back().m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
-					m_entityTexGroups.back().m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures.back().texture);
-					m_entityTexGroups.back().m_entitesForLua.back().shape.setPosition(pos);
-					m_entityTexGroups.back().m_entitesForLua.back().pos = pos;
-					m_entityTexGroups.back().m_entitesForLua.back().texturePath = m_entityInstanceTextures.back().path;
-					m_entityTexGroups.back().m_entitesForLua.back().luafile = m_entityInstanceTextures.back().luafile;
+#define BACK m_entityTexGroups[m_entityTexGroups.size() - 1]
+					BACK.m_entitesForLua.push_back(EntityShape());
+					BACK.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
+					bool firstEnt = (m_entityTexGroups.size() == 1);
+					BACK.m_entitesForLua.back().isPlayer = firstEnt;
+					BACK.m_entitesForLua.back().textureObj = new sf::Texture(m_entityInstanceTextures.back().texture);
+					BACK.m_entitesForLua.back().shape.setTexture(BACK.m_entitesForLua.back().textureObj);
+					BACK.m_entitesForLua.back().shape.setPosition(pos);
+					BACK.m_entitesForLua.back().pos = pos;
+					BACK.m_entitesForLua.back().texturePath = m_entityInstanceTextures.back().path;
+					BACK.m_entitesForLua.back().luafile = m_entityInstanceTextures.back().luafile;
 					
 				}
 				else if (type == "sheet")
 				{
 					std::string path;
 					stream >> path;
-					//TODO HENRIK
-					m_grid->LoadSpriteSheet(path);
+					if(path != "")
+						m_grid->LoadSpriteSheet(path);
 					
 							
 				}
@@ -95,8 +98,9 @@ void Level::LoadLevel(const std::string & target)
 					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &t, &r, &g, &b, &itx, &ity);
 					m_grid->setTypeOfTile(x, y, t);
 					m_grid->setColorOfTile(x, y, r, g, b);
-
-					m_grid->setTextureOfTile(x, y, sf::IntRect(itx, ity, 32, 32));
+					// No spritesheet was present when saving
+					if(itx != -1)
+						m_grid->setTextureOfTile(x, y, sf::IntRect(itx, ity, 32, 32));
 
 					
 				}		
@@ -120,13 +124,13 @@ void Level::LoadLevel(const std::string & target)
 	{
 		std::cout << "Could not open " << target << " please dont suck\n";
 	}
+
 	int i = 0;
 }
 
 bool Level::SaveLevel(const std::string & target)
 {
 	std::ofstream map;
-
 	std::string path = "Resourses/Levels/";
 	std::string path2 = "Scripts/";
 	std::string levelName = path+ target + ".level";
@@ -288,9 +292,17 @@ Level & Level::operator=(const Level & other)
 	return *this;
 }
 
+void Level::Draw(sf::Vector2f camPos)
+{
+	m_camera->setPosition(-camPos);
+	
+	m_pWindow->draw(*m_grid);
+	
+}
+
 void Level::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-	target.draw(*m_grid, states);
+	
 }
 
 void Level::_toolbarRender()
@@ -322,7 +334,7 @@ void Level::_toolbarRender()
 		}
 		if (ImGui::BeginMenu("Open"))
 		{
-			static auto files = filesInDir("Resourses/Levels/");
+			auto files = filesInDir("Resourses/Levels/");
 			
 			for (auto& s : files)
 			{
@@ -385,34 +397,40 @@ void Level::_spritePaletteRender()
 	if (_IsClickInside())
 		_changeCurrentTool(TOOL_SPRITE, "Sprite Palette", true);
 
+	int tSize = m_grid->getTile(0, 0).getSize().x;
+
 	if (!m_grid->isSpritesheetLoaded())
 	{
-		static char path[20];
-		static int size;
-		ImGui::InputText("Path", path, 20, ImGuiInputTextFlags_CharsNoBlank);
+		auto sprites = filesInDir("Resourses/SpriteSheet");
+		static int currentSheetIndex = -1;
+		static std::array<bool, 10> selectable{ 0,0,0,0,0,0 };
+		for (int i = 0; i < sprites.size(); i++)
+		{
+			if (ImGui::Selectable(sprites[i].c_str(), &selectable[i]))
+			{
+				_resetArray(selectable, i);
+				currentSheetIndex = i;
+			}
 
-		ImGui::InputInt("Sprite Size", &size);
+		}
 
 		if (ImGui::Button("Load"))
 		{
 
 			std::string fullPath = "Resourses/SpriteSheet/";
-			fullPath += std::string(path);
-		
+			fullPath += std::string(sprites[currentSheetIndex]);
+
 			m_grid->LoadSpriteSheet(fullPath);
 			imgSize = m_grid->getSheetImageSize();
-			
-			
+
 		}
-
-
 	}
 	else
 	{
 		ImVec2 p = ImGui::GetCursorScreenPos();
 		ImVec2 l = ImGui::GetMousePos();
 		ImVec2 s = ImGui::GetWindowSize();
-		static int tSize = m_grid->getTile(0, 0).getSize().x;
+		
 
 		l = ImVec2(l.x - p.x, l.y - p.y);
 		imgSize = m_grid->getSheetImageSize();
@@ -460,6 +478,20 @@ void Level::_spritePaletteRender()
 			}
 			
 		}
+
+		if (ImGui::Button("New Sheet"))
+		{
+
+			m_grid->UnloadSpriteSheet();
+
+		}
+
+		if (ImGui::Button("Fill With Selected Sprite"))
+		{
+
+			
+			
+		}
 		
 	}
 	ImGui::End();
@@ -473,17 +505,64 @@ void Level::_entityPaletteRender()
 		_changeCurrentTool(TOOL_ENTITY, "Entity Palette", true);
 
 	static std::string path = "Scripts/";
-	static std::vector<std::string> strs = filesInDir(path);
+	static std::vector<std::string> ent;
+	static std::string playerFolderPath = "Scripts/Player";
+	static std::vector<std::string> pla;
 	
 	static int currentTextureIndex = -1;
-	static sf::Sprite displayTexure;
-	static sf::Texture sampleTexture;
+	
 	if (!m_loadedSprites)
 	{
-		sampleTexture.loadFromFile("sample.png");
-		displayTexure.setTexture(sampleTexture);
-		auto i = std::begin(strs);
-		while (i != std::end(strs))
+		ent = filesInDir(path);
+		pla = filesInDir(playerFolderPath);
+		m_sampleTexture.loadFromFile("sample.png");
+		m_displayTexure.setTexture(m_sampleTexture);
+
+
+		auto ip = std::begin(pla);
+		while (ip != std::end(pla))
+		{
+			std::string currentPath;
+
+			currentPath += playerFolderPath + (*ip).c_str();
+			std::string yes = getTexturePath(currentPath);
+
+			if (yes == "")
+			{
+				ip = pla.erase(ip);
+			}
+			else
+			{
+
+				bool exists = false;
+				for (int k = 0; k < m_entityTexGroups.size(); k++)
+				{
+					if (m_entityTexGroups[k].texturePath == yes)
+					{
+						exists = true;
+					}
+				}
+				if (!exists)
+				{
+					m_entityInstanceTextures.push_back(TextureWPath());
+					m_entityInstanceTextures.back().texture.loadFromFile(yes);
+					m_entityInstanceTextures.back().path = yes;
+					if ((*ip)[0] == '\\')
+						(*ip).erase((*ip).begin());
+					std::string luaPath = "Scripts/Player/" + *ip;
+					m_entityInstanceTextures.back().luafile = luaPath;
+					EntityTexGroup etg;
+					etg.texturePath = yes;
+					m_entityTexGroups.push_back(etg);
+				}
+
+				ip++;
+			}
+
+		}
+
+		auto i = std::begin(ent);
+		while (i != std::end(ent))
 		{
 			std::string currentPath;
 
@@ -492,7 +571,7 @@ void Level::_entityPaletteRender()
 			
 			if (yes == "")
 			{
-				i = strs.erase(i);
+				i = ent.erase(i);
 			}
 			else
 			{
@@ -528,24 +607,44 @@ void Level::_entityPaletteRender()
 
 	}
 	
-	ImGui::Image(displayTexure);
-	
+	ImGui::Image(m_displayTexure);
+	ImGui::TextColored(ImVec4(0,255,0,255),"Player Entities");
+	ImGui::Separator();
 	static std::array<bool, 10> selectable{ 0,0,0,0,0,0 };
-
-	for (int i = 0; i < strs.size(); i++)
+	int textureIndex = 0;
+	for (int i = 0; i < pla.size(); i++)
 	{
-		if (ImGui::Selectable(strs[i].c_str(), &selectable[i]))
+		if (ImGui::Selectable(pla[i].c_str(), &selectable[textureIndex]))
 		{
-			_resetArray(selectable, i);
-			currentTextureIndex = i;
-			displayTexure.setTexture(m_entityInstanceTextures[i].texture);
+			_resetArray(selectable, textureIndex);
+			currentTextureIndex = textureIndex;
+			m_displayTexure.setTexture(m_entityInstanceTextures[textureIndex].texture);
 		}
+		textureIndex++;
 
 	}
 
-	if (m_activeTool[TOOL_ENTITY])
+	ImGui::Separator();
+	ImGui::TextColored(ImVec4(255, 0, 0, 255), "Entites");
+	ImGui::Separator();
+	for (int i = 0; i < ent.size(); i++)
 	{
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_IsMouseInside())
+		if (ImGui::Selectable(ent[i].c_str(), &selectable[textureIndex]))
+		{
+			_resetArray(selectable, textureIndex);
+			currentTextureIndex = textureIndex;
+
+			m_displayTexure.setTexture(m_entityInstanceTextures[textureIndex].texture);
+		}
+		textureIndex++;
+
+	}
+
+	if (m_activeTool[TOOL_ENTITY] && currentTextureIndex != -1)
+	{
+		bool placeMode = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+		bool deleteMode = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+		if ((placeMode || deleteMode) && !_IsMouseInside())
 		{
 			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
 			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
@@ -566,19 +665,83 @@ void Level::_entityPaletteRender()
 
 				}
 
-				if (!existing)
+				if (!existing && placeMode)
+				{
+					// Now are we moving a player 
+					if (currentTextureIndex < pla.size())
+					{
+						bool found = false;
+						for (auto& tg : m_entityTexGroups)
+						{
+							for (auto& e : tg.m_entitesForLua)
+							{
+								if (e.isPlayer)
+								{
+									found = true;
+									e.pos = position;
+									e.shape.setPosition(position + m_camera->getPosition());
+									e.shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+									e.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
+									e.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
+								}
+							}
+						}
+						// We didnt found an existing player!!
+						if (!found)
+						{
+							EntityTexGroup etg;
+							etg.m_entitesForLua.push_back(EntityShape());
+							etg.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
+							etg.m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+							etg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
+							etg.m_entitesForLua.back().pos = position;
+							etg.m_entitesForLua.back().luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
+							etg.m_entitesForLua.back().isPlayer = true;
+							m_entityTexGroups.insert(m_entityTexGroups.begin(), etg);
+						}
+					}
+					else // Now are we placing an entity
+					{
+						// if the entityTexGroup is empty, we need to create a slot for the player at the begining
+						if (!m_entityTexGroups.size())
+						{
+							EntityTexGroup etg;
+							etg.texturePath = "null";
+							EntityShape es;
+							es.isPlayer = true;
+							etg.m_entitesForLua.push_back(es);
+							m_entityTexGroups.push_back(etg);
+						}
+						for (auto& tg : m_entityTexGroups)
+						{
+							if (tg.texturePath == m_entityInstanceTextures[currentTextureIndex].path)
+							{
+								tg.m_entitesForLua.push_back(EntityShape());
+								tg.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
+								tg.m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+								tg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
+								tg.m_entitesForLua.back().pos = position;
+								tg.m_entitesForLua.back().luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
+								break;
+
+							}
+						}
+					}
+
+					
+				}
+				else if (deleteMode)
 				{
 					for (auto& tg : m_entityTexGroups)
 					{
-						if (tg.texturePath == m_entityInstanceTextures[currentTextureIndex].path)
+						for (int entityIndex = 0; entityIndex < tg.m_entitesForLua.size(); entityIndex++)
 						{
-							tg.m_entitesForLua.push_back(EntityShape());
-							tg.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
-							tg.m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
-							tg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
-							tg.m_entitesForLua.back().pos = position;
-							tg.m_entitesForLua.back().luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
-							break;
+							if (tg.m_entitesForLua[entityIndex].pos.x == index.x << 5 && tg.m_entitesForLua[entityIndex].pos.y == index.y << 5)
+							{
+								if(!tg.m_entitesForLua[entityIndex].isPlayer)
+									tg.m_entitesForLua.erase(tg.m_entitesForLua.begin() + entityIndex);
+								break;
+							}
 
 						}
 					}
@@ -740,9 +903,14 @@ void Level::_cleanup()
 	m_grid = nullptr;
 	delete m_camera;
 	m_camera = nullptr;
-
-	m_entityTexGroups.clear();
-	m_entityInstanceTextures.clear();
+	for (auto& etg : m_entityTexGroups)
+	{
+		for (auto& e : etg.m_entitesForLua)
+		{
+			delete e.textureObj;
+			e.textureObj = nullptr;
+		}
+	}
 }
 
 void Level::_copy(const Level & other)

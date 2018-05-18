@@ -79,6 +79,11 @@ const sf::Vector2f & Camera::getDeltaPosition() const
 	return m_deltaPos;
 }
 
+void Camera::setPosition(sf::Vector2f pos)
+{
+	m_pos = pos;
+}
+
 float Camera::getZoom() const
 {
 	return m_zoom;

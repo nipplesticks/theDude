@@ -6,7 +6,7 @@ local ENTITYS_AMOUNT = 1
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/Player/PlayerModule.Lua")
-	Entity_Scripted:setPosition(128,96)
+	Entity_Scripted:setPosition(0,0)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 end

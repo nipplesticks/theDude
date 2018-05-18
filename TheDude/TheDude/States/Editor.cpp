@@ -3,7 +3,7 @@
 Editor::Editor()
 	: level(s_window)
 {
-	level.LoadLevel("Resourses/Levels/peace.txt");
+	level.LoadLevel("Resourses/Levels/game.level");
 }
 
 Editor::~Editor()

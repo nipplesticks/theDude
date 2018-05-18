@@ -31,8 +31,10 @@ private:
 		{
 			sf::Vector2f pos;
 			sf::RectangleShape shape;
+			sf::Texture* textureObj;
 			std::string luafile;
 			std::string texturePath;
+			bool isPlayer;
 		};
 
 		struct EntityTexGroup
@@ -51,7 +53,8 @@ private:
 		};
 		std::vector<TextureWPath> m_entityInstanceTextures;
 
-		// Only for displaying entities in the editor not during runtime
+		sf::Sprite m_displayTexure;
+		sf::Texture m_sampleTexture;
 		
 	// }
 
@@ -71,7 +74,7 @@ public:
 		bool isClose();
 	// }
 	Level& operator=(const Level& other);
-
+	void Draw(sf::Vector2f camPos);
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
 

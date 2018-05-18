@@ -17,15 +17,15 @@ private:
 	static bool s_isGameRunning;
 	Level m_level; 
 public:
-	Game();
+	Game(std::string level);
 	~Game();
 	void Update() override;
 	void Draw() override;
 
 private:
 // Help Functions
-	void _init();
-	void _initEntityHandler();
+	void _init(std::string level);
+	void _initEntityHandler(std::string luaFile);
 	void _pushFunctions();
 
 public:

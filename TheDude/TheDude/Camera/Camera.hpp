@@ -25,6 +25,8 @@ public:
 	const sf::Vector2f& getPosition() const;
 	const sf::Vector2f& getDeltaPosition() const;
 
+	void setPosition(sf::Vector2f pos);
+
 	float getZoom() const;
 	
 };
