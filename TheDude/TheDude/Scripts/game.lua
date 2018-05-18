@@ -5,8 +5,8 @@ local ENTITYS_AMOUNT = 1
 
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/PlayerModule.lua")
-	Entity_Scripted:setPosition(128,160)
+	Entity_Scripted:AddScript("Scripts/PlayerModule.Lua")
+	Entity_Scripted:setPosition(128,128)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 end
@@ -16,15 +16,11 @@ local function _updateEntities()
 	for i = 1, #Entities, 1 do
 		Entities[i]:Update()
 		mx, my = Entities[i]:getMoveRequest()
-
 		if mx ~= 0.0 or my ~= 0.0 then
-		--If !col(mx, my) then
-			--print("x: " .. mx .. " y: " .. my)
-			Entities[i]:Move(mx, my)
-		--end
+			--If !col(mx, my) then
+				Entities[i]:Move(mx, my)
+			--End
 		end
-
-
 	end
 end
 

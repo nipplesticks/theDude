@@ -135,15 +135,15 @@ bool Level::SaveLevel(const std::string & target)
 	map.open(levelName);
 	if (map)
 	{
-		int currentEntity = 0;
+		int currentIndex = 0;
 		for (auto& etg : m_entityTexGroups)
 		{
 			if (etg.m_entitesForLua.size())
 			{
-				map << "entity " << etg.texturePath << " " << etg.m_entitesForLua[currentEntity].luafile << "\n";
+				map << "entity " << etg.texturePath << " " << etg.m_entitesForLua[0].luafile << "\n";
 				for (auto& e : etg.m_entitesForLua)
 					map << "p " << e.pos.x << " " << e.pos.y << "\n";
-				currentEntity++;
+				currentIndex++;
 			}
 			
 		}
@@ -190,7 +190,7 @@ bool Level::SaveLevel(const std::string & target)
 				map << "\t\t\t--If !col(mx, my) then\n";
 				map << "\t\t\t\tEntities[i]:Move(mx, my)\n";
 				map << "\t\t\t--End\n";
-				map << "\t\tEnd\n";
+				map << "\t\tend\n";
 			map << "\tend\n";
 		map << "end\n";
 		map << "\n";
