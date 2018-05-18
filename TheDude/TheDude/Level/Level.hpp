@@ -27,11 +27,20 @@ private:
 #define TOOL_TYPE 2
 #define TOOL_COLOR 3
 
+		struct EntityShape
+		{
+			sf::Vector2f pos;
+			sf::RectangleShape shape;
+			std::string luafile;
+			std::string texturePath;
+		};
+
 		struct EntityTexGroup
 		{
 			std::string texturePath;
-			std::vector<sf::Vector2f> m_entityPositions;
+			std::vector<EntityShape> m_entitesForLua;
 		};
+
 		std::vector<EntityTexGroup> m_entityTexGroups;
 
 		struct TextureWPath
@@ -43,13 +52,7 @@ private:
 		std::vector<TextureWPath> m_entityInstanceTextures;
 
 		// Only for displaying entities in the editor not during runtime
-		struct EntityShape
-		{
-			sf::Vector2f pos;
-			sf::RectangleShape shape;
-			std::string luafile;
-		};
-		std::vector<EntityShape> m_entitesForLua;
+		
 	// }
 
 public:

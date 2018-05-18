@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />
-    <Text Include="Scripts\EntityHandler.Lua" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resourses\Levels\test.chef" />

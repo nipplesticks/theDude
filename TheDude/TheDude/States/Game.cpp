@@ -206,7 +206,7 @@ int Game::s_mapCol(lua_State * l)
 	std::cout<< "\rT(" << eTileX << "," << eTileY << ")" << " P(" << e->getPosition().x << ", " << e->getPosition().y << ")" <<std::flush;
 
 	if (eTileX > 0 && eTileY > 0 &&
-		eTileX < map->size() && eTileY < map[0].size())
+		eTileX < map->size() - 1&& eTileY < map[0].size() - 1)
 	{
 		//Right
 		if ((*map)[eTileX + 1][eTileY].getType() == Tile::Solid)
