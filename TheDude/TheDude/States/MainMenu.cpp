@@ -1,6 +1,8 @@
 #include "MainMenu.hpp"
 #include "Game.hpp"
 #include "Editor.hpp"
+#include <filesystem>
+#include <sstream>
 
 
 MainMenu::MainMenu()
@@ -14,25 +16,47 @@ MainMenu::~MainMenu()
 	delete m_Exit;
 	delete m_Editor;
 	delete px;
+	delete m_returnToMM;
+	for (auto& bt : m_levelButton)
+	{
+		delete bt;
+	}
 }
 
 void MainMenu::Update()
 {
 	sf::Vector2i mp = sf::Mouse::getPosition(*s_window);
+	if (m_showLevels)
+	{
+		_displayLevels();
+	}
+	else
+	{
+		m_Game->Update(mp);
+		m_Editor->Update(mp);
+		m_Exit->Update(mp);
 
-	m_Game->Update(mp);
-	m_Editor->Update(mp);
-	m_Exit->Update(mp);
+	}
 }
 
 void MainMenu::Draw()
 {
 	s_window->draw(m_bck);
 	_moveBackground();
+	if (m_showLevels)
+	{
+		for (auto& bt : m_levelButton)
+			bt->draw(*s_window, sf::RenderStates::Default);
 
-	m_Game->draw(*s_window, sf::RenderStates::Default);
-	m_Editor->draw(*s_window, sf::RenderStates::Default);
-	m_Exit->draw(*s_window, sf::RenderStates::Default);
+		m_returnToMM->draw(*s_window, sf::RenderStates::Default);
+	}
+	else
+	{
+		m_Game->draw(*s_window, sf::RenderStates::Default);
+		m_Editor->draw(*s_window, sf::RenderStates::Default);
+		m_Exit->draw(*s_window, sf::RenderStates::Default);
+
+	}
 
 }
 
@@ -70,14 +94,59 @@ void MainMenu::_init()
 	m_Editor->setButtonText("Create_Map");
 	m_Exit = new Button(startX, startY + (height + distY) * 2, width, height);
 	m_Exit->setButtonText("Exit_Game");
-	m_Game->setFunctionPointer(std::bind(&MainMenu::_pushGame, this));
+
+	m_Game->setFunctionPointer(std::bind(&MainMenu::_displayLevels, this));
 	m_Editor->setFunctionPointer(std::bind(&MainMenu::_pushEditor, this));
 	m_Exit->setFunctionPointer(std::bind(&MainMenu::Pop, this));
 }
-#include "../Hack.hpp"
-void MainMenu::_pushGame()
+void MainMenu::_displayLevels()
 {
-	Hack::g = new Game;
+	auto levels = getfilesInDir();
+	if (!m_showLevels)
+	{
+		delete m_returnToMM;
+		for (auto& bt : m_levelButton)
+		{
+			delete bt;
+		}
+		m_levelButton.clear();
+		int counter = 0;
+		for (auto& l : levels)
+		{
+			l.erase(l.begin() + l.find_last_of('.'), l.end());
+			Button* bt = new Button((counter * 200) + 10, 10, 200, 200);
+			bt->setButtonText(l);
+			m_levelButton.push_back(bt);
+			counter++;
+		}
+		m_showLevels = true;
+		m_returnToMM = new Button(600, 400, 200, 200);
+		m_returnToMM->setButtonText("Return to main menu");
+		m_returnToMM->setFunctionPointer(std::bind(&MainMenu::_disableShowLevels, this));
+	}
+
+	sf::Vector2i mp = sf::Mouse::getPosition(*s_window);
+	for (auto& bt : m_levelButton)
+	{
+		if (bt->Update(mp))
+		{
+			_pushGame(bt->getTextString());
+		}
+	}
+
+	m_returnToMM->Update(mp);
+
+
+}
+void MainMenu::_disableShowLevels()
+{
+	m_showLevels = false;
+}
+#include "../Hack.hpp"
+void MainMenu::_pushGame(std::string level)
+{
+	
+	Hack::g = new Game(level);
 	State::Push(Hack::g);
 }
 
@@ -92,7 +161,7 @@ void MainMenu::_moveBackground()
 	static int counter = 0;
 	static bool add = true;
 	static int canUpdate = 0;
-	sf::Vector2f m(pxSizeX *0.5f, pxSizeY *0.5f);
+	static sf::Vector2f m(pxSizeX *0.5f, pxSizeY *0.5f);
 
 	for (int x = 0; x < (int)pxSizeX; x++)
 	{
@@ -131,4 +200,29 @@ void MainMenu::_moveBackground()
 
 
 	m_t.update(px);
+}
+
+std::vector<std::string> MainMenu::getfilesInDir()
+{
+	std::vector<std::string> files;
+
+	// Stupid but works
+	std::string folderPath = __FILE__;
+	folderPath += "/../../";
+	folderPath += "Resourses/Levels";
+	namespace fs = std::experimental::filesystem;
+	for (auto& p : fs::directory_iterator(folderPath))
+	{
+		std::stringstream s;
+		s << p << std::endl;
+		std::string lol(s.str());
+		std::string relative;
+		for (size_t i = lol.find_last_of('\\'); i < lol.size() - 1; i++)
+			relative += lol[i];
+
+		files.push_back(relative);
+
+	}
+
+	return files;
 }

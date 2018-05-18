@@ -1,12 +1,27 @@
 --Auto generated code based on map
 
 local Entities = {}
-local ENTITYS_AMOUNT = 1
+local ENTITYS_AMOUNT = 4
 
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/Player/PlayerModule.Lua")
-	Entity_Scripted:setPosition(128,96)
+	Entity_Scripted:setPosition(704,384)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/DVD.Lua")
+	Entity_Scripted:setPosition(1024,288)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/DVD.Lua")
+	Entity_Scripted:setPosition(416,704)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/DVD.Lua")
+	Entity_Scripted:setPosition(992,640)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 end

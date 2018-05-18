@@ -19,6 +19,17 @@ Grid::~Grid()
 	_cleanup();
 }
 
+void Grid::setTextureOfAllTiles(const sf::IntRect & rect)
+{
+	for (auto& row : m_tiles)
+	{
+		for (auto& col : row)
+		{
+			col.setTexture(*m_spriteSheet, rect);
+		}
+	}
+}
+
 void Grid::setTypeOfTile(int x, int y, int type)
 {
 	m_tiles[x][y].setType(type);
@@ -38,7 +49,7 @@ void Grid::setTextureOfTile(int x, int y, const sf::IntRect& rect)
 {
 	if (nullptr == m_spriteSheet)
 	{
-		std::cout << __LINE__ << ": Spritesheet not loaded!";
+		std::cout << __LINE__ << ": Spritesheet not loaded!" << std::endl;
 		return;
 	}
 
@@ -63,12 +74,12 @@ const std::vector<std::vector<Tile>>* Grid::getTiles() const
 
 int Grid::getWidth() const
 {
-	return static_cast<int>(m_tiles[0].size());
+	return static_cast<int>(m_tiles.size());
 }
 
 int Grid::getHeight() const
 {
-	return static_cast<int>(m_tiles.size());
+	return static_cast<int>(m_tiles[0].size());
 }
 
 sf::Vector2i Grid::getDimensions() const
@@ -124,10 +135,10 @@ void Grid::update(Camera* cam)
 
 		int scale = static_cast<int>(m_tiles[0][0].getSize().x);
 		int startX = static_cast<int>(-cam->getPosition().x) >> 5;
-
 		int startY = static_cast<int>(-cam->getPosition().y) >> 5;
-		int endX = startX + ((cam->getWindowWidth()) >> 5);
-		int endY = startY + ((cam->getWindowHeight()) >> 5);
+
+		int endX = (startX + ((cam->getWindowWidth()) >> 5) + 1 );
+		int endY = (startY + ((cam->getWindowHeight()) >> 5) + 2);
 
 		for (int i = startX; i < endX; i++)
 		{
@@ -165,6 +176,14 @@ Grid & Grid::operator=(const Grid & other)
 	}
 
 	return *this;
+}
+
+void Grid::UnloadSpriteSheet()
+{
+	delete m_spriteSheet;
+	m_spriteSheet = nullptr;
+	m_spritesheetPath = "";
+	m_displaySprite = sf::Sprite();
 }
 
 void Grid::LoadSpriteSheet(const std::string & path)
@@ -211,10 +230,10 @@ void Grid::NormalMode()
 
 void Grid::_init(int width, int height, float sizeOfTile, int type)
 {
-	for (int i = 0; i < height; i++)
+	for (int i = 0; i < width; i++)
 	{
 		m_tiles.push_back(std::vector<Tile>());
-		for (int k = 0; k < width; k++)
+		for (int k = 0; k < height; k++)
 		{
 			Tile t(sizeOfTile, sizeOfTile, type);
 			t.setPosition(static_cast<float>(i) * sizeOfTile , static_cast<float>(k) * sizeOfTile);

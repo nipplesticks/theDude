@@ -1,5 +1,9 @@
-entity zelda.png Scripts/PlayerModule.Lua
-p 0 0
+entity zelda.png Scripts/Player/PlayerModule.Lua
+p 128 96
+entity goomba.png Scripts/DVD.Lua
+p 32 256
+p 288 288
+p 288 96
 grid 10 10 32 0
 sheet Resourses/SpriteSheet/\spritesheet1.png
 t 0 0 0 255 255 255 32 64

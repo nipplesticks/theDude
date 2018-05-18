@@ -4,10 +4,10 @@
 std::vector<Entity*> Render::g_renderQueue;
 bool Game::s_isGameRunning = true;
 
-Game::Game() : m_level(s_window)
+Game::Game(std::string level) : m_level(s_window)
 {
 	s_isGameRunning = true;
-	_init();
+	_init(level);
 }
 
 Game::~Game()
@@ -32,12 +32,16 @@ void Game::Update()
 
 void Game::Draw()
 {
-	s_window->draw(m_level); 
+	
 	m_entityHandler->Draw();
 
 	// TEMP
-	sf::Vector2f camPos(0.0f, 0.0f);
-
+	
+	sf::Vector2f m(s_window->getSize());
+	m *= 0.5f;
+	sf::Vector2f camPos(Render::g_renderQueue[0]->getPosition());
+	camPos -= m;
+	m_level.Draw(camPos);
 	for (auto & entity : Render::g_renderQueue)
 	{
 		sf::Vector2f worldPos = entity->getPosition();
@@ -49,15 +53,15 @@ void Game::Draw()
 }
 
 
-void Game::_init()
+void Game::_init(std::string level)
 {
-	_initEntityHandler();
-	m_level.LoadLevel("Resourses/Levels/game.level"); 
+	_initEntityHandler("Scripts/" + level + ".lua");
+	m_level.LoadLevel("Resourses/Levels/" + level + ".level"); 
 }
 
-void Game::_initEntityHandler()
+void Game::_initEntityHandler(std::string luaFile)
 {
-	m_entityHandler = new OurLua("Scripts/game.lua");
+	m_entityHandler = new OurLua(luaFile);
 	_pushFunctions();
 	m_entityHandler->InitLua();
 }

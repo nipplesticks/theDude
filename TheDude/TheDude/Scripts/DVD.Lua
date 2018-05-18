@@ -1,5 +1,3 @@
-require("Scripts.EntityHandler")
-
 function init()
 	setHPBar(50,110,50,10)
 	setHealth(100)

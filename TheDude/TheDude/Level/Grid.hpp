@@ -20,6 +20,7 @@ public:
 	Grid(const Grid& other);
 	virtual ~Grid();
 	
+	void setTextureOfAllTiles(const sf::IntRect& rect);
 	void setTypeOfTile(int x, int y, int type);
 	void setColorOfTile(int x, int y, int r, int g, int b, bool perm = false);
 	void setColorOfTile(int x, int y, const sf::Vector3i& color, bool perm = false);
@@ -38,6 +39,7 @@ public:
 	void draw(sf::RenderTarget & target, sf::RenderStates states) const;
 	Grid& operator=(const Grid& other);
 
+	void UnloadSpriteSheet();
 	void LoadSpriteSheet(const std::string& path);
 
 	// EDITOR {

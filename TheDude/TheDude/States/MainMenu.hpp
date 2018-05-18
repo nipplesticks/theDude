@@ -9,6 +9,12 @@ private:
 	Button * m_Editor;
 	Button * m_Exit;
 
+	bool m_showLevels;
+	std::vector<Button*> m_levelButton;
+	Button * m_returnToMM;
+	
+
+
 	sf::RectangleShape m_bck;
 	sf::Texture m_t;
 	int px_size;
@@ -25,7 +31,10 @@ public:
 
 private:
 	void _init();
-	void _pushGame();
+	void _displayLevels();
+	void _disableShowLevels();
+	void _pushGame(std::string level);
 	void _pushEditor();
 	void _moveBackground();
+	std::vector<std::string> getfilesInDir();
 };
