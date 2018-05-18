@@ -76,7 +76,7 @@ void Character::setDefence(int defence)
 {
 	m_defence = defence;
 }
-
+#include <iostream>
 void Character::MoveRequest(float x, float y)
 {
 	m_moveReq.x += x;
@@ -138,7 +138,7 @@ void Character::DrawOther(sf::RenderWindow * wnd)
 	wnd->draw(m_HPBar);
 }
 
-#include "../States/Game.hpp"
+#include "../Hack.hpp"
 void Character::_initLua()
 {
 	m_script->PushClassFunction(this, Character::s_setColor, "setColor");
@@ -162,8 +162,10 @@ void Character::_initLua()
 	m_script->PushClassFunction(this, Character::s_SetHPBar, "setHPBar");
 	m_script->PushClassFunction(this, Character::s_MoveRequest, "MoveRequest");
 
+	
 	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
 	m_script->PushFunction(Game::s_isKeyPressed, "isKeyPressed");
+	m_script->PushClassFunction(this, Game::s_mapCol, "isColMap");
 	
 	m_script->InitLua();
 
@@ -655,7 +657,7 @@ int Character::s_MoveRequest(lua_State * l)
 	if (c)
 	{
 		std::vector<float> mr = OurLua::getFloats(l, 2);
-		c->setPosition(mr[1], mr[0]);
+		c->MoveRequest(mr[1], mr[0]);
 	}
 	else
 	{
@@ -663,7 +665,7 @@ int Character::s_MoveRequest(lua_State * l)
 		if (c)
 		{
 			std::vector<float> mr = OurLua::getFloats(l, 2);
-			c->setPosition(mr[1], mr[0]);
+			c->MoveRequest(mr[1], mr[0]);
 		}
 	}
 

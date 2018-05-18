@@ -51,6 +51,7 @@
     <ClInclude Include="Interface\Button.hpp" />
     <ClInclude Include="Interface\HeadsUpDisplay.h" />
     <ClInclude Include="States\Editor.hpp" />
+    <ClInclude Include="Hack.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resourses\Levels\level_template.txt" />

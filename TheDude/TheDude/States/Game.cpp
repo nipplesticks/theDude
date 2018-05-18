@@ -4,7 +4,7 @@
 std::vector<Entity*> Render::g_renderQueue;
 bool Game::s_isGameRunning = true;
 
-Game::Game()
+Game::Game() : m_level(s_window)
 {
 	s_isGameRunning = true;
 	_init();
@@ -13,13 +13,17 @@ Game::Game()
 Game::~Game()
 {
 	delete m_entityHandler;
+	
 }
+
+
 
 void Game::Update()
 {
 	if (s_isGameRunning)
 	{
 		m_entityHandler->Update();
+		m_level.Update(); 
 	}
 	else
 	{
@@ -29,8 +33,8 @@ void Game::Update()
 
 void Game::Draw()
 {
+	s_window->draw(m_level); 
 	m_entityHandler->Draw();
-
 
 	// TEMP
 	sf::Vector2f camPos(0.0f, 0.0f);
@@ -38,35 +42,33 @@ void Game::Draw()
 	for (auto & entity : Render::g_renderQueue)
 	{
 		sf::Vector2f worldPos = entity->getPosition();
-		entity->setViewPos(worldPos - camPos);
 		s_window->draw(entity->getShape());
-
+		entity->setViewPos(worldPos - camPos);
 		Character * p = dynamic_cast<Character*>(entity);
 		if (p) p->DrawOther(s_window);
-
 	}
-
 }
+
 
 void Game::_init()
 {
 	_initEntityHandler();
+	m_level.LoadLevel("Resourses/Levels/game.level"); 
 }
 
 void Game::_initEntityHandler()
 {
 	m_entityHandler = new OurLua("Scripts/game.Lua");
-	m_entityHandler->PushClassFunction(this, Game::s_test, "testMe");
 	_pushFunctions();
 	m_entityHandler->InitLua();
 }
 
 void Game::_pushFunctions()
 {
-	m_entityHandler->PushFunction(s_CheckCollision,	"CheckCollision");
-	m_entityHandler->PushFunction(s_isKeyPressed,	"isKeyPressed");
-	m_entityHandler->PushFunction(s_ExitGame,		"ExitGame");
-	m_entityHandler->PushFunction(s_setPlayerPos,	"setPlayerPosition");
+	m_entityHandler->PushFunction(s_CheckCollision, "CheckCollision");
+	m_entityHandler->PushFunction(s_isKeyPressed, "isKeyPressed");
+	m_entityHandler->PushFunction(s_ExitGame, "ExitGame");
+	m_entityHandler->PushFunction(s_setPlayerPos, "setPlayerPosition");
 
 	luaL_Reg characterFunctions[]
 	{
@@ -99,7 +101,6 @@ void Game::_pushFunctions()
 	};
 	m_entityHandler->PushClassFunctions(Character::metaTable, characterFunctions, "Character");
 }
-
 int Game::s_isKeyPressed(lua_State * l)
 {
 	std::string key = OurLua::getStrings(l, 1)[0];
@@ -168,10 +169,82 @@ int Game::s_setPlayerPos(lua_State * l)
 
 	return 0;
 }
-
-int Game::s_test(lua_State * l)
+#include "../Hack.hpp"
+int Game::s_mapCol(lua_State * l)
 {
-	auto lol = OurLua::getClassPointer<Game>(l);
-	std::cout << (lol) << std::endl;
-	return 0;
+	//auto gamePtr = OurLua::getClassPointer<Game>(l);
+	
+	//std::vector<Entity**> e = OurLua::getInstancePointer<Entity>(l,1);
+	auto e = OurLua::getClassPointer<Entity>(l);
+	auto map = Hack::g->m_level.getMap();
+	bool collided = false;
+	sf::IntRect collidePoints[8]; 
+	int tSize = (*map)[0][0].getSize().x;
+	int eTileX = e->getPosition().x / tSize; 
+	int eTileY = e->getPosition().y / tSize; 
+
+	sf::Vector2i generalSize = sf::Vector2i(e->getShape().getSize()); 
+	//Set collidePoints 
+	
+	int pointSize = 3; 
+
+	//LeftUp
+	collidePoints[0] = sf::IntRect{ int(e->getPosition().x) + 2, int(e->getPosition().y) + 2,pointSize,pointSize };
+	//LeftDown
+	collidePoints[1] = sf::IntRect{ int(e->getPosition().x) + 2, int(e->getPosition().y) + (generalSize.y - 4),pointSize,pointSize };
+	//UpLeft
+	collidePoints[2] = sf::IntRect{ int(e->getPosition().x) + 4, int(e->getPosition().y) + 1,pointSize,pointSize };
+	//UpRight 
+	collidePoints[3] = sf::IntRect{ int(e->getPosition().x) + (generalSize.x - 4), int(e->getPosition().y) + 1,pointSize,pointSize };
+	//RightUp
+	collidePoints[4] = sf::IntRect{ int(e->getPosition().x) + (generalSize.x - 2), int(e->getPosition().y) + 2,pointSize,pointSize };
+	//RightDown
+	collidePoints[5] = sf::IntRect{ int(e->getPosition().x) + (generalSize.x - 2), int(e->getPosition().y) + (generalSize.y - 4),pointSize,pointSize };
+	//DownLeft
+	collidePoints[6] = sf::IntRect{ int(e->getPosition().x) + 4, int(e->getPosition().y) + (generalSize.y - 2),pointSize,pointSize };
+	//DownRight
+	collidePoints[7] = sf::IntRect{ int(e->getPosition().x) +	(generalSize.x - 4), int(e->getPosition().y) + (generalSize.y - 2),pointSize,pointSize };
+
+	std::cout<< "\rT(" << eTileX << "," << eTileY << ")" << " P(" << e->getPosition().x << ", " << e->getPosition().y << ")" <<std::flush;
+
+	if (eTileX > 0 && eTileY > 0 &&
+		eTileX < map->size() && eTileY < map[0].size())
+	{
+		//Right
+		if ((*map)[eTileX + 1][eTileY].getType() == Tile::Solid)
+		{
+			sf::IntRect lol = { int(e->getPosition().x + generalSize.x) ,int(e->getPosition().y),generalSize.x,generalSize.y };
+			if (lol.intersects(collidePoints[4]) ||lol.intersects(collidePoints[5]))
+			{ 
+				collided = true; 
+			}
+		}
+		//Left
+			if ((*map)[eTileX - 1][eTileY].getType() == Tile::Solid)
+		{
+			sf::IntRect lol = { int(e->getPosition().x - generalSize.x) ,int(e->getPosition().y),generalSize.x,generalSize.y };
+			if (lol.intersects(collidePoints[0]) || lol.intersects(collidePoints[1]))
+				collided = true; 
+		}
+		//Up
+			if ((*map)[eTileX][eTileY - 1].getType() == Tile::Solid)
+		{
+			sf::IntRect lol = { int(e->getPosition().x) , int(e->getPosition().y) - generalSize.y,generalSize.x,generalSize.y };
+			if (lol.intersects(collidePoints[2]) || lol.intersects(collidePoints[3]))
+				collided = true;
+		}
+		//Down
+			if ((*map)[eTileX][eTileY + 1].getType() == Tile::Solid)
+		{
+			sf::IntRect lol = {int(e->getPosition().x),int(e->getPosition().y) + generalSize.y ,generalSize.x,generalSize.y};
+			if (lol.intersects(collidePoints[6]) || lol.intersects(collidePoints[7])) 
+				collided = true;
+		}
+	}
+		
+	std::vector<bool> colVec;
+	colVec.push_back(collided);
+	OurLua::setBooleans(l, colVec);
+
+	return 1;
 }
