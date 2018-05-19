@@ -54,6 +54,8 @@ private:
 
 		sf::Sprite m_displayTexure;
 		sf::Texture m_sampleTexture;
+
+		std::string m_currentLevel;
 		
 	// }
 

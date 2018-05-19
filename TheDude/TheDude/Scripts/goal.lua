@@ -1,29 +1,19 @@
 --Auto generated code based on map
 
 local Entities = {}
-local ENTITYS_AMOUNT = 4
 
+local GoalTiles = {}
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/Player/PlayerModule.Lua")
-	Entity_Scripted:setPosition(704,384)
+	Entity_Scripted:setPosition(128,160)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
-	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(1024,288)
-	Entity_Scripted:setSize(32,32)
-	table.insert(Entities, Entity_Scripted)
-	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(416,704)
-	Entity_Scripted:setSize(32,32)
-	table.insert(Entities, Entity_Scripted)
-	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(992,640)
-	Entity_Scripted:setSize(32,32)
-	table.insert(Entities, Entity_Scripted)
+
+	local Goal = Character.Create()
+	Goal:setPosition(64,288)
+	Goal:setSize(32,32)
+	table.insert(GoalTiles, Goal)
 end
 
 local function _updateEntities()
@@ -52,7 +42,8 @@ end
 
 local function _collisionHandling()
 	for i = 2, #Entities, 1 do
-		isCollision = CheckCollision(Entities[1], Entities[i])		if isCollision then
+		isCollision = CheckCollision(Entities[1], Entities[i])
+		if isCollision then
 			Entities[1]:AlterHealth(Entities[i]:getAttack() * -1)
 		end
 	end
@@ -66,8 +57,15 @@ function update()
 	if isKeyPressed("ESC") then
 		ExitGame()
 	elseif Entities[1]:isDead() == false then
+		for i = 1, #GoalTiles, 1 do
+			if CheckCollision(Entities[1], GoalTiles[i]) then
+				setGameStatus(1)
+			end
+		end
 		_updateEntities()
 		_collisionHandling()
+	else
+		setGameStatus(2)
 	end
 end
 

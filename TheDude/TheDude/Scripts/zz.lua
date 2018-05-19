@@ -1,49 +1,34 @@
 --Auto generated code based on map
 
 local Entities = {}
-local ENTITYS_AMOUNT = 8
 
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/Player/PlayerModule.Lua")
-	Entity_Scripted:setPosition(1184,640)
+	Entity_Scripted:setPosition(128,128)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(864,576)
+	Entity_Scripted:setPosition(0,288)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(1408,512)
+	Entity_Scripted:setPosition(288,288)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(1568,896)
+	Entity_Scripted:setPosition(288,0)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(960,832)
+	Entity_Scripted:setPosition(0,0)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
-	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(992,1152)
-	Entity_Scripted:setSize(32,32)
-	table.insert(Entities, Entity_Scripted)
-	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(544,352)
-	Entity_Scripted:setSize(32,32)
-	table.insert(Entities, Entity_Scripted)
-	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(448,352)
-	Entity_Scripted:setSize(32,32)
-	table.insert(Entities, Entity_Scripted)
+
 end
 
 local function _updateEntities()
@@ -72,7 +57,8 @@ end
 
 local function _collisionHandling()
 	for i = 2, #Entities, 1 do
-		isCollision = CheckCollision(Entities[1], Entities[i])		if isCollision then
+		isCollision = CheckCollision(Entities[1], Entities[i])
+		if isCollision then
 			Entities[1]:AlterHealth(Entities[i]:getAttack() * -1)
 		end
 	end
@@ -88,6 +74,8 @@ function update()
 	elseif Entities[1]:isDead() == false then
 		_updateEntities()
 		_collisionHandling()
+	else
+		setGameStatus(2)
 	end
 end
 

@@ -3,6 +3,7 @@
 
 std::vector<Entity*> Render::g_renderQueue;
 bool Game::s_isGameRunning = true;
+int Game::s_gameStatus = RUNNING;
 
 Game::Game(std::string level) : m_level(s_window)
 {
@@ -19,6 +20,15 @@ Game::~Game()
 
 void Game::Update()
 {
+	if (s_gameStatus == WON)
+	{
+		std::cout << "Won!" << std::endl;
+	}
+	else if(s_gameStatus == LOSE)
+	{
+		std::cout << "Lost!" << std::endl;
+	}
+	
 	if (s_isGameRunning)
 	{
 		m_entityHandler->Update();
@@ -28,6 +38,8 @@ void Game::Update()
 	{
 		State::Pop();
 	}
+	
+	
 }
 
 void Game::Draw()
@@ -56,7 +68,7 @@ void Game::Draw()
 void Game::_init(std::string level)
 {
 	_initEntityHandler("Scripts/" + level + ".lua");
-	m_level.LoadLevel("Resourses/Levels/" + level + ".level"); 
+	m_level.LoadLevel(level + ".level"); 
 }
 
 void Game::_initEntityHandler(std::string luaFile)
@@ -73,6 +85,7 @@ void Game::_pushFunctions()
 	m_entityHandler->PushFunction(s_ExitGame, "ExitGame");
 	m_entityHandler->PushFunction(s_setPlayerPos, "setPlayerPosition");
 	m_entityHandler->PushFunction(s_mapCol, "canMove");
+	m_entityHandler->PushFunction(s_setGameStatus, "setGameStatus");
 
 	luaL_Reg characterFunctions[]
 	{
@@ -328,4 +341,11 @@ int Game::s_mapCol(lua_State * l)
 	OurLua::setBooleans(l, colVec);
 	return 2;
 	*/
+}
+
+int Game::s_setGameStatus(lua_State * l)
+{
+	std::vector<float> status = OurLua::getFloats(l, 1);
+	Game::s_gameStatus = status[0];
+	return 0;
 }

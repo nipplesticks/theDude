@@ -1,6 +1,12 @@
 #pragma once
 #include <SFML\Graphics.hpp>
 
+#define TYPE_NONE_COLOR sf::Color::White
+#define TYPE_DANGEROUS_COLOR sf::Color::Red
+#define TYPE_SOLID_COLOR sf::Color::Blue
+#define TYPE_GOAL_COLOR sf::Color::Yellow
+
+
 class Tile : public sf::Drawable
 {
 public:
@@ -8,7 +14,8 @@ public:
 	{
 		None,
 		Dangerous,
-		Solid
+		Solid,
+		Goal
 	};
 
 private:
@@ -34,7 +41,9 @@ public:
 	void setColor(int r, int g, int b, bool permCol);
 	void setColor(const sf::Color &color, bool permanant = false);
 	void setTexture(const sf::Texture & texture, const sf::IntRect& rect);
+	
 	const sf::Color& getColor() const;
+	const sf::Color& getOutlineColor() const;
 
 	int getType() const;
 	const sf::Vector2f& getSize() const;
@@ -42,7 +51,7 @@ public:
 	const sf::Vector2f& getShapePosition() const;
 	const sf::IntRect& getTextureRect() const;
 
-	void ApplyTypeColor();
+	void ApplyTypeColor(bool on);
 	void RemoveColors();
 	void RemoveTexture();
 	bool hasTexture() const;

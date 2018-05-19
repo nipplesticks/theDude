@@ -50,7 +50,21 @@ void Tile::setSize(const sf::Vector2f & size)
 void Tile::setType(int type)
 {
 	m_type = type;
-	ApplyTypeColor();
+	switch (m_type)
+	{
+	case Solid:
+		m_tileShape.setOutlineColor(TYPE_SOLID_COLOR);
+		return;
+	case None:
+		m_tileShape.setOutlineColor(TYPE_NONE_COLOR);
+		return;
+	case Dangerous:
+		m_tileShape.setOutlineColor(TYPE_DANGEROUS_COLOR);
+		return;
+	case Goal:
+		m_tileShape.setOutlineColor(TYPE_GOAL_COLOR);
+		return;
+	}
 }
 
 void Tile::setColor(int r, int g, int b, bool permCol)
@@ -62,6 +76,7 @@ void Tile::setColor(const sf::Color & color, bool perm)
 {
 	if (perm)
 		m_tempColor = color;
+
 	m_tileShape.setFillColor(color);
 }
 
@@ -75,6 +90,11 @@ void Tile::setTexture(const sf::Texture & texture, const sf::IntRect& rect)
 const sf::Color & Tile::getColor() const
 {
 	return m_tileShape.getFillColor();
+}
+
+const sf::Color & Tile::getOutlineColor() const
+{
+	return m_tileShape.getOutlineColor();
 }
 
 int Tile::getType() const
@@ -102,20 +122,16 @@ const sf::IntRect & Tile::getTextureRect() const
 	return m_tileShape.getTextureRect();
 }
 
-void Tile::ApplyTypeColor()
+void Tile::ApplyTypeColor(bool on)
 {
-	switch (m_type)
+	if (!on)
 	{
-	case Solid:
-		m_tileShape.setFillColor(sf::Color::Blue);
-		return;
-	case None:
-		m_tileShape.setFillColor(sf::Color::White);
-		return;
-	case Dangerous:
-		m_tileShape.setFillColor(sf::Color::Red);
+		m_tileShape.setOutlineThickness(0.0f);
 		return;
 	}
+	m_tileShape.setOutlineThickness(5.0f);
+	
+
 }
 
 void Tile::RemoveColors()

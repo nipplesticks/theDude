@@ -23,13 +23,20 @@ public:
 	void setTextureOfAllTiles(const sf::IntRect& rect);
 	void setColorOfAllTiles(const sf::Color color, bool force = false);
 
+	void MarkTiles(bool on);
 	void setTypeOfTile(int x, int y, int type);
+
 	void setColorOfTile(int x, int y, int r, int g, int b, bool perm = false);
 	void setColorOfTile(int x, int y, const sf::Vector3i& color, bool perm = false);
+
 	void setTextureOfTile(int x, int y, const sf::IntRect& rect);
 	void removeTextureOfTile(int x, int y);
+
 	const std::vector<std::vector<Tile>>* getTiles() const;
+
 	void update(Camera* cam);
+
+	std::vector<sf::Vector2i> getGoalTilesPositions() const;
 
 	int getWidth() const;
 	int getHeight() const;

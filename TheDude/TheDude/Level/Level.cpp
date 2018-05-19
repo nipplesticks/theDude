@@ -7,6 +7,10 @@
 #include "imgui-SFML.h"
 #include <array>
 
+#define RUNNING 0
+#define WON 1
+#define LOSE 2
+
 Level::Level(sf::RenderWindow* renderWindow)
 {
 	m_pWindow = renderWindow;
@@ -32,6 +36,7 @@ Level::~Level()
 void Level::LoadLevel(const std::string & target)
 {
 	_cleanup();
+	std::string finalTarget = "Resourses/Levels/" + target;
 	m_camera = new Camera(static_cast<float>(0), static_cast<float>(0), m_pWindow->getSize().x, m_pWindow->getSize().y);
 	m_loadedSprites = false;
 	
@@ -42,9 +47,12 @@ void Level::LoadLevel(const std::string & target)
 	}
 
 	std::ifstream map;
-	map.open(target);
+	map.open(finalTarget);
 	if (map)
 	{
+		m_currentLevel = target;
+		std::cout << target << std::endl;
+		m_currentLevel.erase(m_currentLevel.begin() + m_currentLevel.find_last_of('.'), m_currentLevel.end());
 		std::string currentLine = "";
 
 		while (std::getline(map, currentLine))
@@ -60,11 +68,6 @@ void Level::LoadLevel(const std::string & target)
 					stream >> spritePath;
 					std::string luafile;
 					stream >> luafile;
-
-					////m_entityInstanceTextures.push_back(TextureWPath());
-					////m_entityInstanceTextures.back().path = spritePath;
-					////m_entityInstanceTextures.back().texture.loadFromFile(spritePath);
-					////m_entityInstanceTextures.back().luafile = luafile;
 
 					m_entityTexGroups.push_back(EntityTexGroup());
 					m_entityTexGroups.back().texturePath = spritePath;
@@ -167,6 +170,7 @@ bool Level::SaveLevel(const std::string & target)
 	// Creating the lua file
 	if(map)
 	{
+		std::vector<sf::Vector2i> goals = m_grid->getGoalTilesPositions();
 		int numberOfEntitys = 0;
 		for (auto& e : m_entityTexGroups)
 		{
@@ -175,8 +179,11 @@ bool Level::SaveLevel(const std::string & target)
 		map << "--Auto generated code based on map\n";
 		map << "\n";
 		map << "local Entities = {}\n";
-		map << "local ENTITYS_AMOUNT = " << numberOfEntitys << "\n";
 		map << "\n";
+		if (goals.size())
+		{
+			map << "local GoalTiles = {}\n";
+		}
 		map << "local function _initEntities()\n";
 		for (auto& e : m_entityTexGroups)
 		{
@@ -188,6 +195,14 @@ bool Level::SaveLevel(const std::string & target)
 				map << "\tEntity_Scripted:setSize(" << ee.shape.getSize().x << "," << ee.shape.getSize().y << ")\n";
 				map << "\ttable.insert(Entities, Entity_Scripted)\n";
 			}
+		}
+		map << "\n";
+		for (auto& g : goals)
+		{
+			map << "\tlocal Goal = Character.Create()\n";
+			map << "\tGoal:setPosition(" << g.x << "," << g.y <<")\n";
+			map << "\tGoal:setSize(32,32)\n";
+			map << "\ttable.insert(GoalTiles, Goal)\n";
 		}
 		map << "end\n";
 		map << "\n";
@@ -221,7 +236,7 @@ bool Level::SaveLevel(const std::string & target)
 		
 		map << "local function _collisionHandling()\n";
 			map << "\tfor i = 2, #Entities, 1 do\n";
-				map << "\t\tisCollision = CheckCollision(Entities[1], Entities[i])";
+				map << "\t\tisCollision = CheckCollision(Entities[1], Entities[i])\n";
 				map << "\t\tif isCollision then\n";
 				map << "\t\t\tEntities[1]:AlterHealth(Entities[i]:getAttack() * -1)\n";
 				map << "\t\tend\n";
@@ -238,8 +253,18 @@ bool Level::SaveLevel(const std::string & target)
 		map << "\tif isKeyPressed(\"ESC\") then\n";
 		map << "\t\tExitGame()\n";
 		map << "\telseif Entities[1]:isDead() == false then\n";
+		if (goals.size())
+		{
+			map << "\t\tfor i = 1, #GoalTiles, 1 do\n";
+			map << "\t\t\tif CheckCollision(Entities[1], GoalTiles[i]) then\n";
+			map << "\t\t\t\tsetGameStatus(" << WON << ")\n";
+			map << "\t\t\tend\n";
+			map << "\t\tend\n";
+		}
 		map << "\t\t_updateEntities()\n";
 		map << "\t\t_collisionHandling()\n";
+		map << "\telse\n";
+		map << "\t\tsetGameStatus(" << LOSE << ")\n";
 		map << "\tend\n";
 		map << "end\n";
 		map << "\n";
@@ -354,31 +379,56 @@ void Level::_toolbarRender()
 				if (ImGui::MenuItem(s.c_str()))
 				{
 					s.erase(s.begin());
-					LoadLevel("Resourses/Levels/" + s);
+					LoadLevel(s);
 				}
 
 			}
 			ImGui::EndMenu();
 		}
+		
 		static bool saved = false;
-		if (ImGui::BeginMenu("Save"))
+		if (m_currentLevel != "" && ImGui::MenuItem("Save"))
 		{
-			static char name[20] = {};
-
-			ImGui::InputText("File path", name, 20);
-			if (ImGui::Button("Save"))
+			if (m_entityTexGroups.size())
 			{
-				
-				saved = SaveLevel(std::string(name));
 
-
+				saved = SaveLevel(m_currentLevel);			
+				if (saved)
+					ImGui::BulletText("Saved Succ");
 			}
-			if (saved)
-				ImGui::BulletText("Saved Succ");
-			ImGui::EndMenu();
+			else
+			{
+				ImGui::Text("You need to have player present to save!");
+			}
+	
 		}
 		else
 			saved = false;
+
+		if (ImGui::BeginMenu("Save As.."))
+		{
+			if (m_entityTexGroups.size())
+			{
+				static char name[20] = {};
+
+				ImGui::InputText("File path", name, 20);
+				if (ImGui::Button("Save"))
+				{
+
+					saved = SaveLevel(std::string(name));
+
+
+				}
+				if (saved)
+					ImGui::BulletText("Saved Succ");
+			}
+			else
+			{
+				ImGui::Text("You need to have player present to save!");
+			}
+
+			ImGui::EndMenu();
+		}
 
 		if (ImGui::MenuItem("Exit"))
 		{
@@ -427,7 +477,7 @@ void Level::_spritePaletteRender()
 
 		}
 
-		if (ImGui::Button("Load"))
+		if (currentSheetIndex != -1 && ImGui::Button("Load"))
 		{
 
 			std::string fullPath = "Resourses/SpriteSheet/";
@@ -771,7 +821,7 @@ void Level::_tileTypePaletteRender()
 		_changeCurrentTool(TOOL_TYPE, "Tile Type", false);
 	}
 
-	static std::array<bool,3> selectables = { 1, 0, 0 };
+	static std::array<bool,4> selectables = { 1, 0, 0 , 1};
 	static int currentType = 0;
 	if (ImGui::Selectable("None", &selectables[0]))
 	{
@@ -787,6 +837,11 @@ void Level::_tileTypePaletteRender()
 	{
 		_resetArray(selectables, 2);
 		currentType = 2;
+	}
+	if (ImGui::Selectable("Goal", &selectables[3]))
+	{
+		_resetArray(selectables, 3);
+		currentType = 3;
 	}
 	if (m_activeTool[TOOL_TYPE])
 	{
@@ -889,8 +944,7 @@ void Level::_changeCurrentTool(int index, std::string tool, bool NormalMode)
 	memset(m_activeTool, 0, sizeof(m_activeTool));
 	m_activeTool[index] = true;
 	
-	if(NormalMode)	m_grid->NormalMode();
-	else m_grid->MarkMode();
+	m_grid->MarkTiles(!NormalMode);
 }
 
 std::string Level::getTexturePath(std::string luafile) const

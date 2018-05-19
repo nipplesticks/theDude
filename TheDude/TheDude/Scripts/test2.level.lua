@@ -1,14 +1,14 @@
 --Auto generated code based on map
 
 local Entities = {}
-local ENTITYS_AMOUNT = 1
 
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/Player/PlayerModule.Lua")
-	Entity_Scripted:setPosition(128,96)
+	Entity_Scripted:AddScript("Scripts/Player/mario.lua")
+	Entity_Scripted:setPosition(96,96)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
+
 end
 
 local function _updateEntities()
@@ -37,7 +37,8 @@ end
 
 local function _collisionHandling()
 	for i = 2, #Entities, 1 do
-		isCollision = CheckCollision(Entities[1], Entities[i])		if isCollision then
+		isCollision = CheckCollision(Entities[1], Entities[i])
+		if isCollision then
 			Entities[1]:AlterHealth(Entities[i]:getAttack() * -1)
 		end
 	end
@@ -53,6 +54,8 @@ function update()
 	elseif Entities[1]:isDead() == false then
 		_updateEntities()
 		_collisionHandling()
+	else
+		setGameStatus(2)
 	end
 end
 

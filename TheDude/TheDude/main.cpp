@@ -33,11 +33,13 @@ int main()
 	
 	gameTime.Init();
 	sf::Clock clock;
-							// V THIS IS FOR THE MENU LATER
+	sf::Color clearColor(127, 255, 127);
+
 	while (!states.empty())
 	{
-		window.clear();
-
+		
+		window.clear(clearColor);
+		
 		Render::g_renderQueue.clear();
 
 		gameTime.UpdateGameTime();
@@ -55,14 +57,17 @@ int main()
 		if (!states.empty())
 			states.top()->Draw();
 		ImGui::SFML::Render(window);
+		
+		
+		
 		window.display();
-
 		if (gameTime.HasTimePassed(1000.0f))
 		{
 			std::string title;
 			title += gameTitle;
 			title += gameTime.GetAndResetStats();
 			window.setTitle(sf::String(title));
+		
 		}
 	}
 	ImGui::SFML::Shutdown();

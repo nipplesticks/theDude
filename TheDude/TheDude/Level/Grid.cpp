@@ -41,6 +41,17 @@ void Grid::setColorOfAllTiles(const sf::Color color, bool force)
 	}
 }
 
+void Grid::MarkTiles(bool on)
+{
+	for (auto& row : m_tiles)
+	{
+		for (auto& col : row)
+		{
+			col.ApplyTypeColor(on);
+		}
+	}
+}
+
 void Grid::setTypeOfTile(int x, int y, int type)
 {
 	m_tiles[x][y].setType(type);
@@ -171,6 +182,22 @@ void Grid::update(Camera* cam)
 	
 }
 
+std::vector<sf::Vector2i> Grid::getGoalTilesPositions() const
+{
+	std::vector<sf::Vector2i> positions;
+	for (auto& row : m_tiles)
+	{
+		for (auto& col : row)
+		{
+			if (col.getOutlineColor() == TYPE_GOAL_COLOR) // If this is a goal node
+			{
+				positions.push_back(col.getPosition());
+			}
+		}
+	}
+	return positions;
+}
+
 void Grid::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
 	for (auto& t : m_renderableTiles)
@@ -231,9 +258,9 @@ sf::Vector2u Grid::getSheetImageSize() const
 
 void Grid::MarkMode()
 {
-	for (auto& t : m_tiles)
+	/*for (auto& t : m_tiles)
 		for (auto &t2 : t)
-			t2.ApplyTypeColor();
+			t2.ApplyTypeColor();*/
 }
 
 void Grid::NormalMode()

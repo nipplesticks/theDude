@@ -10,12 +10,15 @@
 #include <vector>
 #include <string>
 
-
+#define RUNNING 0
+#define WON 1
+#define LOSE 2
 class Game : public State
 {
 private:
 	OurLua * m_entityHandler;
 	static bool s_isGameRunning;
+	static int s_gameStatus;
 	Level m_level; 
 public:
 	Game(std::string level);
@@ -36,4 +39,5 @@ public:
 	LUA_FUNC s_ExitGame(lua_State * l);
 	LUA_FUNC s_setPlayerPos(lua_State * l);
 	LUA_FUNC s_mapCol(lua_State* l);
+	LUA_FUNC s_setGameStatus(lua_State* l);
 };
