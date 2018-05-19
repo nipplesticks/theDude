@@ -32,8 +32,14 @@ Level::~Level()
 void Level::LoadLevel(const std::string & target)
 {
 	_cleanup();
-	m_loadedSprites = false;
 	m_camera = new Camera(static_cast<float>(0), static_cast<float>(0), m_pWindow->getSize().x, m_pWindow->getSize().y);
+	m_loadedSprites = false;
+	
+	if (target == "")
+	{
+		m_grid = new Grid(10, 10);
+		return;
+	}
 
 	std::ifstream map;
 	map.open(target);
@@ -55,13 +61,14 @@ void Level::LoadLevel(const std::string & target)
 					std::string luafile;
 					stream >> luafile;
 
-					m_entityInstanceTextures.push_back(TextureWPath());
-					m_entityInstanceTextures.back().path = spritePath;
-					m_entityInstanceTextures.back().texture.loadFromFile(spritePath);
-					m_entityInstanceTextures.back().luafile = luafile;
+					////m_entityInstanceTextures.push_back(TextureWPath());
+					////m_entityInstanceTextures.back().path = spritePath;
+					////m_entityInstanceTextures.back().texture.loadFromFile(spritePath);
+					////m_entityInstanceTextures.back().luafile = luafile;
 
 					m_entityTexGroups.push_back(EntityTexGroup());
 					m_entityTexGroups.back().texturePath = spritePath;
+					m_entityTexGroups.back().luafile = luafile;
 
 				}
 				else if (type == "p")
@@ -70,17 +77,18 @@ void Level::LoadLevel(const std::string & target)
 					stream >> xCoord >> yCoord;
 
 					sf::Vector2f pos(xCoord, yCoord);
-#define BACK m_entityTexGroups[m_entityTexGroups.size() - 1]
-					BACK.m_entitesForLua.push_back(EntityShape());
-					BACK.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
-					bool firstEnt = (m_entityTexGroups.size() == 1);
-					BACK.m_entitesForLua.back().isPlayer = firstEnt;
-					BACK.m_entitesForLua.back().textureObj = new sf::Texture(m_entityInstanceTextures.back().texture);
-					BACK.m_entitesForLua.back().shape.setTexture(BACK.m_entitesForLua.back().textureObj);
-					BACK.m_entitesForLua.back().shape.setPosition(pos);
-					BACK.m_entitesForLua.back().pos = pos;
-					BACK.m_entitesForLua.back().texturePath = m_entityInstanceTextures.back().path;
-					BACK.m_entitesForLua.back().luafile = m_entityInstanceTextures.back().luafile;
+					
+					
+					m_entityTexGroups.back().m_entitesForLua.push_back(EntityShape());
+					m_entityTexGroups.back().m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
+																	// The first entity being loaded is the player
+					m_entityTexGroups.back().m_entitesForLua.back().isPlayer = (m_entityTexGroups.size() == 1);
+					m_entityTexGroups.back().m_entitesForLua.back().textureObj = new sf::Texture();
+					m_entityTexGroups.back().m_entitesForLua.back().textureObj->loadFromFile(m_entityTexGroups.back().texturePath);
+					m_entityTexGroups.back().m_entitesForLua.back().shape.setTexture(m_entityTexGroups.back().m_entitesForLua.back().textureObj);
+					m_entityTexGroups.back().m_entitesForLua.back().shape.setPosition(pos);
+					m_entityTexGroups.back().m_entitesForLua.back().pos = pos;
+				
 					
 				}
 				else if (type == "sheet")
@@ -98,10 +106,10 @@ void Level::LoadLevel(const std::string & target)
 					sscanf_s(currentLine.c_str(), "%*s %d %d %d %d %d %d %d %d", &x, &y, &t, &r, &g, &b, &itx, &ity);
 					m_grid->setTypeOfTile(x, y, t);
 					m_grid->setColorOfTile(x, y, r, g, b);
-					// No spritesheet was present when saving
+					float tileSize = m_grid->getTileDim().x;
 					if(itx != -1)
-						m_grid->setTextureOfTile(x, y, sf::IntRect(itx, ity, 32, 32));
-
+						m_grid->setTextureOfTile(x, y, sf::IntRect(itx, ity, tileSize, tileSize));
+					// else No spritesheet was present when saving
 					
 				}		
 				else if (type == "grid")
@@ -112,7 +120,6 @@ void Level::LoadLevel(const std::string & target)
 
 					if (m_grid)
 						delete m_grid;
-					m_grid = nullptr;
 					m_grid = new Grid(w, h, static_cast<float>(s), t);
 				}
 			}
@@ -144,7 +151,7 @@ bool Level::SaveLevel(const std::string & target)
 		{
 			if (etg.m_entitesForLua.size())
 			{
-				map << "entity " << etg.texturePath << " " << etg.m_entitesForLua[0].luafile << "\n";
+				map << "entity " << etg.texturePath << " " << etg.luafile << "\n";
 				for (auto& e : etg.m_entitesForLua)
 					map << "p " << e.pos.x << " " << e.pos.y << "\n";
 				currentIndex++;
@@ -157,7 +164,7 @@ bool Level::SaveLevel(const std::string & target)
 	map.close();
 
 	map.open(luaName);
-	
+	// Creating the lua file
 	if(map)
 	{
 		int numberOfEntitys = 0;
@@ -176,7 +183,7 @@ bool Level::SaveLevel(const std::string & target)
 			for (auto& ee : e.m_entitesForLua)
 			{
 				map << "\tlocal Entity_Scripted = Character.Create()\n";
-				map << "\tEntity_Scripted:AddScript(\"" << ee.luafile << "\")\n";
+				map << "\tEntity_Scripted:AddScript(\"" << e.luafile << "\")\n";
 				map << "\tEntity_Scripted:setPosition(" << ee.pos.x << ","<< ee.pos.y << ")\n";
 				map << "\tEntity_Scripted:setSize(" << ee.shape.getSize().x << "," << ee.shape.getSize().y << ")\n";
 				map << "\ttable.insert(Entities, Entity_Scripted)\n";
@@ -521,6 +528,7 @@ void Level::_entityPaletteRender()
 	{
 		ent = filesInDir(path);
 		pla = filesInDir(playerFolderPath);
+
 		m_sampleTexture.loadFromFile("sample.png");
 		m_displayTexure.setTexture(m_sampleTexture);
 
@@ -539,29 +547,13 @@ void Level::_entityPaletteRender()
 			}
 			else
 			{
-
-				bool exists = false;
-				for (int k = 0; k < m_entityTexGroups.size(); k++)
-				{
-					if (m_entityTexGroups[k].texturePath == yes)
-					{
-						exists = true;
-					}
-				}
-				if (!exists)
-				{
-					m_entityInstanceTextures.push_back(TextureWPath());
-					m_entityInstanceTextures.back().texture.loadFromFile(yes);
-					m_entityInstanceTextures.back().path = yes;
-					if ((*ip)[0] == '\\')
-						(*ip).erase((*ip).begin());
-					std::string luaPath = "Scripts/Player/" + *ip;
-					m_entityInstanceTextures.back().luafile = luaPath;
-					EntityTexGroup etg;
-					etg.texturePath = yes;
-					m_entityTexGroups.push_back(etg);
-				}
-
+				m_entityInstanceTextures.push_back(TextureWPath());
+				m_entityInstanceTextures.back().texture.loadFromFile(yes);
+				m_entityInstanceTextures.back().path = yes;
+				if ((*ip)[0] == '\\')
+					(*ip).erase((*ip).begin());
+				std::string luaPath = "Scripts/Player/" + *ip;
+				m_entityInstanceTextures.back().luafile = luaPath;
 				ip++;
 			}
 
@@ -582,16 +574,6 @@ void Level::_entityPaletteRender()
 			else
 			{
 				
-				bool exists = false;
-				for (int k = 0; k < m_entityTexGroups.size(); k++)
-				{
-					if (m_entityTexGroups[k].texturePath == yes)
-					{
-						exists = true;
-					}
-				}
-				if (!exists)
-				{
 					m_entityInstanceTextures.push_back(TextureWPath());
 					m_entityInstanceTextures.back().texture.loadFromFile(yes);
 					m_entityInstanceTextures.back().path = yes;
@@ -599,10 +581,8 @@ void Level::_entityPaletteRender()
 						(*i).erase((*i).begin());
 					std::string luaPath = "Scripts/" + *i;
 					m_entityInstanceTextures.back().luafile = luaPath;
-					EntityTexGroup etg;
-					etg.texturePath = yes;
-					m_entityTexGroups.push_back(etg);
-				}
+				
+				
 				
 				i++;
 			}
@@ -687,8 +667,8 @@ void Level::_entityPaletteRender()
 									e.pos = position;
 									e.shape.setPosition(position + m_camera->getPosition());
 									e.shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
-									e.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
-									e.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
+									tg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
+									tg.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
 								}
 							}
 						}
@@ -701,8 +681,10 @@ void Level::_entityPaletteRender()
 							etg.m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
 							etg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
 							etg.m_entitesForLua.back().pos = position;
-							etg.m_entitesForLua.back().luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
 							etg.m_entitesForLua.back().isPlayer = true;
+
+							etg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
+							etg.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
 							m_entityTexGroups.insert(m_entityTexGroups.begin(), etg);
 						}
 					}
@@ -718,19 +700,39 @@ void Level::_entityPaletteRender()
 							etg.m_entitesForLua.push_back(es);
 							m_entityTexGroups.push_back(etg);
 						}
+						bool findExisintGroup = false;
 						for (auto& tg : m_entityTexGroups)
 						{
 							if (tg.texturePath == m_entityInstanceTextures[currentTextureIndex].path)
 							{
+								findExisintGroup = true;
 								tg.m_entitesForLua.push_back(EntityShape());
 								tg.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
 								tg.m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
 								tg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
 								tg.m_entitesForLua.back().pos = position;
-								tg.m_entitesForLua.back().luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
+								tg.m_entitesForLua.back().isPlayer = false;
+
+								tg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
+								tg.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
 								break;
 
 							}
+						}
+						if (!findExisintGroup)
+						{
+							EntityTexGroup etg;
+							etg.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
+							etg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
+								EntityShape es;
+								es.shape = sf::RectangleShape(sf::Vector2f(32, 32));
+								es.shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+								es.shape.setPosition(position + m_camera->getPosition());
+								es.pos = position;
+								es.isPlayer = false;
+							etg.m_entitesForLua.push_back(es);
+							m_entityTexGroups.push_back(etg);
+							
 						}
 					}
 
@@ -816,6 +818,10 @@ void Level::_tileColorPaletteRender()
 	static bool removeSprite = false;
 	ImGui::ColorPicker4("Colors", colors.data());
 	ImGui::Selectable("Remove Sprite", &removeSprite);
+	if (ImGui::Button("Paint all"))
+	{
+		m_grid->setColorOfAllTiles(sf::Color(colors[0] * 255, colors[1] * 255, colors[2] * 255), removeSprite);
+	}
 	
 	if (m_activeTool[TOOL_COLOR])
 	{
@@ -909,14 +915,20 @@ void Level::_cleanup()
 	m_grid = nullptr;
 	delete m_camera;
 	m_camera = nullptr;
-	for (auto& etg : m_entityTexGroups)
+	if(m_entityTexGroups.size())
+		delete m_entityTexGroups.front().m_entitesForLua.front().textureObj;
+
+	/*for (auto& etg : m_entityTexGroups)
 	{
 		for (auto& e : etg.m_entitesForLua)
 		{
 			delete e.textureObj;
 			e.textureObj = nullptr;
+			break;
 		}
-	}
+	}*/
+	m_entityInstanceTextures.clear();
+	m_entityTexGroups.clear();
 }
 
 void Level::_copy(const Level & other)

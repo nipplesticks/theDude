@@ -30,6 +30,17 @@ void Grid::setTextureOfAllTiles(const sf::IntRect & rect)
 	}
 }
 
+void Grid::setColorOfAllTiles(const sf::Color color, bool force)
+{
+	for (auto& row : m_tiles)
+	{
+		for (auto& col : row)
+		{
+			col.setColor(color, force);
+		}
+	}
+}
+
 void Grid::setTypeOfTile(int x, int y, int type)
 {
 	m_tiles[x][y].setType(type);
@@ -176,6 +187,11 @@ Grid & Grid::operator=(const Grid & other)
 	}
 
 	return *this;
+}
+
+sf::Vector2f Grid::getTileDim() const
+{
+	return m_tiles[0][0].getSize();
 }
 
 void Grid::UnloadSpriteSheet()

@@ -32,14 +32,13 @@ private:
 			sf::Vector2f pos;
 			sf::RectangleShape shape;
 			sf::Texture* textureObj;
-			std::string luafile;
-			std::string texturePath;
 			bool isPlayer;
 		};
 
 		struct EntityTexGroup
 		{
 			std::string texturePath;
+			std::string luafile;
 			std::vector<EntityShape> m_entitesForLua;
 		};
 

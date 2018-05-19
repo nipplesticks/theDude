@@ -21,6 +21,8 @@ public:
 	virtual ~Grid();
 	
 	void setTextureOfAllTiles(const sf::IntRect& rect);
+	void setColorOfAllTiles(const sf::Color color, bool force = false);
+
 	void setTypeOfTile(int x, int y, int type);
 	void setColorOfTile(int x, int y, int r, int g, int b, bool perm = false);
 	void setColorOfTile(int x, int y, const sf::Vector3i& color, bool perm = false);
@@ -37,11 +39,14 @@ public:
 	std::string toFile() const;
 
 	void draw(sf::RenderTarget & target, sf::RenderStates states) const;
-	Grid& operator=(const Grid& other);
+
+	
+	sf::Vector2f getTileDim() const;
 
 	void UnloadSpriteSheet();
 	void LoadSpriteSheet(const std::string& path);
 
+	Grid& operator=(const Grid& other);
 	// EDITOR {
 		const sf::Sprite& getDisplaySprite() const;
 		bool isSpritesheetLoaded() const;
