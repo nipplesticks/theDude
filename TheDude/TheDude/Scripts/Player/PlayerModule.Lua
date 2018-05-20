@@ -14,8 +14,9 @@ function update()
 
 if wasPressed == false then
 	if isKeyPressed("K") then
-		pc, ps = getPosition();
-		pistol:Shoot(pc, ps, 0, 0);
+		px, py = getPosition();
+		mx, my = getMousePos();
+		pistol:Shoot(px, py, mx, my);
 		wasPressed = true
 	elseif isKeyPressed("L") then
 		AlterHealth(5)

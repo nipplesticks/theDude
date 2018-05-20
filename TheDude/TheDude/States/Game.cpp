@@ -81,6 +81,8 @@ void Game::_initEntityHandler(std::string luaFile)
 void Game::_pushFunctions()
 {
 	m_entityHandler->PushFunction(s_CheckCollision, "CheckCollision");
+	m_entityHandler->PushFunction(s_GetMousePos, "getMousePos");
+
 	m_entityHandler->PushFunction(s_isKeyPressed, "isKeyPressed");
 	m_entityHandler->PushFunction(s_ExitGame, "ExitGame");
 	m_entityHandler->PushFunction(s_setPlayerPos, "setPlayerPosition");
@@ -113,10 +115,20 @@ void Game::_pushFunctions()
 		{ "getDistanceToPlayer"	,Character::s_getDistanceToPlayer	},
 		{ "MoveRequest"			,Character::s_MoveRequest			},
 		{ "getMoveRequest"		,Character::s_getMoveRequest		},
+		{ "getProjectiles"		,Character::s_getProjectiles		},
 		{ "__gc"				,Character::s_Destroy				},
 		{ NULL					,NULL								}
 	};
 	m_entityHandler->PushClassFunctions(Character::metaTable, characterFunctions, "Character");
+
+	luaL_Reg bulletFunctions[]
+	{
+	{ "getDamage"			,Projectile::s_getDamage },
+	{ "Disable"				,Projectile::s_DisableAndDelete },
+	{ NULL					,NULL }
+	};
+	m_entityHandler->PushClassFunctions(Projectile::metaTable, bulletFunctions, "Projectile");
+
 }
 int Game::s_isKeyPressed(lua_State * l)
 {
@@ -170,6 +182,21 @@ int Game::s_CheckCollision(lua_State * l)
 
 	OurLua::setBooleans(l, col);
 	return 1;
+}
+
+int Game::s_GetMousePos(lua_State * l)
+{
+	std::vector<int> mousePos;
+	sf::Vector2i ms = sf::Mouse::getPosition(*s_window);
+	sf::Vector2u ws = s_window->getSize();
+	ms.x -= ws.x / 2;
+	ms.y -= ws.y / 2;
+	mousePos.push_back(ms.x);
+	mousePos.push_back(ms.y);
+
+	OurLua::setIntegers(l, mousePos);
+
+	return 2;
 }
 
 int Game::s_ExitGame(lua_State * l)

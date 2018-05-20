@@ -17,7 +17,7 @@ OurLua::OurLua(const std::string & script)
 	{
 		std::cout << m_fileName << " Opened\n";
 	}
-	
+
 }
 
 OurLua::~OurLua()

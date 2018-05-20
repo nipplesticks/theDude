@@ -83,6 +83,16 @@ void Character::MoveRequest(float x, float y)
 	m_moveReq.y += y;
 }
 
+std::vector<Projectile*> Character::getProjectiles()
+{
+	std::vector<Projectile*> p;
+	
+	for (auto & w : m_weapons)
+		p.insert(p.end(), w->GetBullets()->begin(), w->GetBullets()->end());
+
+	return p;
+}
+
 sf::Vector2f Character::getMoveRequest()
 {
 	sf::Vector2f mr = m_moveReq;
@@ -187,6 +197,7 @@ void Character::_initLua()
 	m_script->PushFunction(s_getPlayerPos, "getPlayerPosition");
 	m_script->PushFunction(Game::s_isKeyPressed, "isKeyPressed");
 	m_script->PushClassFunction(this, Game::s_mapCol, "isColMap");
+	m_script->PushClassFunction(this, Game::s_GetMousePos, "getMousePos");
 	
 	m_script->InitLua();
 
@@ -740,4 +751,47 @@ int Character::s_ApplyWeapon(lua_State * l)
 
 
 	return 0;
+}
+
+int Character::s_getProjectiles(lua_State * l)
+{
+	struct bullet
+	{
+		float x, y;
+		float sx, sy;
+		float damage;
+	};
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+	{
+		int i = 0;
+	}
+
+
+	Character* c = OurLua::getInstanceOf<Character>(l, 1, metaTable);
+	std::vector<Projectile*> proj;
+	if (c)
+	{
+		proj = c->getProjectiles();
+	}
+	else
+	{
+		c = OurLua::getClassPointer<Character>(l);
+		if (c)
+		{
+			proj = c->getProjectiles();
+		}
+	}
+
+	lua_newtable(l);
+	int counter = 1;
+	for (auto & p : proj)
+	{
+		lua_pushinteger(l, counter++);
+		Projectile ** c = OurLua::createInstanceOf<Projectile>(l, Projectile::metaTable);
+		*c = p;
+		lua_settable(l, -3);
+	}
+
+	return 1;
 }
