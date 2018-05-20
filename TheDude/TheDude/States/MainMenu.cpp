@@ -72,8 +72,8 @@ void MainMenu::_init()
 	m_bck.setPosition(0, 0);
 	m_bck.setSize(sf::Vector2f(s_window->getSize().x, s_window->getSize().y));
 
-	pxSizeX = s_window->getSize().x * 0.20f;
-	pxSizeY = s_window->getSize().y * 0.20f;
+	pxSizeX = s_window->getSize().x *0.2f;
+	pxSizeY = s_window->getSize().y *0.2f;
 
 	m_t.create(pxSizeX, pxSizeY);
 	m_bck.setTexture(&m_t);
@@ -104,23 +104,38 @@ void MainMenu::_displayLevels()
 	auto levels = getfilesInDir();
 	if (!m_showLevels)
 	{
+		float winX = s_window->getSize().x;
+		float winY = s_window->getSize().y;
 		delete m_returnToMM;
 		for (auto& bt : m_levelButton)
 		{
 			delete bt;
 		}
 		m_levelButton.clear();
-		int counter = 0;
-		for (auto& l : levels)
+		int counterX = 1;
+		int counterY = 0;
+		for (int i = 0; i < levels.size(); i++)
 		{
+			std::string l = levels[i];
 			l.erase(l.begin() + l.find_last_of('.'), l.end());
-			Button* bt = new Button((counter * 200) + 10, 10, 200, 200);
+			int buttonSize = 200;
+			int padding = 10;
+
+			int xPos = counterX++ * (winX / (levels.size() + 1));
+			int yPos = counterY * buttonSize;
+			Button* bt = new Button(xPos - (buttonSize/2) , yPos + padding , buttonSize, buttonSize);
+		/*	if (counterX == 5)
+			{
+				counterX = 1;
+				counterY++;
+			}*/
 			bt->setButtonText(l);
 			m_levelButton.push_back(bt);
-			counter++;
+		
 		}
+		
 		m_showLevels = true;
-		m_returnToMM = new Button(600, 400, 200, 200);
+		m_returnToMM = new Button(winX - 350, winY - 120, 300, 100);
 		m_returnToMM->setButtonText("Return to main menu");
 		m_returnToMM->setFunctionPointer(std::bind(&MainMenu::_disableShowLevels, this));
 	}
