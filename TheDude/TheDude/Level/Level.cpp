@@ -267,7 +267,7 @@ bool Level::SaveLevel(const std::string & target)
 		map << "						bullets = Entities[i] : getProjectiles()				  \n";
 		map << "						for k = 1, #bullets, 1 do								  \n";
 		map << "							if CheckCollision(Entities[1], bullets[k]) then		  \n";
-		map << "								Entities[j]:AlterHealth(-bullets[k]:getDamage())  \n";
+		map << "								Entities[1]:AlterHealth(-bullets[k]:getDamage())  \n";
 		map << "								bullets[k] : Disable()							  \n";
 		map << "								end												  \n";
 		map << "								end												  \n";

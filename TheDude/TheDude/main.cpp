@@ -46,11 +46,19 @@ int main()
 		CheckPollEvents(&window);
 		ImGui::SFML::Update(window, clock.restart());
 
-		while (gameTime.AllowedToUpdate())
+		if (window.hasFocus())
 		{
-			if (!states.empty())
-				states.top()->Update();
+			while (gameTime.AllowedToUpdate())
+			{
+				if (!states.empty())
+					states.top()->Update();
 
+			}
+		}
+		else
+		{
+			gameTime.UpdateGameTime();
+			gameTime.AllowedToUpdate();
 		}
 
 

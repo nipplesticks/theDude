@@ -159,6 +159,8 @@ int Game::s_isKeyPressed(lua_State * l)
 			s[0] = GetAsyncKeyState(VK_SPACE);
 		else if (!_strcmpi(key.c_str(), "lshift"))
 			s[0] = GetAsyncKeyState(VK_LSHIFT);
+		else if (!_strcmpi(key.c_str(), "lmouse"))
+			s[0] = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 		else if (!_strcmpi(key.c_str(), "up"))
 			s[0] = GetAsyncKeyState(VK_UP);
 		else if (!_strcmpi(key.c_str(), "down"))
