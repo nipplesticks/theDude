@@ -205,6 +205,7 @@ bool Level::SaveLevel(const std::string & target)
 			map << "\tGoal:setSize(32,32)\n";
 			map << "\ttable.insert(GoalTiles, Goal)\n";
 		}
+		map << "\tSomeOneDied = false\n";
 		map << "end\n";
 		map << "\n";
 
@@ -212,18 +213,15 @@ bool Level::SaveLevel(const std::string & target)
 		map << "	for i = 1, #Entities, 1 do								 \n";
 		map << "		if Entities[i] ~= nil and Entities[i]:isDead() then	 \n";
 		map << "			table.remove(Entities, i)						 \n";
-		map << "			end												 \n";
-		map << "			end												 \n";
-		map << "			end												 \n";
+		map << "		end												 \n";
+		map << "	end												 \n";
+		map << "end												 \n";
 
 
 		map << "local function _updateEntities()\n";
 			map << "\tsetPlayerPosition(Entities[1]:getPosition())\n";
 			map << "\tfor i = 1, #Entities, 1 do\n";
-				map << "\t\tEntities[i]:Update()\n";
-				map << "if Entities[i]:isDead() then  \n";
-				map << "	table.remove(Entities, i) \n";
-				map << "	end						  \n";
+				map << "\t\tEntities[i]:Update()\n";	
 				map << "\t\tmRx, mRy = Entities[i]:getMoveRequest()\n";
 				map << "\t\tif mRx ~= 0.0 or mRy ~= 0.0 then\n";
 				map << "\t\t\tmx, my = canMove(Entities[i], mRx, mRy)\n";
@@ -235,8 +233,10 @@ bool Level::SaveLevel(const std::string & target)
 				map << "\t\t\tend\n";
 				map << "\t\t\tEntities[i]:Move(mRx, mRy)\n";
 				map << "\t\tend\n";
-				//map << "\t\tend\n";
-			map << "\tend\n";
+				map << "	if Entities[i]:isDead() then\n";
+				map << "		SomeOneDied = true\n";
+				map << "	end\n";
+			map << "\tend\n";						
 		map << "end\n";
 		map << "\n";
 

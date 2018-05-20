@@ -30,17 +30,15 @@ local function _initEntities()
 	table.insert(Entities, Entity_Scripted)
 
 	SomeOneDied = false
-
 end
 
-local function _clean()
-	for i = 1, #Entities, 1 do
-		if Entities[i] ~= nil and Entities[i]:isDead() then
-			table.remove(Entities, i)
-		end
-	end
-end
-
+local function _clean()										 
+	for i = 1, #Entities, 1 do								 
+		if Entities[i] ~= nil and Entities[i]:isDead() then	 
+			table.remove(Entities, i)						 
+		end												 
+	end												 
+end												 
 local function _updateEntities()
 	setPlayerPosition(Entities[1]:getPosition())
 	for i = 1, #Entities, 1 do
@@ -49,16 +47,16 @@ local function _updateEntities()
 		if mRx ~= 0.0 or mRy ~= 0.0 then
 			mx, my = canMove(Entities[i], mRx, mRy)
 			if mx == false then
-				mRx = 0.0 
+				 mRx = 0.0 
 			end
 			if my == false then
-				mRy = 0.0
+				 mRy = 0.0
 			end
 			Entities[i]:Move(mRx, mRy)
 		end
-		if Entities[i]:isDead() then  
-			SomeOneDied = true
-		end
+	if Entities[i]:isDead() then
+		SomeOneDied = true
+	end
 	end
 end
 
@@ -105,10 +103,9 @@ function update()
 	elseif Entities[1]:isDead() == false then
 		_updateEntities()
 		_collisionHandling()
-		if SomeOneDied then
-			_clean()
-		end
-		SomeOneDied = false;
+if SomeOneDied then	
+	_clean()		
+	end				
 	else
 		setGameStatus(2)
 	end
