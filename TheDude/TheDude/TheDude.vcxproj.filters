@@ -23,6 +23,7 @@
     <ClCompile Include="States\MainMenu.cpp" />
     <ClCompile Include="States\Editor.cpp" />
     <ClCompile Include="Entity\Weapon.cpp" />
+    <ClCompile Include="Interface\HeadsUpDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="levelEditor">

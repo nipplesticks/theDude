@@ -13,8 +13,6 @@ private:
 	std::vector<Button*> m_levelButton;
 	Button * m_returnToMM;
 	
-
-
 	sf::RectangleShape m_bck;
 	sf::Texture m_t;
 	int px_size;
