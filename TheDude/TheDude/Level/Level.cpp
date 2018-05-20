@@ -771,7 +771,8 @@ void Level::_entityPaletteRender()
 									found = true;
 									e.pos = position;
 									e.shape.setPosition(position + m_camera->getPosition());
-									e.shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+									e.textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
+									e.shape.setTexture(e.textureObj);
 									tg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
 									tg.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
 								}
@@ -783,7 +784,9 @@ void Level::_entityPaletteRender()
 							EntityTexGroup etg;
 							etg.m_entitesForLua.push_back(EntityShape());
 							etg.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
-							etg.m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+							etg.m_entitesForLua.back().textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
+
+							etg.m_entitesForLua.back().shape.setTexture(etg.m_entitesForLua.back().textureObj);
 							etg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
 							etg.m_entitesForLua.back().pos = position;
 							etg.m_entitesForLua.back().isPlayer = true;
@@ -813,7 +816,8 @@ void Level::_entityPaletteRender()
 								findExisintGroup = true;
 								tg.m_entitesForLua.push_back(EntityShape());
 								tg.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
-								tg.m_entitesForLua.back().shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+								tg.m_entitesForLua.back().textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
+								tg.m_entitesForLua.back().shape.setTexture(tg.m_entitesForLua.back().textureObj);
 								tg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
 								tg.m_entitesForLua.back().pos = position;
 								tg.m_entitesForLua.back().isPlayer = false;
@@ -831,7 +835,8 @@ void Level::_entityPaletteRender()
 							etg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
 								EntityShape es;
 								es.shape = sf::RectangleShape(sf::Vector2f(32, 32));
-								es.shape.setTexture(&m_entityInstanceTextures[currentTextureIndex].texture);
+								es.textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
+								es.shape.setTexture(es.textureObj);
 								es.shape.setPosition(position + m_camera->getPosition());
 								es.pos = position;
 								es.isPlayer = false;
@@ -851,8 +856,11 @@ void Level::_entityPaletteRender()
 						{
 							if (tg.m_entitesForLua[entityIndex].pos.x == index.x << 5 && tg.m_entitesForLua[entityIndex].pos.y == index.y << 5)
 							{
-								if(!tg.m_entitesForLua[entityIndex].isPlayer)
+								if (!tg.m_entitesForLua[entityIndex].isPlayer)
+								{
+									delete tg.m_entitesForLua[entityIndex].textureObj;
 									tg.m_entitesForLua.erase(tg.m_entitesForLua.begin() + entityIndex);
+								}
 								break;
 							}
 
