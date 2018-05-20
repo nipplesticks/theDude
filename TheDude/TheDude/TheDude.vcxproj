@@ -198,11 +198,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Goomba.lua" />
-    <None Include="Scripts\penis.lua" />
+    <None Include="Scripts\mariosass.lua" />
     <None Include="Scripts\Player\mario.lua" />
     <None Include="Resourses\Levels\test.chef" />
     <None Include="Scripts\DVD.Lua" />
     <None Include="Scripts\Player\PlayerModule.Lua" />
+    <None Include="Scripts\spike.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

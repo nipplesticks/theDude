@@ -1,9 +1,8 @@
 function init()
 	setHPBar(-1,-1,-1,-1)
 	setHealth(100)
-	setColor(255, 0, 255)
 	setSprite("goomba.png")
-	setAttack(1);
+	setAttack(100);
 	s1x = -1
 	s1y = -1
 
@@ -12,6 +11,7 @@ function init()
 	Aggro = 1
 end
 
+local GRAVITY = 3
 local lastxCoord = 256
 local dir = -1
 function update()
@@ -22,6 +22,6 @@ function update()
 	else
 		lastxCoord = x
 	end
-
-	MoveRequest(dir,0)
+	
+	MoveRequest(dir, GRAVITY)
 end

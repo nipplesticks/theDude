@@ -51,6 +51,7 @@ void Game::Draw()
 	
 	sf::Vector2f m(s_window->getSize());
 	m *= 0.5f;
+	
 	sf::Vector2f camPos(Render::g_renderQueue[0]->getPosition());
 	camPos -= m;
 	m_level.Draw(camPos);
@@ -63,6 +64,7 @@ void Game::Draw()
 		if (p) p->DrawOther(s_window, camPos);
 	}
 
+	
 	if (m_drawWinText)
 	{
 		s_window->draw(m_winText);
@@ -234,10 +236,12 @@ int Game::s_mapCol(lua_State * l)
 	auto d = OurLua::getFloats(l, 2);
 	Entity * e = (*OurLua::getInstancePointer<Entity>(l, 1)[0]);
 	sf::Vector2f dir(d[1], d[0]);
-
+#define NONE 0
+#define SOLID 1
+#define DANGEROUS 2
 	auto map = Hack::g->m_level.getMap();
-	bool mx = true;
-	bool my = true;
+	int mx = NONE;
+	int my = NONE;
 	sf::FloatRect collidePoints[4]; 
 	int tSize = (*map)[0][0].getSize().x;
 	sf::Vector2f generalSize = sf::Vector2f(e->getShape().getSize());
@@ -306,83 +310,35 @@ int Game::s_mapCol(lua_State * l)
 		if ((*map)[x1.x / tSize][x1.y / tSize].getType() == Tile::Solid ||
 			(*map)[x2.x / tSize][x2.y / tSize].getType() == Tile::Solid)
 		{
-			mx = false;
+			mx = SOLID;
 		}
+		else if((*map)[x1.x / tSize][x1.y / tSize].getType() == Tile::Dangerous||
+				(*map)[x2.x / tSize][x2.y / tSize].getType() == Tile::Dangerous)
+			{
+				mx = DANGEROUS;
+			}
 
 		if (dir.y)
 		{
 			if ((*map)[y1.x / tSize][y1.y / tSize].getType() == Tile::Solid ||
 				(*map)[y2.x / tSize][y2.y / tSize].getType() == Tile::Solid)
 			{
-				my = false;
+				my = SOLID;
+			}
+			else if ((*map)[y1.x / tSize][y1.y / tSize].getType() == Tile::Dangerous ||
+				(*map)[y2.x / tSize][y2.y / tSize].getType() == Tile::Dangerous)
+			{
+				my = DANGEROUS;
 			}
 		}
 	}
 
-	std::vector<bool> colVec;
+	std::vector<int> colVec;
 	colVec.push_back(mx);
 	colVec.push_back(my);
-	OurLua::setBooleans(l, colVec);
+	OurLua::setIntegers(l, colVec);
 	
 	return 2;
-
-	//RightUp			   
-	/*collidePoints[4] = sf::FloatRect{ (realPosX) + (generalSize.x - 3), (realPosY) + 4,(float)pointSize,(float)pointSize};
-	//RightDown			
-	collidePoints[5] = sf::FloatRect{ (realPosX) + (generalSize.x - 3), (realPosY) + (generalSize.y - 4),(float)pointSize,(float)pointSize};
-	//DownLeft
-	collidePoints[6] = sf::FloatRect{ (realPosX) + 4, (realPosY) + (generalSize.y - 3),(float)pointSize,(float)pointSize};
-	//DownRight		
-	collidePoints[7] = sf::FloatRect{ (realPosX) + (generalSize.x - 4), (realPosY) + (generalSize.y - 3),(float)pointSize, (float)pointSize};
-
-
-	//Makes sure the points collision check is calculated from the middle of every point
-	sf::Vector2f PointPosLeftUp = sf::Vector2f{collidePoints[0].left, collidePoints[0].top};
-	sf::Vector2f PointPosLeftDown = sf::Vector2f{ collidePoints[1].left, collidePoints[1].top};
-	sf::Vector2f PointPosUpLeft = sf::Vector2f{ collidePoints[2].left + ((float)pointSize / 2), collidePoints[2].top};
-	sf::Vector2f PointPosUpRight = sf::Vector2f{ collidePoints[3].left + ((float)pointSize / 2), collidePoints[3].top};
-	sf::Vector2f PointPosRightUp = sf::Vector2f{ collidePoints[4].left + (float)pointSize, collidePoints[4].top};
-	sf::Vector2f PointPosRightDown = sf::Vector2f{ collidePoints[5].left + (float)pointSize, collidePoints[5].top};
-	sf::Vector2f PointPosDownLeft = sf::Vector2f{ collidePoints[6].left + ((float)pointSize / 2), collidePoints[6].top + (float)pointSize };
-	sf::Vector2f PointPosDownRight = sf::Vector2f{ collidePoints[7].left + ((float)pointSize / 2), collidePoints[7].top + (float)pointSize};
-
-	std::cout<< "\rT(" << eTileX << "," << eTileY << ")" << " P(" << realPosX << ", " << realPosY << ")" <<std::flush;
-
-	if (eTileX > 0 && eTileY > 0 &&
-		eTileX < map->size() - 1&& eTileY < map[0].size() - 1)
-	{
-		//Left
-		if ((*map)[(int)(PointPosLeftUp.x + 0.5f) / tSize][(int)(PointPosLeftUp.y + 0.5f) / tSize].getType() == Tile::Solid ||
-			(*map)[(int)(PointPosLeftDown.x + 0.5f) / tSize][(int)(PointPosLeftDown.y + 0.5f) / tSize].getType() == Tile::Solid)
-		{
-			mx = false; 
-		}
-		//Right
-		if ((*map)[PointPosRightUp.x / tSize][PointPosRightUp.y / tSize].getType() == Tile::Solid ||
-			(*map)[PointPosRightDown.x / tSize][PointPosRightDown.y / tSize].getType() == Tile::Solid)
-		{
-			mx = false; 
-		}
-		//Up
-			if ((*map)[PointPosUpLeft.x / tSize][PointPosUpLeft.y / tSize].getType() == Tile::Solid ||
-				(*map)[PointPosUpRight.x / tSize][PointPosUpRight.y / tSize].getType() == Tile::Solid)
-		{
-				my = false;
-		}
-		//Down
-			if ((*map)[PointPosDownLeft.x / tSize][PointPosDownLeft.y / tSize].getType() == Tile::Solid ||
-				(*map)[PointPosDownRight.x / tSize][PointPosDownRight.y / tSize].getType() == Tile::Solid)
-		{
-				my = false;
-		}
-	}
-	
-	std::vector<bool> colVec;
-	colVec.push_back(mx);
-	colVec.push_back(my); 
-	OurLua::setBooleans(l, colVec);
-	return 2;
-	*/
 }
 
 int Game::s_setGameStatus(lua_State * l)
