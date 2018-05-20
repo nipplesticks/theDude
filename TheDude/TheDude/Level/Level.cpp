@@ -12,18 +12,19 @@
 #define LOSE 2
 
 Level::Level(sf::RenderWindow* renderWindow)
+	: m_camera(0,0,renderWindow->getSize().x, renderWindow->getSize().y)
 {
 	m_pWindow = renderWindow;
 	m_loadedSprites = false;
 	m_grid = nullptr;
-	m_camera = nullptr;
 	m_closeFlag = false;
 	m_spritePaletteOpen = true;
 	m_entityPaletteOpen = true;
-	m_winConditions[0] = m_winConditions[1] = true;
+	m_winConditions[KILL_ENEMIES] = m_winConditions[GOAL] = true;
 }
 
 Level::Level(const Level & other)
+	: m_camera(0,0, m_pWindow->getSize().x, m_pWindow->getSize().y)
 {
 	_cleanup();
 	_copy(other);
@@ -38,7 +39,6 @@ void Level::LoadLevel(const std::string & target)
 {
 	_cleanup();
 	std::string finalTarget = "Resourses/Levels/" + target;
-	m_camera = new Camera(static_cast<float>(0), static_cast<float>(0), m_pWindow->getSize().x, m_pWindow->getSize().y);
 	m_loadedSprites = false;
 	
 	if (target == "")
@@ -84,14 +84,15 @@ void Level::LoadLevel(const std::string & target)
 					
 					
 					m_entityTexGroups.back().m_entitesForLua.push_back(EntityShape());
-					m_entityTexGroups.back().m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
+					EntityShape* entity = &m_entityTexGroups.back().m_entitesForLua.back();
+					entity->shape = sf::RectangleShape(sf::Vector2f(32, 32));
 																	// The first entity being loaded is the player
-					m_entityTexGroups.back().m_entitesForLua.back().isPlayer = (m_entityTexGroups.size() == 1);
-					m_entityTexGroups.back().m_entitesForLua.back().textureObj = new sf::Texture();
-					m_entityTexGroups.back().m_entitesForLua.back().textureObj->loadFromFile(m_entityTexGroups.back().texturePath);
-					m_entityTexGroups.back().m_entitesForLua.back().shape.setTexture(m_entityTexGroups.back().m_entitesForLua.back().textureObj);
-					m_entityTexGroups.back().m_entitesForLua.back().shape.setPosition(pos);
-					m_entityTexGroups.back().m_entitesForLua.back().pos = pos;
+					entity->isPlayer = (m_entityTexGroups.size() == 1);
+					entity->textureObj = new sf::Texture();
+					entity->textureObj->loadFromFile(m_entityTexGroups.back().texturePath);
+					entity->shape.setTexture(m_entityTexGroups.back().m_entitesForLua.back().textureObj);
+					entity->shape.setPosition(pos);
+					entity->pos = pos;
 				
 					
 				}
@@ -181,7 +182,7 @@ bool Level::SaveLevel(const std::string & target)
 		map << "\n";
 		map << "local Entities = {}\n";
 		map << "\n";
-		if (goals.size())
+		if (m_winConditions[1])
 		{
 			map << "local GoalTiles = {}\n";
 		}
@@ -331,8 +332,8 @@ const std::vector<std::vector<Tile>>* Level::getMap() const
 
 void Level::Update()
 {
-	m_grid->update(m_camera);
-	m_camera->update();
+	m_camera.update();
+	m_grid->update(&m_camera);
 }
 
 void Level::EditorRender()
@@ -341,7 +342,7 @@ void Level::EditorRender()
 	{
 		for (auto& ee : e.m_entitesForLua)
 		{
-			ee.shape.setPosition(ee.pos + m_camera->getPosition());
+			ee.shape.setPosition(ee.pos + m_camera.getPosition());
 			m_pWindow->draw(ee.shape);
 		}
 		
@@ -378,7 +379,7 @@ Level & Level::operator=(const Level & other)
 
 void Level::Draw(sf::Vector2f camPos)
 {
-	m_camera->setPosition(-camPos);
+	m_camera.setPosition(-camPos);
 	
 	m_pWindow->draw(*m_grid);
 	
@@ -583,7 +584,7 @@ void Level::_spritePaletteRender()
 			
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_IsMouseInside())
 			{
-				sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+				sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera.getPosition());
 				sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
 
 				if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
@@ -655,7 +656,7 @@ void Level::_entityPaletteRender()
 				m_entityInstanceTextures.push_back(TextureWPath());
 				m_entityInstanceTextures.back().texture.loadFromFile(yes);
 				m_entityInstanceTextures.back().path = yes;
-				if ((*ip)[0] == '\\')
+				if ((*ip)[0] == '\\' && (*ip)[1] != '\\')
 					(*ip).erase((*ip).begin());
 				std::string luaPath = "Scripts/Player/" + *ip;
 				m_entityInstanceTextures.back().luafile = luaPath;
@@ -678,16 +679,13 @@ void Level::_entityPaletteRender()
 			}
 			else
 			{
-				
-					m_entityInstanceTextures.push_back(TextureWPath());
-					m_entityInstanceTextures.back().texture.loadFromFile(yes);
-					m_entityInstanceTextures.back().path = yes;
-					if ((*i)[0] == '\\')
-						(*i).erase((*i).begin());
-					std::string luaPath = "Scripts/" + *i;
-					m_entityInstanceTextures.back().luafile = luaPath;
-				
-				
+				m_entityInstanceTextures.push_back(TextureWPath());
+				m_entityInstanceTextures.back().texture.loadFromFile(yes);
+				m_entityInstanceTextures.back().path = yes;
+				if ((*i)[0] == '\\' && (*i)[1] != '\\')
+					(*i).erase((*i).begin());
+				std::string luaPath = "Scripts/" + *i;
+				m_entityInstanceTextures.back().luafile = luaPath;
 				
 				i++;
 			}
@@ -735,9 +733,10 @@ void Level::_entityPaletteRender()
 	{
 		bool placeMode = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 		bool deleteMode = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+
 		if ((placeMode || deleteMode) && !_IsMouseInside())
 		{
-			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera.getPosition());
 			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
 
 			if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
@@ -770,7 +769,7 @@ void Level::_entityPaletteRender()
 								{
 									found = true;
 									e.pos = position;
-									e.shape.setPosition(position + m_camera->getPosition());
+									e.shape.setPosition(position + m_camera.getPosition());
 									e.textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
 									e.shape.setTexture(e.textureObj);
 									tg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
@@ -782,18 +781,19 @@ void Level::_entityPaletteRender()
 						if (!found)
 						{
 							EntityTexGroup etg;
-							etg.m_entitesForLua.push_back(EntityShape());
-							etg.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
-							etg.m_entitesForLua.back().textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
-
-							etg.m_entitesForLua.back().shape.setTexture(etg.m_entitesForLua.back().textureObj);
-							etg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
-							etg.m_entitesForLua.back().pos = position;
-							etg.m_entitesForLua.back().isPlayer = true;
-
 							etg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
 							etg.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
-							m_entityTexGroups.insert(m_entityTexGroups.begin(), etg);
+							etg.m_entitesForLua.push_back(EntityShape());
+
+							EntityShape* entity = &etg.m_entitesForLua.back();
+							entity->shape = sf::RectangleShape(sf::Vector2f(32, 32));
+							entity->textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
+							entity->shape.setTexture(etg.m_entitesForLua.back().textureObj);
+							entity->shape.setPosition(position + m_camera.getPosition());
+							entity->pos = position;
+							entity->isPlayer = true;
+	
+							m_entityTexGroups.insert(m_entityTexGroups.begin(), etg); // Insert the player at the begining
 						}
 					}
 					else // Now are we placing an entity
@@ -814,17 +814,19 @@ void Level::_entityPaletteRender()
 							if (tg.texturePath == m_entityInstanceTextures[currentTextureIndex].path)
 							{
 								findExisintGroup = true;
-								tg.m_entitesForLua.push_back(EntityShape());
-								tg.m_entitesForLua.back().shape = sf::RectangleShape(sf::Vector2f(32, 32));
-								tg.m_entitesForLua.back().textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
-								tg.m_entitesForLua.back().shape.setTexture(tg.m_entitesForLua.back().textureObj);
-								tg.m_entitesForLua.back().shape.setPosition(position + m_camera->getPosition());
-								tg.m_entitesForLua.back().pos = position;
-								tg.m_entitesForLua.back().isPlayer = false;
-
 								tg.luafile = m_entityInstanceTextures[currentTextureIndex].luafile;
 								tg.texturePath = m_entityInstanceTextures[currentTextureIndex].path;
-								break;
+								tg.m_entitesForLua.push_back(EntityShape());
+
+								EntityShape* entity = &tg.m_entitesForLua.back();
+								entity->shape = sf::RectangleShape(sf::Vector2f(32, 32));
+								entity->textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
+								entity->shape.setTexture(tg.m_entitesForLua.back().textureObj);
+								entity->shape.setPosition(position + m_camera.getPosition());
+								entity->pos = position;
+								entity->isPlayer = false;
+
+								break; // We can now exit as 
 
 							}
 						}
@@ -837,7 +839,7 @@ void Level::_entityPaletteRender()
 								es.shape = sf::RectangleShape(sf::Vector2f(32, 32));
 								es.textureObj = new sf::Texture(m_entityInstanceTextures[currentTextureIndex].texture);
 								es.shape.setTexture(es.textureObj);
-								es.shape.setPosition(position + m_camera->getPosition());
+								es.shape.setPosition(position + m_camera.getPosition());
 								es.pos = position;
 								es.isPlayer = false;
 							etg.m_entitesForLua.push_back(es);
@@ -910,7 +912,7 @@ void Level::_tileTypePaletteRender()
 	{
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_IsMouseInside())
 		{
-			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera.getPosition());
 			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
 
 			if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
@@ -945,7 +947,7 @@ void Level::_tileColorPaletteRender()
 	{
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_IsMouseInside())
 		{
-			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera->getPosition());
+			sf::Vector2i mp = sf::Mouse::getPosition(*m_pWindow) - sf::Vector2i(m_camera.getPosition());
 			sf::Vector2i index = mp / static_cast<int>(m_grid->getTile(0, 0).getSize().x + 0.5f);
 
 			if (index.x >= 0 && index.y >= 0 && index.x < m_grid->getWidth() && index.y < m_grid->getHeight())
@@ -1027,11 +1029,8 @@ std::string Level::getTexturePath(std::string luafile) const
 
 void Level::_cleanup()
 {
-
 	delete m_grid;
 	m_grid = nullptr;
-	delete m_camera;
-	m_camera = nullptr;
 	for (auto& etg : m_entityTexGroups)
 	{
 		for (auto& ent : etg.m_entitesForLua)

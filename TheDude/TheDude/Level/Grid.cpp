@@ -256,21 +256,6 @@ sf::Vector2u Grid::getSheetImageSize() const
 	return m_spriteSheet->getSize();
 }
 
-void Grid::MarkMode()
-{
-	/*for (auto& t : m_tiles)
-		for (auto &t2 : t)
-			t2.ApplyTypeColor();*/
-}
-
-void Grid::NormalMode()
-{
-	for (auto& t : m_tiles)
-		for (auto &t2 : t)
-			t2.RemoveColors();
-}
-
-
 void Grid::_init(int width, int height, float sizeOfTile, int type)
 {
 	for (int i = 0; i < width; i++)
