@@ -6,7 +6,7 @@ class Level : public sf::Drawable
 {
 private:
 	Grid * m_grid;
-	Camera* m_camera;
+	Camera m_camera;
 	sf::RenderWindow* m_pWindow;
 
 
@@ -56,6 +56,8 @@ private:
 		sf::Texture m_sampleTexture;
 
 		std::string m_currentLevel;
+#define KILL_ENEMIES 0
+#define GOAL 1
 		bool m_winConditions[2];
 	// }
 

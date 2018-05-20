@@ -75,7 +75,10 @@ void Tile::setColor(int r, int g, int b, bool permCol)
 void Tile::setColor(const sf::Color & color, bool perm)
 {
 	if (perm)
+	{
 		m_tempColor = color;
+		m_tileShape.setTexture(nullptr);
+	}
 
 	m_tileShape.setFillColor(color);
 }

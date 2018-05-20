@@ -58,8 +58,6 @@ public:
 		const sf::Sprite& getDisplaySprite() const;
 		bool isSpritesheetLoaded() const;
 		sf::Vector2u getSheetImageSize() const;
-		void MarkMode();
-		void NormalMode();
 	// }
 private:
 	void _init(int width, int height, float sizeOfTile, int type);
