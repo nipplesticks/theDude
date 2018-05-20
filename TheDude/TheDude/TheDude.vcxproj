@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Entity\Weapon.cpp" />
+    <ClCompile Include="Interface\HeadsUpDisplay.cpp" />
     <ClCompile Include="States\Editor.cpp" />
     <ClCompile Include="States\Game.cpp" />
     <ClCompile Include="GameTime.cpp" />

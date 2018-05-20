@@ -67,7 +67,6 @@ int main()
 			title += gameTitle;
 			title += gameTime.GetAndResetStats();
 			window.setTitle(sf::String(title));
-		
 		}
 	}
 	ImGui::SFML::Shutdown();
