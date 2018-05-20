@@ -76,7 +76,7 @@ void Character::setDefence(int defence)
 {
 	m_defence = defence;
 }
-#include <iostream>
+
 void Character::MoveRequest(float x, float y)
 {
 	m_moveReq.x += x;

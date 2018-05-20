@@ -1,6 +1,6 @@
 function init()
 	setSize(6,6)
-	setDamage(4)
+	setDamage(8)
 	setColor(255, 255, 255)
 	dirX, dirY = getDirection()
 	Live = 0

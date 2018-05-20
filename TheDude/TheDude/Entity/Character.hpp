@@ -19,7 +19,6 @@ private:
 	sf::Vector2f		m_HPOffset;
 	sf::Vector2f		m_HPScl;
 	sf::Vector2f		m_moveReq;
-
 	std::vector<Weapon* > m_weapons;
 
 public:
