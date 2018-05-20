@@ -2,6 +2,7 @@
 
 local Entities = {}
 
+local GoalTiles = {}
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/Player/mario.lua")
@@ -23,7 +24,60 @@ local function _initEntities()
 	Entity_Scripted:setPosition(416,64)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/Goomba.lua")
+	Entity_Scripted:setPosition(224,416)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/Goomba.lua")
+	Entity_Scripted:setPosition(768,416)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/Goomba.lua")
+	Entity_Scripted:setPosition(736,416)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/Goomba.lua")
+	Entity_Scripted:setPosition(384,576)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/Goomba.lua")
+	Entity_Scripted:setPosition(704,608)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/spike.lua")
+	Entity_Scripted:setPosition(256,416)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/spike.lua")
+	Entity_Scripted:setPosition(800,896)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/spike.lua")
+	Entity_Scripted:setPosition(896,896)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/spike.lua")
+	Entity_Scripted:setPosition(512,832)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
 
+	local Goal = Character.Create()
+	Goal:setPosition(832,896)
+	Goal:setSize(32,32)
+	table.insert(GoalTiles, Goal)
+	local Goal = Character.Create()
+	Goal:setPosition(864,896)
+	Goal:setSize(32,32)
+	table.insert(GoalTiles, Goal)
 	SomeOneDied = false
 end
 
@@ -102,8 +156,10 @@ function update()
 	elseif Entities[1]:isDead() == false then
 		_updateEntities()
 		_collisionHandling()
-		if #Entities == 1 then
-			setGameStatus(1)
+		for i = 1, #GoalTiles, 1 do
+			if CheckCollision(Entities[1], GoalTiles[i]) then
+				setGameStatus(1)
+			end
 		end
 	else
 		setGameStatus(2)
