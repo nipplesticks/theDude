@@ -212,16 +212,20 @@ bool Level::SaveLevel(const std::string & target)
 			map << "\tsetPlayerPosition(Entities[1]:getPosition())\n";
 			map << "\tfor i = 1, #Entities, 1 do\n";
 				map << "\t\tEntities[i]:Update()\n";
-				map << "\t\tmRx, mRy = Entities[i]:getMoveRequest()\n";
-				map << "\t\tif mRx ~= 0.0 or mRy ~= 0.0 then\n";
-				map << "\t\t\tmx, my = canMove(Entities[i], mRx, mRy)\n";
-				map << "\t\t\tif mx == false then\n";
-				map << "\t\t\t\t mRx = 0.0 \n";
+				map << "\t\tif Entities[i]:isDead() then\n";
+				map << "\t\t\ttable.remove(Entities, i)\n";
+				map << "\t\telse\n";
+				map << "\t\t\tmRx, mRy = Entities[i]:getMoveRequest()\n";
+				map << "\t\t\tif mRx ~= 0.0 or mRy ~= 0.0 then\n";
+				map << "\t\t\t\tmx, my = canMove(Entities[i], mRx, mRy)\n";
+				map << "\t\t\t\tif mx == false then\n";
+				map << "\t\t\t\t\t mRx = 0.0 \n";
+				map << "\t\t\t\tend\n";
+				map << "\t\t\t\tif my == false then\n";
+				map << "\t\t\t\t\t mRy = 0.0\n";
+				map << "\t\t\t\tend\n";
+				map << "\t\t\t\tEntities[i]:Move(mRx, mRy)\n";
 				map << "\t\t\tend\n";
-				map << "\t\t\tif my == false then\n";
-				map << "\t\t\t\t mRy = 0.0\n";
-				map << "\t\t\tend\n";
-				map << "\t\t\tEntities[i]:Move(mRx, mRy)\n";
 				map << "\t\tend\n";
 				//map << "\t\tend\n";
 			map << "\tend\n";
@@ -240,6 +244,7 @@ bool Level::SaveLevel(const std::string & target)
 				map << "\t\tisCollision = CheckCollision(Entities[1], Entities[i])\n";
 				map << "\t\tif isCollision then\n";
 				map << "\t\t\tEntities[1]:AlterHealth(Entities[i]:getAttack() * -1)\n";
+				map << "\t\t\tEntities[i]:AlterHealth(Entities[1]:getAttack() * -1)\n";
 				map << "\t\tend\n";
 			map << "\tend\n";
 		map << "end\n";
@@ -254,6 +259,8 @@ bool Level::SaveLevel(const std::string & target)
 		map << "\tif isKeyPressed(\"ESC\") then\n";
 		map << "\t\tExitGame()\n";
 		map << "\telseif Entities[1]:isDead() == false then\n";
+		map << "\t\t_updateEntities()\n";
+		map << "\t\t_collisionHandling()\n";
 		if (goals.size())
 		{
 			map << "\t\tfor i = 1, #GoalTiles, 1 do\n";
@@ -262,8 +269,12 @@ bool Level::SaveLevel(const std::string & target)
 			map << "\t\t\tend\n";
 			map << "\t\tend\n";
 		}
-		map << "\t\t_updateEntities()\n";
-		map << "\t\t_collisionHandling()\n";
+		if (m_winConditions[0])
+		{
+			map << "\t\tif #Entities == 1 then\n";
+			map << "\t\t\tsetGameStatus(1)\n";
+			map << "\t\tend\n";
+		}
 		map << "\telse\n";
 		map << "\t\tsetGameStatus(" << LOSE << ")\n";
 		map << "\tend\n";

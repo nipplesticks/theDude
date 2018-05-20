@@ -2,6 +2,7 @@ function init()
 	Speed = 2.5
 	setHPBar(-1,-1,-1,-1)
 	setHealth(100)
+	setAttack(100)
 	setSprite("mario.jpg")
 	wasPressed = false
 
@@ -17,11 +18,12 @@ function update()
 
 	local tempSpeed = Speed
 	xPos, yPos = getPosition()
+
 	if yPos == lastY then
 		canJump = true
 		if JUMP_POWER > 0 then
-		JUMP_POWER = 0
-	end
+			JUMP_POWER = 0
+		end	
 	else 
 		canJump = false
 		lastY = yPos

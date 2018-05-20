@@ -3,7 +3,30 @@
 local Entities = {}
 
 local GoalTiles = {}
+
+local Bullets = 
+{
+	{
+		Pos = {
+			X = 32,
+			Y = 32,
+				},
+		Size = {
+			S = 32,
+		},
+	},
+	{
+		Pos = {
+			X = 128,
+			Y = 64,
+			},
+		Size = {
+			S = 32,
+		},
+	}
+}
 local function _initEntities()
+print(Bullets[1].Pos.X .. " " .. Bullets[1].Pos.Y)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/Player/mario.lua")
 	Entity_Scripted:setPosition(160,576)
@@ -39,14 +62,14 @@ local function _initEntities()
 end
 
 local function _updateEntities()
+
+
 	setPlayerPosition(Entities[1]:getPosition())
 	for i = 1, #Entities, 1 do
 		Entities[i]:Update()
-
 		if Entities[i]:isDead() then
 			table.remove(Entities, i)
 		else
-
 			mRx, mRy = Entities[i]:getMoveRequest()
 			if mRx ~= 0.0 or mRy ~= 0.0 then
 				mx, my = canMove(Entities[i], mRx, mRy)
@@ -88,17 +111,11 @@ function update()
 	elseif Entities[1]:isDead() == false then
 		_updateEntities()
 		_collisionHandling()
-		
 		for i = 1, #GoalTiles, 1 do
 			if CheckCollision(Entities[1], GoalTiles[i]) then
 				setGameStatus(1)
 			end
 		end
-
-		if #Entities == 1 then
-			setGameStatus(1)
-		end	
-		
 	else
 		setGameStatus(2)
 	end
