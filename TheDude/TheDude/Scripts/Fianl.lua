@@ -5,46 +5,49 @@ local Entities = {}
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/Player/PlayerModule.Lua")
-	Entity_Scripted:setPosition(0,0)
+	Entity_Scripted:setPosition(32,128)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(256,256)
+	Entity_Scripted:setPosition(160,192)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(288,256)
+	Entity_Scripted:setPosition(160,160)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(288,288)
+	Entity_Scripted:setPosition(192,160)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
 	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(288,224)
+	Entity_Scripted:setPosition(192,128)
+	Entity_Scripted:setSize(32,32)
+	table.insert(Entities, Entity_Scripted)
+	local Entity_Scripted = Character.Create()
+	Entity_Scripted:AddScript("Scripts/DVD.Lua")
+	Entity_Scripted:setPosition(192,96)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 
+	SomeOneDied = false
 end
 
 local function _clean()										 
 	for i = 1, #Entities, 1 do								 
 		if Entities[i] ~= nil and Entities[i]:isDead() then	 
 			table.remove(Entities, i)						 
-			end												 
-			end												 
-			end												 
+		end												 
+	end												 
+end												 
 local function _updateEntities()
 	setPlayerPosition(Entities[1]:getPosition())
 	for i = 1, #Entities, 1 do
 		Entities[i]:Update()
-if Entities[i]:isDead() then  
-	table.remove(Entities, i) 
-	end						  
 		mRx, mRy = Entities[i]:getMoveRequest()
 		if mRx ~= 0.0 or mRy ~= 0.0 then
 			mx, my = canMove(Entities[i], mRx, mRy)
@@ -56,6 +59,9 @@ if Entities[i]:isDead() then
 			end
 			Entities[i]:Move(mRx, mRy)
 		end
+	if Entities[i]:isDead() then
+		SomeOneDied = true
+	end
 	end
 end
 

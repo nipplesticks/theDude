@@ -205,30 +205,34 @@ bool Level::SaveLevel(const std::string & target)
 			map << "\tGoal:setSize(32,32)\n";
 			map << "\ttable.insert(GoalTiles, Goal)\n";
 		}
+		map << "\tSomeOneDied = false\n";
 		map << "end\n";
 		map << "\n";
+
+		map << "local function _clean()										 \n";
+		map << "	for i = 1, #Entities, 1 do								 \n";
+		map << "		if Entities[i] ~= nil and Entities[i]:isDead() then	 \n";
+		map << "			table.remove(Entities, i)						 \n";
+		map << "		end												 \n";
+		map << "	end												 \n";
+		map << "end												 \n";
+
 
 		map << "local function _updateEntities()\n";
 			map << "\tsetPlayerPosition(Entities[1]:getPosition())\n";
 			map << "\tfor i = 1, #Entities, 1 do\n";
-				map << "\t\tEntities[i]:Update()\n";
-				map << "\t\tif Entities[i]:isDead() then\n";
-				map << "\t\t\ttable.remove(Entities, i)\n";
-				map << "\t\telse\n";
-				map << "\t\t\tmRx, mRy = Entities[i]:getMoveRequest()\n";
-				map << "\t\t\tif mRx ~= 0.0 or mRy ~= 0.0 then\n";
-				map << "\t\t\t\tmx, my = canMove(Entities[i], mRx, mRy)\n";
-				map << "\t\t\t\tif mx == false then\n";
-				map << "\t\t\t\t\t mRx = 0.0 \n";
-				map << "\t\t\t\tend\n";
-				map << "\t\t\t\tif my == false then\n";
-				map << "\t\t\t\t\t mRy = 0.0\n";
-				map << "\t\t\t\tend\n";
-				map << "\t\t\t\tEntities[i]:Move(mRx, mRy)\n";
+				map << "\t\tEntities[i]:Update()\n";	
+				map << "\t\tmRx, mRy = Entities[i]:getMoveRequest()\n";
+				map << "\t\tif mRx ~= 0.0 or mRy ~= 0.0 then\n";
+				map << "\t\t\tmx, my = canMove(Entities[i], mRx, mRy)\n";
+				map << "\t\t\tif mx == false then\n";
+				map << "\t\t\t\t mRx = 0.0 \n";
 				map << "\t\t\tend\n";
 				map << "\t\tend\n";
-				//map << "\t\tend\n";
-			map << "\tend\n";
+				map << "	if Entities[i]:isDead() then\n";
+				map << "		SomeOneDied = true\n";
+				map << "	end\n";
+			map << "\tend\n";						
 		map << "end\n";
 		map << "\n";
 
@@ -239,14 +243,31 @@ bool Level::SaveLevel(const std::string & target)
 		map << "end\n";
 		map << "\n";
 		
-		map << "local function _collisionHandling()\n";
-			map << "\tfor i = 2, #Entities, 1 do\n";
-				map << "\t\tisCollision = CheckCollision(Entities[1], Entities[i])\n";
-				map << "\t\tif isCollision then\n";
-				map << "\t\t\tEntities[1]:AlterHealth(Entities[i]:getAttack() * -1)\n";
-				map << "\t\t\tEntities[i]:AlterHealth(Entities[1]:getAttack() * -1)\n";
-				map << "\t\tend\n";
-			map << "\tend\n";
+		map << "local function _collisionHandling()\n";											  
+		map << "local bullets = Entities[1]:getProjectiles()									  \n";
+		map << "	for k = 1, #bullets, 1 do													  \n";
+		map << "		for j = 2, #Entities, 1 do												  \n";
+		map << "			if CheckCollision(Entities[j], bullets[k]) then						  \n";
+		map << "				Entities[j]:AlterHealth(-bullets[k]:getDamage())				  \n";
+		map << "				bullets[k] : Disable()											  \n";
+		map << "				end																  \n";
+		map << "				end																  \n";
+		map << "				end																  \n";
+		map << "																				  \n";
+		map << "				for i = 2, #Entities, 1 do										  \n";
+		map << "					isCollision = CheckCollision(Entities[1], Entities[i])		  \n";
+		map << "					if isCollision then											  \n";
+		map << "						Entities[1]:AlterHealth(Entities[i]:getAttack() * -1)	  \n";
+		map << "						Entities[i]:AlterHealth(Entities[1]:getAttack() * -1)	  \n";
+		map << "						end														  \n";
+		map << "						bullets = Entities[i] : getProjectiles()				  \n";
+		map << "						for k = 1, #bullets, 1 do								  \n";
+		map << "							if CheckCollision(Entities[1], bullets[k]) then		  \n";
+		map << "								Entities[j]:AlterHealth(-bullets[k]:getDamage())  \n";
+		map << "								bullets[k] : Disable()							  \n";
+		map << "								end												  \n";
+		map << "								end												  \n";
+		map << "								end												  \n";
 		map << "end\n";
 		map << "\n";
 
@@ -269,12 +290,11 @@ bool Level::SaveLevel(const std::string & target)
 			map << "\t\t\tend\n";
 			map << "\t\tend\n";
 		}
-		if (m_winConditions[0])
-		{
-			map << "\t\tif #Entities == 1 then\n";
-			map << "\t\t\tsetGameStatus(1)\n";
-			map << "\t\tend\n";
-		}
+		map << "\t\t_updateEntities()\n";
+		map << "\t\t_collisionHandling()\n";
+		map << "if SomeOneDied then	\n";
+		map << "	_clean()		\n";
+		map << "	end				\n";
 		map << "\telse\n";
 		map << "\t\tsetGameStatus(" << LOSE << ")\n";
 		map << "\tend\n";

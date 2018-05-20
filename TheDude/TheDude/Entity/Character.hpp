@@ -37,14 +37,17 @@ public:
 	void setHealth(int health); 
 	void setAttack(int attack); 
 	void setDefence(int defence); 
-	
 	void MoveRequest(float x, float y);
+
+	std::vector<Projectile*> getProjectiles();
 
 	//This will reset the moveRequest
 	sf::Vector2f getMoveRequest();
 	void AddWeapon(Weapon * w);
 
 	void AlterHealth(int health); 
+
+	
 
 	int getHealth() const; 
 	int getAttack() const; 
@@ -89,4 +92,5 @@ public:
 	LUA_FUNC s_MoveRequest(lua_State * l);
 	LUA_FUNC s_getMoveRequest(lua_State * l);
 	LUA_FUNC s_ApplyWeapon(lua_State * l);
+	LUA_FUNC s_getProjectiles(lua_State * l);
 };

@@ -44,7 +44,6 @@ public:
 	static void setBooleans(lua_State * L, const std::vector<bool> & booleans);
 	static void setFloats(lua_State * L, const std::vector<float> & floats);
 
-
 	template <typename T>
 	static T* getClassPointer(lua_State * l);
 	
@@ -52,7 +51,7 @@ public:
 	static Instance* getInstanceOf(lua_State * l, int n, const std::string &meta);
 
 	template <typename Instance>
-	static Instance** createInstanceOf(lua_State* l, const std::string &meta);
+	static Instance** createInstanceOf(lua_State* l, const std::string &meta = "");
 
 	template <typename Instance>
 	static std::vector<Instance**> getInstancePointer(lua_State* l, int amount);
@@ -109,7 +108,5 @@ inline std::vector<Instance**> OurLua::getInstancePointer(lua_State * l, int amo
 	std::vector<Instance**> instances;
 	for (int i = 0; i < amount; i++)
 		instances.push_back((Instance**)lua_touserdata(l, i + 1));
-
-
 	return instances;
 }

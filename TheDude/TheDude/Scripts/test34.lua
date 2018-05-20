@@ -29,22 +29,20 @@ local function _initEntities()
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 
+	SomeOneDied = false
 end
 
 local function _clean()										 
 	for i = 1, #Entities, 1 do								 
 		if Entities[i] ~= nil and Entities[i]:isDead() then	 
 			table.remove(Entities, i)						 
-			end												 
-			end												 
-			end												 
+		end												 
+	end												 
+end												 
 local function _updateEntities()
 	setPlayerPosition(Entities[1]:getPosition())
 	for i = 1, #Entities, 1 do
 		Entities[i]:Update()
-if Entities[i]:isDead() then  
-	table.remove(Entities, i) 
-	end						  
 		mRx, mRy = Entities[i]:getMoveRequest()
 		if mRx ~= 0.0 or mRy ~= 0.0 then
 			mx, my = canMove(Entities[i], mRx, mRy)
@@ -56,6 +54,9 @@ if Entities[i]:isDead() then
 			end
 			Entities[i]:Move(mRx, mRy)
 		end
+	if Entities[i]:isDead() then
+		SomeOneDied = true
+	end
 	end
 end
 

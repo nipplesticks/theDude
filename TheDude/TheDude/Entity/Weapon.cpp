@@ -20,10 +20,28 @@ void Weapon::Shoot(float x, float y, float dx, float dy)
 	bulletContainer.push_back(p);
 }
 
+std::vector<Projectile*>* Weapon::GetBullets()
+{
+	
+	return &bulletContainer;
+}
+
 void Weapon::Update()
 {
-	for (auto & b : bulletContainer)
-		b->Update();
+	auto bullet = std::begin(bulletContainer);
+
+
+	for (int i = 0; i < bulletContainer.size(); i++)
+	{
+		if (bulletContainer[i]->isActive())
+			bulletContainer[i]->Update();
+		else
+		{
+			delete bulletContainer[i];
+			bulletContainer.erase(bulletContainer.begin() + i);
+			i--;
+		}
+	}
 }
 
 void Weapon::Draw(sf::RenderWindow * wnd, sf::Vector2f camPos)
@@ -75,3 +93,15 @@ int Weapon::s_Shoot(lua_State * l)
 
 	return 0;
 }
+
+
+//local bullets = Entities[i]:getProjectiles()
+//for k = 1, #bullets, 1 do
+//for j = 1, #Entities, 1 do
+//if j ~= i then
+//if checkCollisionWithPos(bullets[k][1], bullets[k][2], bullets[k][3], bullets[k][4], Entities[j]) then
+//print("hit maddafacka")
+//end
+//end
+//end
+//end
