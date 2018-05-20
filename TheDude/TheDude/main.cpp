@@ -11,7 +11,9 @@
 #include <SFML/System/Clock.hpp>
 // ImGui
 
-
+extern "C" {
+	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
 #define CHECK_MEMORY_LEAKS _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF)
 
 const std::string gameTitle = "theDude!";
