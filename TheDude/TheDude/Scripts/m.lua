@@ -2,43 +2,60 @@
 
 local Entities = {}
 
+local GoalTiles = {}
 local function _initEntities()
 	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/Player/PlayerModule.Lua")
-	Entity_Scripted:setPosition(32,128)
+	Entity_Scripted:AddScript("Scripts/Player/mario.lua")
+	Entity_Scripted:setPosition(64,416)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(160,192)
+	Entity_Scripted:AddScript("Scripts/Goomba.lua")
+	Entity_Scripted:setPosition(640,160)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(160,160)
+	Entity_Scripted:AddScript("Scripts/Goomba.lua")
+	Entity_Scripted:setPosition(416,224)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(192,160)
+	Entity_Scripted:AddScript("Scripts/spike.lua")
+	Entity_Scripted:setPosition(672,416)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(192,128)
+	Entity_Scripted:AddScript("Scripts/spike.lua")
+	Entity_Scripted:setPosition(384,416)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 	local Entity_Scripted = Character.Create()
-	Entity_Scripted:AddScript("Scripts/DVD.Lua")
-	Entity_Scripted:setPosition(192,96)
+	Entity_Scripted:AddScript("Scripts/spike.lua")
+	Entity_Scripted:setPosition(192,416)
 	Entity_Scripted:setSize(32,32)
 	table.insert(Entities, Entity_Scripted)
 
+	local Goal = Character.Create()
+	Goal:setPosition(832,384)
+	Goal:setSize(32,32)
+	table.insert(GoalTiles, Goal)
+	local Goal = Character.Create()
+	Goal:setPosition(832,416)
+	Goal:setSize(32,32)
+	table.insert(GoalTiles, Goal)
+	local Goal = Character.Create()
+	Goal:setPosition(864,384)
+	Goal:setSize(32,32)
+	table.insert(GoalTiles, Goal)
+	local Goal = Character.Create()
+	Goal:setPosition(864,416)
+	Goal:setSize(32,32)
+	table.insert(GoalTiles, Goal)
 	SomeOneDied = false
 end
 
 local function _clean()										 
-	for i = 1, #Entities, 1 do								 
+	for i = 2, #Entities, 1 do								 
 		if Entities[i] ~= nil and Entities[i]:isDead() then	 
 			table.remove(Entities, i)						 
 		end												 
@@ -51,17 +68,21 @@ local function _updateEntities()
 		mRx, mRy = Entities[i]:getMoveRequest()
 		if mRx ~= 0.0 or mRy ~= 0.0 then
 			mx, my = canMove(Entities[i], mRx, mRy)
-			if mx == false then
-				 mRx = 0.0 
+			if mx == 1 then
+				mRx = 0.0 
+			elseif mx == 2 then
+				Entities[i]:AlterHealth(-100) -- Instant Death
 			end
-			if my == false then
-				 mRy = 0.0
+			if my == 1 then
+				mRy = 0.0
+			elseif my == 2 then
+				Entities[i]:AlterHealth(-100) -- Instant Death
 			end
 			Entities[i]:Move(mRx, mRy)
+			if Entities[i]:isDead() then
+				SomeOneDied = true
+			end
 		end
-	if Entities[i]:isDead() then
-		SomeOneDied = true
-	end
 	end
 end
 
@@ -108,12 +129,17 @@ function update()
 	elseif Entities[1]:isDead() == false then
 		_updateEntities()
 		_collisionHandling()
-if SomeOneDied then	
-	_clean()		
-	end				
+		for i = 1, #GoalTiles, 1 do
+			if CheckCollision(Entities[1], GoalTiles[i]) then
+				setGameStatus(1)
+			end
+		end
 	else
 		setGameStatus(2)
 	end
+if SomeOneDied then	
+	_clean()		
+	end				
 end
 
 function draw()

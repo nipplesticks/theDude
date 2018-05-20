@@ -63,7 +63,7 @@ local function _initEntities()
 end
 
 local function _clean()										 
-	for i = 1, #Entities, 1 do								 
+	for i = 2, #Entities, 1 do								 
 		if Entities[i] ~= nil and Entities[i]:isDead() then	 
 			table.remove(Entities, i)						 
 		end												 
@@ -76,17 +76,21 @@ local function _updateEntities()
 		mRx, mRy = Entities[i]:getMoveRequest()
 		if mRx ~= 0.0 or mRy ~= 0.0 then
 			mx, my = canMove(Entities[i], mRx, mRy)
-			if mx == false then
-				 mRx = 0.0 
+			if mx == 1 then
+				mRx = 0.0 
+			elseif mx == 2 then
+				Entities[i]:AlterHealth(-100) -- Instant Death
 			end
-			if my == false then
-				 mRy = 0.0
+			if my == 1 then
+				mRy = 0.0
+			elseif my == 2 then
+				Entities[i]:AlterHealth(-100) -- Instant Death
 			end
 			Entities[i]:Move(mRx, mRy)
+			if Entities[i]:isDead() then
+				SomeOneDied = true
+			end
 		end
-	if Entities[i]:isDead() then
-		SomeOneDied = true
-	end
 	end
 end
 
@@ -133,12 +137,15 @@ function update()
 	elseif Entities[1]:isDead() == false then
 		_updateEntities()
 		_collisionHandling()
-if SomeOneDied then	
-	_clean()		
-	end				
+		if #Entities == 1 then
+			setGameStatus(1)
+		end
 	else
 		setGameStatus(2)
 	end
+if SomeOneDied then	
+	_clean()		
+	end				
 end
 
 function draw()

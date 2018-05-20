@@ -2,10 +2,11 @@ function init()
 	Speed = 2.5
 	setHPBar(-1,-1,-1,-1)
 	setHealth(100)
+	setAttack(0)
 	setSprite("mario.jpg")
 	wasPressed = false
 
-	pistol = Weapon:Create("Scripts/penis.lua");
+	pistol = Weapon:Create("Scripts/mariosass.lua");
 	ApplyWeapon(pistol)
 end
 local canJump = true
@@ -14,16 +15,18 @@ local JUMP_POWER = 0
 local GRAVITY = 0.5
 local lol1 = false
 function update()
-
+	
 	local tempSpeed = Speed
 	xPos, yPos = getPosition()
+
 	if yPos == lastY then
 		canJump = true
 		if JUMP_POWER > 0 then
-		JUMP_POWER = 0
-	end
+			JUMP_POWER = 0
+		end	
 	else 
 		canJump = false
+		pistol:Shoot(xPos,yPos +32 , 0,1)
 		lastY = yPos
 	end
 

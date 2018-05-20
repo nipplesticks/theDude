@@ -70,5 +70,7 @@
     <None Include="Scripts\Weapons\AK.lua" />
     <None Include="Scripts\ZombieNormal.lua" />
     <None Include="Scripts\ZombieRange.lua" />
+    <None Include="Scripts\mariosass.lua" />
+    <None Include="Scripts\spike.lua" />
   </ItemGroup>
 </Project>

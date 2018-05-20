@@ -72,8 +72,8 @@ void MainMenu::_init()
 	m_bck.setPosition(0, 0);
 	m_bck.setSize(sf::Vector2f(s_window->getSize().x, s_window->getSize().y));
 
-	pxSizeX = s_window->getSize().x *0.2f;
-	pxSizeY = s_window->getSize().y *0.2f;
+	pxSizeX = s_window->getSize().x *0.05f;
+	pxSizeY = s_window->getSize().y *0.05f;
 
 	m_t.create(pxSizeX, pxSizeY);
 	m_bck.setTexture(&m_t);

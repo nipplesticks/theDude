@@ -29,6 +29,7 @@ private:
 	void _initLua();
 
 public:
+	
 	LUA_FUNC s_Move(lua_State * l);
 	LUA_FUNC s_setSize(lua_State * l);
 	LUA_FUNC s_setColor(lua_State * l);

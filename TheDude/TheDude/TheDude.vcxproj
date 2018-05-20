@@ -200,6 +200,7 @@
     <None Include="Scripts\Goomba.lua" />
     <None Include="Scripts\Weapons\AK.lua" />
     <None Include="Scripts\Weapons\pistol.lua" />
+    <None Include="Scripts\mariosass.lua" />
     <None Include="Scripts\Player\mario.lua" />
     <None Include="Resourses\Levels\test.chef" />
     <None Include="Scripts\DVD.Lua" />
@@ -207,6 +208,7 @@
     <None Include="Scripts\Player\RunAndGunner.lua" />
     <None Include="Scripts\ZombieNormal.lua" />
     <None Include="Scripts\ZombieRange.lua" />
+    <None Include="Scripts\spike.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
