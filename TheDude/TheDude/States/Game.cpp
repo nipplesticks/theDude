@@ -8,6 +8,8 @@ int Game::s_gameStatus = RUNNING;
 Game::Game(std::string level) : m_level(s_window)
 {
 	s_isGameRunning = true;
+	s_gameStatus = RUNNING;
+
 	_init(level);
 }
 
@@ -15,8 +17,6 @@ Game::~Game()
 {
 	delete m_entityHandler;
 }
-
-
 
 void Game::Update()
 {
@@ -31,14 +31,13 @@ void Game::Update()
 	
 	if (s_isGameRunning)
 	{
-		m_entityHandler->Update();
 		m_level.Update();
+		m_entityHandler->Update();
 	}
 	else
 	{
 		State::Pop();
 	}
-	
 	
 }
 
@@ -77,6 +76,7 @@ void Game::_initEntityHandler(std::string luaFile)
 	_pushFunctions();
 	m_entityHandler->InitLua();
 }
+
 
 void Game::_pushFunctions()
 {

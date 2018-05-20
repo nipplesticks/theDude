@@ -1,6 +1,6 @@
 function init()
 	Speed = 2.5
-	setHPBar(50,110,100,10)
+	setHPBar(-1,-1,-1,-1)
 	setHealth(100)
 	setSprite("mario.jpg")
 	wasPressed = false

@@ -56,7 +56,7 @@ private:
 		sf::Texture m_sampleTexture;
 
 		std::string m_currentLevel;
-		
+		bool m_winConditions[2];
 	// }
 
 public:

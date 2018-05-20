@@ -20,6 +20,7 @@ Level::Level(sf::RenderWindow* renderWindow)
 	m_closeFlag = false;
 	m_spritePaletteOpen = true;
 	m_entityPaletteOpen = true;
+	m_winConditions[0] = m_winConditions[1] = true;
 }
 
 Level::Level(const Level & other)
@@ -442,6 +443,15 @@ void Level::_toolbarRender()
 		m_entityPaletteOpen = ImGui::MenuItem("Entities") ? true : m_entityPaletteOpen;
 		m_tileTypePaletteOpen = ImGui::MenuItem("Tile Type") ? true : m_tileTypePaletteOpen;
 		m_tileColorPaletteOpen = ImGui::MenuItem("Tile Colors") ? true : m_tileColorPaletteOpen;
+
+		ImGui::EndMenu();
+	}
+	if (ImGui::BeginMenu("Win Condition"))
+	{
+	
+		ImGui::Checkbox("Kill all enemies", &m_winConditions[0]);
+		ImGui::Checkbox("Reach goal tile", &m_winConditions[1]);
+
 
 		ImGui::EndMenu();
 	}
@@ -969,18 +979,15 @@ void Level::_cleanup()
 	m_grid = nullptr;
 	delete m_camera;
 	m_camera = nullptr;
-	if(m_entityTexGroups.size())
-		delete m_entityTexGroups.front().m_entitesForLua.front().textureObj;
-
-	/*for (auto& etg : m_entityTexGroups)
+	for (auto& etg : m_entityTexGroups)
 	{
-		for (auto& e : etg.m_entitesForLua)
+		for (auto& ent : etg.m_entitesForLua)
 		{
-			delete e.textureObj;
-			e.textureObj = nullptr;
-			break;
+			delete ent.textureObj;
+
 		}
-	}*/
+	}
+	
 	m_entityInstanceTextures.clear();
 	m_entityTexGroups.clear();
 }

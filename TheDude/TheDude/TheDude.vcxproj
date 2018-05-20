@@ -196,6 +196,7 @@
     <ClInclude Include="Entity\Projectile.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Scripts\Goomba.lua" />
     <None Include="Scripts\penis.lua" />
     <None Include="Scripts\Player\mario.lua" />
     <None Include="Resourses\Levels\test.chef" />
