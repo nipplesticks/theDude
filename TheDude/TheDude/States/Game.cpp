@@ -1,13 +1,14 @@
 #include "Game.hpp"
 #include "../RenderQueue.hpp"
 
+
 std::vector<Entity*> Render::g_renderQueue;
 bool Game::s_isGameRunning = true;
 int Game::s_gameStatus = RUNNING;
 
 Game::Game(std::string level) : m_level(s_window)
 {
-	s_isGameRunning = true;
+	s_isGameRunning = true; 
 	s_gameStatus = RUNNING;
 
 	_init(level);
@@ -22,11 +23,11 @@ void Game::Update()
 {
 	if (s_gameStatus == WON)
 	{
-		std::cout << "Won!" << std::endl;
+		m_drawWinText = true; 
 	}
 	else if(s_gameStatus == LOSE)
 	{
-		std::cout << "Lost!" << std::endl;
+		m_drawLoseText = true; 
 	}
 	
 	if (s_isGameRunning)
@@ -61,6 +62,15 @@ void Game::Draw()
 		Character * p = dynamic_cast<Character*>(entity);
 		if (p) p->DrawOther(s_window, camPos);
 	}
+
+	if (m_drawWinText)
+	{
+		s_window->draw(m_winText);
+	}
+	else if (m_drawLoseText)
+	{
+		s_window->draw(m_loseText);
+	}
 }
 
 
@@ -68,6 +78,11 @@ void Game::_init(std::string level)
 {
 	_initEntityHandler("Scripts/" + level + ".lua");
 	m_level.LoadLevel(level + ".level"); 
+	
+	m_winText.setFont("Resourses/FONT/Hollywood Capital Hills (Final).ttf", "YOU WIN!", sf::Vector2f((s_window->getSize().x / 2) - 60,200), 50); 
+	m_loseText.setFont("Resourses/FONT/Hollywood Capital Hills (Final).ttf", "YOU LOSE!", sf::Vector2f((s_window->getSize().x / 2) - 60, 200), 50);
+	m_drawWinText = false;
+	m_drawLoseText = false;
 }
 
 void Game::_initEntityHandler(std::string luaFile)

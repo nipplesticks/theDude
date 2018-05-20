@@ -4,6 +4,7 @@
 #include "../Entity/Character.hpp"
 #include "../Level/Level.hpp"
 #include "../Entity/Weapon.hpp"
+#include "../Interface/HeadsUpDisplay.h"
 #include <Windows.h>
 
 #include <iostream>
@@ -19,7 +20,11 @@ private:
 	OurLua * m_entityHandler;
 	static bool s_isGameRunning;
 	static int s_gameStatus;
-	Level m_level; 
+	HeadsUpDisplay m_winText; 
+	HeadsUpDisplay m_loseText; 
+	bool m_drawWinText; 
+	bool m_drawLoseText; 
+	Level m_level;
 public:
 	Game(std::string level);
 	~Game();
