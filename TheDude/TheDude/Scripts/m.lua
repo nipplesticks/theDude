@@ -112,7 +112,7 @@ local bullets = Entities[1]:getProjectiles()
 						bullets = Entities[i] : getProjectiles()				  
 						for k = 1, #bullets, 1 do								  
 							if CheckCollision(Entities[1], bullets[k]) then		  
-								Entities[j]:AlterHealth(-bullets[k]:getDamage())  
+								Entities[1]:AlterHealth(-bullets[k]:getDamage())  
 								bullets[k] : Disable()							  
 								end												  
 								end												  

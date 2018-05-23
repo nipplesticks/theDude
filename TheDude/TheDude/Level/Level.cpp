@@ -292,7 +292,7 @@ bool Level::SaveLevel(const std::string & target)
 		map << "\telseif Entities[1]:isDead() == false then\n";
 		map << "\t\t_updateEntities()\n";
 		map << "\t\t_collisionHandling()\n";
-		if (goals.size())
+		if (m_winConditions[1])
 		{
 			map << "\t\tfor i = 1, #GoalTiles, 1 do\n";
 			map << "\t\t\tif CheckCollision(Entities[1], GoalTiles[i]) then\n";
