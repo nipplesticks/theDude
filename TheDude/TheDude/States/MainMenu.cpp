@@ -225,11 +225,12 @@ std::vector<std::string> MainMenu::getfilesInDir()
 	std::string folderPath = __FILE__;
 	folderPath += "/../../";
 	folderPath += "Resourses/Levels";
-	namespace fs = std::experimental::filesystem;
-	for (auto& p : fs::directory_iterator(folderPath))
+	namespace fs = std::filesystem;
+	for (const std::filesystem::directory_entry p : fs::directory_iterator(folderPath))
 	{
 		std::stringstream s;
-		s << p << std::endl;
+		const std::filesystem::path pp = p.path();
+		s << pp << std::endl;
 		std::string lol(s.str());
 		std::string relative;
 		for (size_t i = lol.find_last_of('\\'); i < lol.size() - 1; i++)
